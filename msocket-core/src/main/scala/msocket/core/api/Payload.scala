@@ -5,7 +5,7 @@ import java.util.UUID
 import io.bullet.borer.{Codec, Decoder, Encoder}
 import io.bullet.borer.derivation.MapBasedCodecs._
 
-case class Payload[T](id: UUID, message: T)
+case class Payload[T](message: T, id: UUID)
 
 object Payload {
   implicit lazy val uuidCodec: Codec[UUID] = Codec

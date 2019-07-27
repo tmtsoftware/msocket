@@ -1,11 +1,13 @@
 import sbt._
 
 object Dependencies {
-  val `scalatest`       = "org.scalatest"     %% "scalatest"       % "3.0.8"
-  val `akka-http`       = "com.typesafe.akka" %% "akka-http"       % "10.1.9"
-  val `akka-stream`     = "com.typesafe.akka" %% "akka-stream"     % "2.5.23"
-  val `silencer-lib`    = "com.github.ghik"   %% "silencer-lib"    % "1.4.1"
-  val `silencer-plugin` = "com.github.ghik"   %% "silencer-plugin" % "1.4.1"
+  val `scalatest`           = "org.scalatest"     %% "scalatest"           % "3.0.8"
+  val `akka-http`           = "com.typesafe.akka" %% "akka-http"           % "10.1.9"
+  val `akka-http-testkit`   = "com.typesafe.akka" %% "akka-http-testkit"   % "10.1.9"
+  val `akka-stream`         = "com.typesafe.akka" %% "akka-stream"         % "2.5.23"
+  val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.23"
+  val `silencer-lib`        = "com.github.ghik"   %% "silencer-lib"        % "1.4.1"
+  val `silencer-plugin`     = "com.github.ghik"   %% "silencer-plugin"     % "1.4.1"
 }
 
 object Borer {

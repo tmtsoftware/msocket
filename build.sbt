@@ -47,7 +47,13 @@ lazy val `msocket-core` = project
 
 lazy val `msocket-simple-example` = project
   .dependsOn(`simple-service`, `msocket-core`)
-
+  .settings(
+    libraryDependencies ++= Seq(
+      `scalatest`           % Test,
+      `akka-http-testkit`   % Test,
+      `akka-stream-testkit` % Test
+    )
+  )
 lazy val `simple-service` = project
   .settings(
     libraryDependencies ++= Seq(

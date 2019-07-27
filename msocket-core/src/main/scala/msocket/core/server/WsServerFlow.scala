@@ -9,7 +9,7 @@ import io.bullet.borer.Decoder
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-class WsServerFlow[T: Decoder, RR: ClassTag, RS: ClassTag](handler: ServerHandler[T, RR, RS])(
+class WsServerFlow[T: Decoder, RR <: T: ClassTag, RS <: T: ClassTag](handler: ServerHandler[T, RR, RS])(
     implicit mat: Materializer,
     ec: ExecutionContext
 ) {

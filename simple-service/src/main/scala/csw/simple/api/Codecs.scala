@@ -3,38 +3,29 @@ package csw.simple.api
 import akka.Done
 import com.github.ghik.silencer.silent
 import csw.simple.api.Protocol._
-import io.bullet.borer.derivation.ArrayBasedCodecs.deriveCodecForUnaryCaseClass
 import io.bullet.borer.derivation.MapBasedCodecs._
-import io.bullet.borer.{Cbor, Codec, Target}
+import io.bullet.borer.{Codec, Json, Target}
 
 trait Codecs {
-  implicit val target: Target = Cbor
+  implicit val target: Target = Json
 
   implicit lazy val doneCodec: Codec[Done] = Codec.implicitly[String].bimap[Done](_ => "done", _ => Done)
 
-  implicit def protocolCodec[T <: Protocol]: Codec[T] = deriveCodec[Protocol].asInstanceOf[Codec[T]]
+  implicit def protocolCodec[T <: Protocol]: Codec[T] = explicitProtocolCodec.asInstanceOf[Codec[T]]
 
-  implicit def requestResponseCodec[T <: RequestResponse]: Codec[T] = {
-    @silent implicit val helloCodec: Codec[Hello]   = deriveCodecForUnaryCaseClass[Hello]
-    @silent implicit val squareCodec: Codec[Square] = deriveCodecForUnaryCaseClass[Square]
-    deriveCodec[RequestResponse].asInstanceOf[Codec[T]]
-  }
+  lazy val explicitProtocolCodec: Codec[Protocol] = {
+    @silent implicit lazy val helloCodec: Codec[Hello]   = deriveCodec[Hello]
+    @silent implicit lazy val squareCodec: Codec[Square] = deriveCodec[Square]
 
-  implicit def requestStreamCodec[T <: RequestStream]: Codec[T] = {
-    @silent implicit val getNamesCodec: Codec[GetNames]     = deriveCodecForUnaryCaseClass[GetNames]
-    @silent implicit val getNumbersCodec: Codec[GetNumbers] = deriveCodecForUnaryCaseClass[GetNumbers]
-    deriveCodec[RequestStream].asInstanceOf[Codec[T]]
-  }
+    @silent implicit val getNamesCodec: Codec[GetNames]     = deriveCodec[GetNames]
+    @silent implicit val getNumbersCodec: Codec[GetNumbers] = deriveCodec[GetNumbers]
 
-  implicit def fireAndForgetCodec[T <: FireAndForget]: Codec[T] = {
-    @silent implicit val getNamesCodec: Codec[Ping]      = deriveCodecForUnaryCaseClass[Ping]
-    @silent implicit val getNumbersCodec: Codec[Publish] = deriveCodecForUnaryCaseClass[Publish]
-    deriveCodec[FireAndForget].asInstanceOf[Codec[T]]
-  }
+    @silent implicit val pingCodec: Codec[Ping]       = deriveCodec[Ping]
+    @silent implicit val publishCodec: Codec[Publish] = deriveCodec[Publish]
 
-  implicit def requestChannelCodec[T <: RequestChannel]: Codec[T] = {
-    @silent implicit val helloAllCodec: Codec[HelloAll]   = deriveCodecForUnaryCaseClass[HelloAll]
-    @silent implicit val squareAllCodec: Codec[SquareAll] = deriveCodecForUnaryCaseClass[SquareAll]
-    deriveCodec[RequestChannel].asInstanceOf[Codec[T]]
+    @silent implicit val helloAllCodec: Codec[HelloAll]   = deriveCodec[HelloAll]
+    @silent implicit val squareAllCodec: Codec[SquareAll] = deriveCodec[SquareAll]
+
+    deriveCodec[Protocol]
   }
 }

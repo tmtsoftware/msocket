@@ -2,8 +2,8 @@ package msocket.core.api
 
 import java.util.UUID
 
-import io.bullet.borer.{Codec, Decoder, Encoder}
 import io.bullet.borer.derivation.MapBasedCodecs._
+import io.bullet.borer.{Codec, Decoder, Encoder}
 
 case class Payload[T](message: T, id: UUID)
 

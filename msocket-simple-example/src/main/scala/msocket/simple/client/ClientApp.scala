@@ -24,19 +24,12 @@ object ClientApp extends Codecs {
     val client = new SimpleClient(socket)
 
     client.getNumbers(3).runForeach(println)
+    client.getNames(5).runForeach(println)
 
+    Thread.sleep(2000)
     client.hello("msuhtaq").onComplete(println)
-//    Thread.sleep(1000)
     client.hello("msuhtaq1").onComplete(println)
-//    Thread.sleep(1000)
-//    client.square(3).onComplete(println)
-//    Thread.sleep(1000)
-//    client.square(4).onComplete(println)
-//    Thread.sleep(1000)
-//    client.square(5).onComplete(println)
-//    Thread.sleep(1000)
-//    client.square(6).onComplete(println)
-//    Thread.sleep(1000)
-    //    client.square(9).onComplete(println)
+    client.square(3).onComplete(println)
+    client.square(4).onComplete(println)
   }
 }

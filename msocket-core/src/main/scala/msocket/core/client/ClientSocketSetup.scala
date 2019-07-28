@@ -4,26 +4,22 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.ws.{Message, WebSocketRequest}
-import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink}
+import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
-import io.bullet.borer.Encoder
 
-class ClientSocketSetup[RR: Encoder, RS: Encoder](webSocketRequest: WebSocketRequest)(implicit actorSystem: ActorSystem) {
+class ClientSocketSetup(webSocketRequest: WebSocketRequest)(implicit actorSystem: ActorSystem) {
   implicit val mat: Materializer = ActorMaterializer()
   import mat.executionContext
 
-  private def pubSubPair() =
-    MergeHub.source[Message](perProducerBufferSize = 16).toMat(BroadcastHub.sink(bufferSize = 256))(Keep.both).run()
+  def request(message: Message): Source[Message, NotUsed] = {
+    val (connectionSink, connectionSource) =
+      Source.asSubscriber[Message].mapMaterializedValue(Sink.fromSubscriber).preMaterialize()
 
-  val (upstreamSink, _upstreamSourceForFlow)     = pubSubPair()
-  val (_downstreamSinkForFlow, downstreamSource) = pubSubPair()
+    val requestSource        = Source.single(message).concat(Source.maybe)
+    val flow                 = Flow.fromSinkAndSource(connectionSink, requestSource)
+    val (upgradeResponse, _) = Http().singleWebSocketRequest(webSocketRequest, flow)
 
-  _upstreamSourceForFlow.runWith(Sink.ignore)
-  downstreamSource.runWith(Sink.ignore)
-  Thread.sleep(2000)
-
-  private val flow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSource(_downstreamSinkForFlow, _upstreamSourceForFlow)
-
-  private val (upgradeResponse, _) = Http().singleWebSocketRequest(WebSocketRequest("ws://localhost:5000/websocket"), flow)
-  upgradeResponse.onComplete(println)
+    upgradeResponse.onComplete(println)
+    connectionSource
+  }
 }

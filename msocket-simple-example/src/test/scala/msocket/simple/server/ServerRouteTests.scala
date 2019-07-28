@@ -15,7 +15,7 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
       isWebSocketUpgrade shouldBe true
       wsClient.expectMessage().asTextMessage.getStreamedText.asScala.runForeach(println)
 
-      Thread.sleep(5000)
+      Thread.sleep(100000)
     }
   }
 }

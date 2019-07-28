@@ -1,7 +1,5 @@
 package msocket.core.client
 
-import java.util.UUID
-
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.{TextMessage, WebSocketRequest}
@@ -17,39 +15,21 @@ class ClientSocketImpl[RR: Encoder, RS: Encoder](webSocketRequest: WebSocketRequ
     encoding: Encoding
 ) extends ClientSocket[RR, RS] {
 
-  private val setup              = new ClientSocketSetup[RR, RS](webSocketRequest)
+  private val setup              = new ClientSocketSetup(webSocketRequest)
   implicit val mat: Materializer = ActorMaterializer()
 
-  override def requestResponse[Res: Decoder: Encoder](message: RR): Future[Res] = {
-    val Id = UUID.randomUUID()
-    send(Payload(message), Id)
-    rrResponses(Id).runWith(Sink.head)
-  }
-
-  override def requestStream[Res: Decoder: Encoder](message: RS): Source[Res, NotUsed] = {
-    val Id = UUID.randomUUID()
-    send(Payload(message), Id)
-    rsResponses(Id)
-  }
-
-  private def send(message: Payload[_], id: UUID): NotUsed = {
-    Source.single(encoding.strict(message)).runWith(setup.upstreamSink)
-  }
-
-  private def rrResponses[Res: Decoder: Encoder](UUID: UUID): Source[Res, NotUsed] =
-    setup.downstreamSource
+  override def requestResponse[Res: Decoder: Encoder](request: RR): Future[Res] = {
+    setup
+      .request(encoding.strict(Payload(request)))
       .collectType[TextMessage.Strict]
-      .map { x =>
-        println(x)
-        encoding.decode[Payload[Res]](x.text)
-      }
-      .map(_.value)
+      .map(x => encoding.decode[Payload[Res]](x.text).value)
+      .runWith(Sink.head)
+  }
 
-  private def rsResponses[Res: Decoder: Encoder](UUID: UUID): Source[Res, NotUsed] =
-    setup.downstreamSource
+  override def requestStream[Res: Decoder: Encoder](request: RS): Source[Res, NotUsed] = {
+    setup
+      .request(encoding.strict(Payload(request)))
       .collectType[TextMessage.Streamed]
-      .flatMapMerge(
-        1000,
-        xs => xs.textStream.map(x => encoding.decode[Payload[Res]](x)).map(_.value)
-      )
+      .flatMapConcat(xs => xs.textStream.map(x => encoding.decode[Payload[Res]](x).value))
+  }
 }

@@ -3,7 +3,7 @@ import Borer._
 
 inThisBuild(
   Seq(
-    scalaVersion := "2.12.8",
+    scalaVersion := "2.13.0",
     version := "0.1.0-SNAPSHOT",
     organization := "com.github.mushtaq.msocket",
     organizationName := "ThoughtWorks",

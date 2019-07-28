@@ -8,7 +8,7 @@ import akka.http.scaladsl.model.ws.{TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.core.api.{Encoding, Envelope, Payload}
+import msocket.core.api.{Encoding, Payload}
 
 import scala.concurrent.Future
 
@@ -21,36 +21,35 @@ class ClientSocketImpl[RR: Encoder, RS: Encoder](webSocketRequest: WebSocketRequ
   implicit val mat: Materializer = ActorMaterializer()
 
   override def requestResponse[Res: Decoder: Encoder](message: RR): Future[Res] = {
-    call(Payload(message), rrResponses).runWith(Sink.head)
+    val Id = UUID.randomUUID()
+    send(Payload(message), Id)
+    rrResponses(Id).runWith(Sink.head)
   }
 
   override def requestStream[Res: Decoder: Encoder](message: RS): Source[Res, NotUsed] = {
-    call(Payload(message), rsResponses)
-  }
-
-  private def call[Res](
-      payload: Payload[_],
-      responses: Source[Envelope[Res], NotUsed]
-  ): Source[Res, NotUsed] = {
-    val id = UUID.randomUUID()
-    send(payload, id)
-    responses.collect { case Envelope(response, `id`) => response.value }
+    val Id = UUID.randomUUID()
+    send(Payload(message), Id)
+    rsResponses(Id)
   }
 
   private def send(message: Payload[_], id: UUID): NotUsed = {
-    Source.single(encoding.strict(Envelope(message, id))).runWith(setup.upstreamSink)
+    Source.single(encoding.strict(message)).runWith(setup.upstreamSink)
   }
 
-  private def rrResponses[Res: Decoder: Encoder]: Source[Envelope[Res], NotUsed] =
+  private def rrResponses[Res: Decoder: Encoder](UUID: UUID): Source[Res, NotUsed] =
     setup.downstreamSource
       .collectType[TextMessage.Strict]
       .map { x =>
         println(x)
-        encoding.decode[Envelope[Res]](x.text)
+        encoding.decode[Payload[Res]](x.text)
       }
+      .map(_.value)
 
-  private def rsResponses[Res: Decoder: Encoder]: Source[Envelope[Res], NotUsed] =
+  private def rsResponses[Res: Decoder: Encoder](UUID: UUID): Source[Res, NotUsed] =
     setup.downstreamSource
       .collectType[TextMessage.Streamed]
-      .flatMapMerge(1000, xs => xs.textStream.map(x => encoding.decode[Envelope[Res]](x)))
+      .flatMapMerge(
+        1000,
+        xs => xs.textStream.map(x => encoding.decode[Payload[Res]](x)).map(_.value)
+      )
 }

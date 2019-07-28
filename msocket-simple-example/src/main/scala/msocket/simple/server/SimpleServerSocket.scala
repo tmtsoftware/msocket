@@ -16,10 +16,7 @@ class SimpleServerSocket(simpleApi: SimpleApi)(implicit ec: ExecutionContext)
 
   override def requestResponse(message: RequestResponse): Future[Payload[_]] = message match {
     case Hello(name)     => simpleApi.hello(name).response
-    case Square(number)  =>
-      val response = simpleApi.square(number).response
-      println(s"*******************$response")
-      response
+    case Square(number)  => simpleApi.square(number).response
     case Ping(msg)       => simpleApi.ping(msg).response
     case Publish(number) => simpleApi.publish(number).response
   }

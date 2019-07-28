@@ -2,6 +2,7 @@ package msocket.simple.client
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.WebSocketRequest
+import akka.stream.ActorMaterializer
 import csw.simple.api.Codecs
 import csw.simple.api.Protocol.{RequestResponse, RequestStream}
 import msocket.core.api.Encoding
@@ -11,7 +12,8 @@ import msocket.core.client.{ClientSocket, ClientSocketImpl}
 object ClientApp extends Codecs {
 
   def main(args: Array[String]): Unit = {
-    implicit val system: ActorSystem = ActorSystem()
+    implicit val system: ActorSystem    = ActorSystem()
+    implicit val mat: ActorMaterializer = ActorMaterializer()
     import system.dispatcher
     implicit val encoding: Encoding = JsonText
 
@@ -21,18 +23,20 @@ object ClientApp extends Codecs {
 
     val client = new SimpleClient(socket)
 
+    client.getNumbers(3).runForeach(println)
+
     client.hello("msuhtaq").onComplete(println)
 //    Thread.sleep(1000)
     client.hello("msuhtaq1").onComplete(println)
 //    Thread.sleep(1000)
-    client.square(3).onComplete(println)
+//    client.square(3).onComplete(println)
 //    Thread.sleep(1000)
-    client.square(4).onComplete(println)
+//    client.square(4).onComplete(println)
 //    Thread.sleep(1000)
-    client.square(5).onComplete(println)
-    Thread.sleep(1000)
-    client.square(6).onComplete(println)
-    Thread.sleep(1000)
+//    client.square(5).onComplete(println)
+//    Thread.sleep(1000)
+//    client.square(6).onComplete(println)
+//    Thread.sleep(1000)
     //    client.square(9).onComplete(println)
   }
 }

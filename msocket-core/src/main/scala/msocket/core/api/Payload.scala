@@ -14,6 +14,7 @@ object Payload {
       uuid => (uuid.getMostSignificantBits, uuid.getLeastSignificantBits), { case (m, l) => new UUID(m, l) }
     )
 
+//  implicit def payloadEnc2: Encoder[Payload[_]]                     = payloadEnc[Payload[Any]].asInstanceOf[Encoder[Payload[_]]]
   implicit def payloadEnc[T]: Encoder[Payload[T]]                   = deriveEncoder[Payload[T]]
   implicit def payloadDec[T: Decoder: Encoder]: Decoder[Payload[T]] = deriveDecoder[Payload[T]]
 }

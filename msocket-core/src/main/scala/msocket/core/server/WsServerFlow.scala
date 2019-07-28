@@ -5,24 +5,24 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Sink}
 import akka.util.ByteString
-import io.bullet.borer.{Decoder, Encoder, Target}
-import msocket.core.api.{MSocket, PSocket, Payload}
+import io.bullet.borer.compat.akka._
+import io.bullet.borer.{Decoder, Encoder}
+import msocket.core.api.{Encoding, MSocket, PSocket, Payload}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
-import io.bullet.borer.compat.akka._
 
 class WsServerFlow[T: Decoder: Encoder, RR <: T: ClassTag, RS <: T: ClassTag](socket: MSocket[RR, RS])(
     implicit mat: Materializer,
     ec: ExecutionContext,
-    target: Target
+    encoding: Encoding
 ) {
   private val handler: ServerHandler[T, RR, RS] = new ServerHandler(new PSocket(socket))
   val flow: Flow[Message, Message, NotUsed] = {
     Flow[Message]
       .mapAsync(1000) {
         case message: TextMessage.Strict =>
-          val payload = target.decode(ByteString(message.text)).to[Payload[T]].value
+          val payload = encoding.target.decode(ByteString(message.text)).to[Payload[T]].value
           handler.handle(payload).map(List(_))
         case message: TextMessage.Streamed =>
           message.textStream.runWith(Sink.ignore)

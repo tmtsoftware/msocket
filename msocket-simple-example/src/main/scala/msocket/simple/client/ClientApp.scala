@@ -10,8 +10,8 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import csw.simple.api.Codecs
 import csw.simple.api.Protocol.Hello
-import msocket.core.api.{MResponse, Payload}
-import msocket.core.extensions.ToMessage.ValueToMessage
+import msocket.core.api.Encoding.JsonText
+import msocket.core.api.{Encoding, MResponse, Payload}
 
 object ClientApp extends Codecs {
 
@@ -19,10 +19,11 @@ object ClientApp extends Codecs {
     implicit val system: ActorSystem             = ActorSystem()
     implicit val materializer: ActorMaterializer = ActorMaterializer()
     import system.dispatcher
+    implicit val encoding: Encoding.JsonText.type = JsonText
 
     val flow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSource(
       Sink.foreach(println),
-      Source.single(Payload(MResponse(Hello("msuhtaq")), UUID.randomUUID()).textMessage)
+      Source.single(encoding.strict(Payload(MResponse(Hello("msuhtaq")), UUID.randomUUID())))
     )
 
     val (upgradeResponse, closed) = Http().singleWebSocketRequest(WebSocketRequest("ws://localhost:5000/websocket"), flow)

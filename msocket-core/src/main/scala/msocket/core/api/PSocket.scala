@@ -10,7 +10,7 @@ class PSocket[RR, RS](socket: MSocket[RR, RS])(implicit ec: ExecutionContext) {
     socket.requestResponse(payload.response.value).map(x => Payload(x, payload.id))
   }
 
-  def requestStream(payload: Payload[RS]): Source[Payload[_], NotUsed] = {
-    socket.requestStream(payload.response.value).map(x => Payload(x, payload.id))
+  def requestStream(payload: Payload[RS]): Source[Payload[Any], NotUsed] = {
+    socket.requestStream(payload.response.value).map(x => Payload(x.asInstanceOf[MResponse[Any]], payload.id))
   }
 }

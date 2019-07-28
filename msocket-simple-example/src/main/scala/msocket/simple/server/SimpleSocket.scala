@@ -9,7 +9,7 @@ import msocket.core.extensions.ToResponse.{FutureToPayload, SourceToPayload}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SimpleTextSocket(simpleApi: SimpleApi)(implicit ec: ExecutionContext)
+class SimpleSocket(simpleApi: SimpleApi)(implicit ec: ExecutionContext)
     extends MSocket[RequestResponse, RequestStream]
     with DoneCodec {
 

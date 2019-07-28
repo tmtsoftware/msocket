@@ -17,6 +17,6 @@ class Wiring extends Codecs {
   implicit lazy val encoding: Encoding       = JsonText
 
   lazy val simpleImpl   = new SimpleImpl
-  lazy val socket       = new SimpleSocket(simpleImpl)
+  lazy val socket       = new SimpleServerSocket(simpleImpl)
   lazy val simpleServer = new SimpleServer(new WsServerFlow(socket))
 }

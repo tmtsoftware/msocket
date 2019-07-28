@@ -4,13 +4,13 @@ import akka.NotUsed
 import akka.stream.scaladsl.Source
 import csw.simple.api.Protocol._
 import csw.simple.api.SimpleApi
-import msocket.core.api.{DoneCodec, Payload, MSocket}
+import msocket.core.api.{DoneCodec, Payload, MServerSocket}
 import msocket.core.extensions.ToResponse.{FutureToPayload, SourceToPayload}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SimpleSocket(simpleApi: SimpleApi)(implicit ec: ExecutionContext)
-    extends MSocket[RequestResponse, RequestStream]
+class SimpleServerSocket(simpleApi: SimpleApi)(implicit ec: ExecutionContext)
+    extends MServerSocket[RequestResponse, RequestStream]
     with DoneCodec {
 
   override def requestResponse(message: RequestResponse): Future[Payload[_]] = message match {

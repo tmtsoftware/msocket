@@ -1,33 +1,22 @@
 package msocket.simple.client
 
-import java.util.UUID
-
-import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.ws.{Message, WebSocketRequest}
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.http.scaladsl.model.ws.WebSocketRequest
 import csw.simple.api.Codecs
-import csw.simple.api.Protocol.Hello
+import csw.simple.api.Protocol.{Hello, RequestResponse, RequestStream}
+import msocket.core.api.Encoding
 import msocket.core.api.Encoding.JsonText
-import msocket.core.api.{Encoding, Payload, Envelope}
+import msocket.core.client.ClientSocket
 
 object ClientApp extends Codecs {
 
   def main(args: Array[String]): Unit = {
-    implicit val system: ActorSystem             = ActorSystem()
-    implicit val materializer: ActorMaterializer = ActorMaterializer()
+    implicit val system: ActorSystem = ActorSystem()
     import system.dispatcher
-    implicit val encoding: Encoding.JsonText.type = JsonText
+    implicit val encoding: Encoding = JsonText
 
-    val flow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSource(
-      Sink.foreach(println),
-      Source.single(encoding.strict(Envelope(Payload(Hello("msuhtaq")), UUID.randomUUID())))
-    )
-
-    val (upgradeResponse, closed) = Http().singleWebSocketRequest(WebSocketRequest("ws://localhost:5000/websocket"), flow)
-
-    upgradeResponse.foreach(println)
+    val socket = new ClientSocket[RequestResponse, RequestStream](WebSocketRequest("ws://localhost:5000/websocket"))
+    socket.requestResponse[String](Hello("msuhtaq")).onComplete(println)
+    socket.requestResponse[String](Hello("msuhtaq1")).onComplete(println)
   }
 }

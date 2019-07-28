@@ -9,7 +9,7 @@ import akka.http.scaladsl.model.ws.{Message, TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.core.api.{Encoding, MSocket, Payload, Response}
+import msocket.core.api.{Encoding, MSocket, Envelope, Payload}
 
 import scala.concurrent.Future
 
@@ -28,26 +28,26 @@ class ClientHandler(webSocketRequest: WebSocketRequest)(implicit actorSystem: Ac
 
   def textSocket[RR <: Any: Encoder: Decoder, RS: Decoder: Encoder](): MSocket[RR, RS] = new MSocket[RR, RS] {
 
-    val rrResponses: Source[Payload[RR], NotUsed] = downstreamSource
+    val rrResponses: Source[Envelope[RR], NotUsed] = downstreamSource
       .collectType[TextMessage.Strict]
-      .map(x => encoding.decode[Payload[RR]](x.text))
+      .map(x => encoding.decode[Envelope[RR]](x.text))
 
-    val rsResponses: Source[Payload[RS], NotUsed] = downstreamSource
+    val rsResponses: Source[Envelope[RS], NotUsed] = downstreamSource
       .collectType[TextMessage.Streamed]
-      .flatMapMerge(1000, xs => xs.textStream.map(x => encoding.decode[Payload[RS]](x)))
+      .flatMapMerge(1000, xs => xs.textStream.map(x => encoding.decode[Envelope[RS]](x)))
 
-    def send(message: Response[_], id: UUID): NotUsed = Source.single(encoding.strict(Payload(message, id))).runWith(upstreamSink)
+    def send(message: Payload[_], id: UUID): NotUsed = Source.single(encoding.strict(Envelope(message, id))).runWith(upstreamSink)
 
-    override def requestResponse(message: RR): Future[Response[_]] = {
+    override def requestResponse(message: RR): Future[Payload[_]] = {
       val id = UUID.randomUUID()
-      send(Response(message), id)
-      rrResponses.collect { case Payload(response, `id`) => response }.runWith(Sink.head)
+      send(Payload(message), id)
+      rrResponses.collect { case Envelope(response, `id`) => response }.runWith(Sink.head)
     }
 
-    override def requestStream(message: RS): Source[Response[_], NotUsed] = {
+    override def requestStream(message: RS): Source[Payload[_], NotUsed] = {
       val id = UUID.randomUUID()
-      send(Response(message), id)
-      rsResponses.collect { case Payload(response, `id`) => response }
+      send(Payload(message), id)
+      rsResponses.collect { case Envelope(response, `id`) => response }
     }
   }
 }

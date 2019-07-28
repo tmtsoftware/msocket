@@ -11,7 +11,7 @@ import akka.stream.scaladsl.{Flow, Sink, Source}
 import csw.simple.api.Codecs
 import csw.simple.api.Protocol.Hello
 import msocket.core.api.Encoding.JsonText
-import msocket.core.api.{Encoding, Response, Payload}
+import msocket.core.api.{Encoding, Payload, Envelope}
 
 object ClientApp extends Codecs {
 
@@ -23,7 +23,7 @@ object ClientApp extends Codecs {
 
     val flow: Flow[Message, Message, NotUsed] = Flow.fromSinkAndSource(
       Sink.foreach(println),
-      Source.single(encoding.strict(Payload(Response(Hello("msuhtaq")), UUID.randomUUID())))
+      Source.single(encoding.strict(Envelope(Payload(Hello("msuhtaq")), UUID.randomUUID())))
     )
 
     val (upgradeResponse, closed) = Http().singleWebSocketRequest(WebSocketRequest("ws://localhost:5000/websocket"), flow)

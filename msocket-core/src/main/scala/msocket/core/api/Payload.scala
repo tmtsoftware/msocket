@@ -1,19 +1,14 @@
 package msocket.core.api
 
-import java.util.UUID
+import io.bullet.borer.{Decoder, Encoder, Writer}
+import io.bullet.borer.derivation.ArrayBasedCodecs.deriveEncoderForUnaryCaseClass
+import io.bullet.borer.derivation.ArrayBasedCodecs.deriveCodecForUnaryCaseClass
 
-import io.bullet.borer.derivation.MapBasedCodecs._
-import io.bullet.borer.{Codec, Decoder, Encoder}
-
-case class Payload[T](response: Response[T], id: UUID)
+case class Payload[T: Encoder](value: T) {
+  lazy val responseEncoder: Encoder[Payload[T]] = deriveEncoderForUnaryCaseClass[Payload[T]]
+}
 
 object Payload {
-  implicit lazy val uuidCodec: Codec[UUID] = Codec
-    .implicitly[(Long, Long)]
-    .bimap[UUID](
-      uuid => (uuid.getMostSignificantBits, uuid.getLeastSignificantBits), { case (m, l) => new UUID(m, l) }
-    )
-
-  implicit def payloadEnc[T]: Encoder[Payload[T]]                   = deriveEncoder[Payload[T]]
-  implicit def payloadDec[T: Decoder: Encoder]: Decoder[Payload[T]] = deriveDecoder[Payload[T]]
+  implicit def enc[T]: Encoder[Payload[T]]                   = (w: Writer, value: Payload[T]) => value.responseEncoder.write(w, value)
+  implicit def dec[T: Decoder: Encoder]: Decoder[Payload[T]] = deriveCodecForUnaryCaseClass[Payload[T]].decoder
 }

@@ -21,6 +21,7 @@ object ToMessage {
     def textMessage: TextMessage.Streamed     = TextMessage.Streamed(stream.map(_.text))
     def binaryMessage: BinaryMessage.Streamed = BinaryMessage.Streamed(stream.map(_.byteString))
   }
+
   implicit class FutureToMessage[T: Encoder](future: Future[T])(implicit target: Target, ec: ExecutionContext) {
     def textMessage: Future[TextMessage.Strict]     = future.map(_.textMessage)
     def binaryMessage: Future[BinaryMessage.Strict] = future.map(_.binaryMessage)

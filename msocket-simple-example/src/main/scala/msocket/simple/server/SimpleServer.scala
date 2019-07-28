@@ -9,6 +9,6 @@ class SimpleServer(wsServerFlow: WsServerFlow[Protocol, RequestResponse, Request
   def routesForTesting: Route = routes
 
   override protected def routes: Route = path("websocket") {
-    handleWebSocketMessages(wsServerFlow.value)
+    handleWebSocketMessages(wsServerFlow.flow)
   }
 }

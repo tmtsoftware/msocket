@@ -11,6 +11,6 @@ class PSocket[RR, RS](socket: MSocket[RR, RS])(implicit ec: ExecutionContext) {
   }
 
   def requestStream(payload: Payload[RS]): Source[Payload[Any], NotUsed] = {
-    socket.requestStream(payload.response.value).map(x => Payload(x.asInstanceOf[MResponse[Any]], payload.id))
+    socket.requestStream(payload.response.value).map(x => Payload(x.asInstanceOf[Response[Any]], payload.id))
   }
 }

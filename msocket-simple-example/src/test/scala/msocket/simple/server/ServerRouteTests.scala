@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.http.scaladsl.testkit.{ScalatestRouteTest, WSProbe}
 import csw.simple.api.Codecs
 import csw.simple.api.Protocol.GetNumbers
-import msocket.core.api.{MResponse, Payload}
+import msocket.core.api.{Response, Payload}
 import org.scalatest.{FunSuite, Matchers}
 
 class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers with Codecs {
@@ -13,7 +13,7 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
   test("demo") {
     val wsClient = WSProbe()
     WS(s"/websocket", wsClient.flow) ~> wiring.simpleServer.routesForTesting ~> check {
-      wsClient.sendMessage(wiring.encoding.strict(Payload(MResponse(GetNumbers(3)), UUID.randomUUID())))
+      wsClient.sendMessage(wiring.encoding.strict(Payload(Response(GetNumbers(3)), UUID.randomUUID())))
       isWebSocketUpgrade shouldBe true
       wsClient.expectMessage().asTextMessage.getStreamedText.asScala.runForeach(println)
 

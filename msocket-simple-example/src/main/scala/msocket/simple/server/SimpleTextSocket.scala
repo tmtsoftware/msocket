@@ -1,29 +1,27 @@
 package msocket.simple.server
 
-import java.util.UUID
-
-import akka.http.scaladsl.model.ws.TextMessage
+import akka.NotUsed
+import akka.stream.scaladsl.Source
 import csw.simple.api.Protocol._
 import csw.simple.api.SimpleApi
-import io.bullet.borer.Target
-import msocket.core.api.{DoneCodec, TextSocket}
-import msocket.core.extensions.ToPayload.{FutureToPayload, SourceToPayload}
+import msocket.core.api.{DoneCodec, MResponse, MSocket}
+import msocket.core.extensions.ToResponse.{FutureToPayload, SourceToPayload}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SimpleTextSocket(simpleApi: SimpleApi)(implicit ec: ExecutionContext, target: Target)
-    extends TextSocket[RequestResponse, RequestStream]
+class SimpleTextSocket(simpleApi: SimpleApi)(implicit ec: ExecutionContext)
+    extends MSocket[RequestResponse, RequestStream]
     with DoneCodec {
 
-  override def requestResponse(message: RequestResponse, id: UUID): Future[TextMessage.Strict] = message match {
-    case Hello(name)     => simpleApi.hello(name).payloadTextMessage(id)
-    case Square(number)  => simpleApi.square(number).payloadTextMessage(id)
-    case Ping(msg)       => simpleApi.ping(msg).payloadTextMessage(id)
-    case Publish(number) => simpleApi.publish(number).payloadTextMessage(id)
+  override def requestResponse(message: RequestResponse): Future[MResponse[_]] = message match {
+    case Hello(name)     => simpleApi.hello(name).response
+    case Square(number)  => simpleApi.square(number).response
+    case Ping(msg)       => simpleApi.ping(msg).response
+    case Publish(number) => simpleApi.publish(number).response
   }
 
-  override def requestStream(message: RequestStream, id: UUID): TextMessage.Streamed = message match {
-    case GetNames(size)          => simpleApi.getNames(size).payloadTextMessage(id)
-    case GetNumbers(divisibleBy) => simpleApi.getNumbers(divisibleBy).payloadTextMessage(id)
+  override def requestStream(message: RequestStream): Source[MResponse[_], NotUsed] = message match {
+    case GetNames(size)          => simpleApi.getNames(size).responses
+    case GetNumbers(divisibleBy) => simpleApi.getNumbers(divisibleBy).responses
   }
 }

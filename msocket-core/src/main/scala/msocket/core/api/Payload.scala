@@ -5,7 +5,7 @@ import java.util.UUID
 import io.bullet.borer.derivation.MapBasedCodecs._
 import io.bullet.borer.{Codec, Decoder, Encoder}
 
-case class Payload[T](message: T, id: UUID)
+case class Payload[T](response: MResponse[T], id: UUID)
 
 object Payload {
   implicit lazy val uuidCodec: Codec[UUID] = Codec
@@ -14,6 +14,6 @@ object Payload {
       uuid => (uuid.getMostSignificantBits, uuid.getLeastSignificantBits), { case (m, l) => new UUID(m, l) }
     )
 
-  implicit def payloadEnc[T: Encoder]: Encoder[Payload[T]] = deriveEncoder[Payload[T]]
-  implicit def payloadDec[T: Decoder]: Decoder[Payload[T]] = deriveDecoder[Payload[T]]
+  implicit def payloadEnc[T]: Encoder[Payload[T]]                   = deriveEncoder[Payload[T]]
+  implicit def payloadDec[T: Decoder: Encoder]: Decoder[Payload[T]] = deriveDecoder[Payload[T]]
 }

@@ -5,12 +5,12 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Sink}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.core.api.{Encoding, MServerSocket, Envelope}
+import msocket.core.api.{Encoding, Envelope}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-class WsServerFlow[T: Decoder: Encoder, RR <: T: ClassTag, RS <: T: ClassTag](socket: MServerSocket[RR, RS])(
+class WsServerFlow[T: Decoder: Encoder, RR <: T: ClassTag, RS <: T: ClassTag](socket: ServerSocket[RR, RS])(
     implicit mat: Materializer,
     ec: ExecutionContext,
     encoding: Encoding

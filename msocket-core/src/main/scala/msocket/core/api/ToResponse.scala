@@ -1,8 +1,7 @@
-package msocket.core.extensions
+package msocket.core.api
 
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
-import msocket.core.api.Payload
 
 import scala.concurrent.{ExecutionContext, Future}
 

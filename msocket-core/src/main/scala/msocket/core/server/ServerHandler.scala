@@ -1,12 +1,12 @@
 package msocket.core.server
 
 import akka.http.scaladsl.model.ws.Message
-import msocket.core.api.{Encoding, MServerSocket, Envelope}
+import msocket.core.api.{Encoding, Envelope}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-class ServerHandler[RR: ClassTag, RS: ClassTag](socket: MServerSocket[RR, RS])(
+class ServerHandler[RR: ClassTag, RS: ClassTag](socket: ServerSocket[RR, RS])(
     implicit ec: ExecutionContext,
     encoding: Encoding
 ) {

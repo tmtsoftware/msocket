@@ -5,7 +5,7 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Sink}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.core.api.{Encoding, MSocket, PSocket, Payload}
+import msocket.core.api.{Encoding, MSocket, Payload}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -16,7 +16,7 @@ class WsServerFlow[T: Decoder: Encoder, RR <: T: ClassTag, RS <: T: ClassTag](so
     encoding: Encoding
 ) {
 
-  private val handler: ServerHandler[T, RR, RS] = new ServerHandler(new PSocket(socket))
+  private val handler: ServerHandler[RR, RS] = new ServerHandler(socket)
 
   val flow: Flow[Message, Message, NotUsed] = {
     Flow[Message]

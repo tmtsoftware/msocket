@@ -1,18 +1,17 @@
 package msocket.core.server
 
 import akka.http.scaladsl.model.ws.Message
-import io.bullet.borer.Decoder
-import msocket.core.api.{Encoding, PSocket, Payload}
+import msocket.core.api.{Encoding, MSocket, Payload}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-class ServerHandler[T: Decoder, RR <: T: ClassTag, RS <: T: ClassTag](socket: PSocket[RR, RS])(
+class ServerHandler[RR: ClassTag, RS: ClassTag](socket: MSocket[RR, RS])(
     implicit ec: ExecutionContext,
     encoding: Encoding
 ) {
-  def handle(payload: Payload[T]): Future[Message] = payload.response.value match {
-    case x: RR => socket.requestResponse(payload.asInstanceOf[Payload[RR]]).map(x => encoding.strict(x))
-    case x: RS => Future.successful(encoding.streamed(socket.requestStream(payload.asInstanceOf[Payload[RS]])))
+  def handle(payload: Payload[_]): Future[Message] = payload.response.value match {
+    case x: RR => socket.requestResponse(x).map(Payload(_, payload.id)).map(encoding.strict)
+    case x: RS => Future.successful(encoding.streamed(socket.requestStream(x).map(Payload(_, payload.id))))
   }
 }

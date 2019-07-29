@@ -2,7 +2,7 @@ package msocket.core.client
 
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.ws.{TextMessage, WebSocketRequest}
+import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
@@ -22,15 +22,20 @@ class ClientSocketImpl[RR: Encoder, RS: Encoder](webSocketRequest: WebSocketRequ
   override def requestResponse[Res: Decoder: Encoder](request: RR): Future[Res] = {
     setup
       .request(JsonText.strict(Payload(request)))
-      .collectType[TextMessage.Strict]
-      .map(x => encoding.decode[Payload[Res]](x.text).value)
+      .collect {
+        case TextMessage.Strict(text)   => encoding.decodeText[Payload[Res]](text).value
+        case BinaryMessage.Strict(data) => encoding.decodeBinary[Payload[Res]](data).value
+      }
       .runWith(Sink.head)
   }
 
   override def requestStream[Res: Decoder: Encoder](request: RS): Source[Res, NotUsed] = {
     setup
       .request(JsonText.strict(Payload(request)))
-      .collectType[TextMessage.Streamed]
-      .flatMapConcat(xs => xs.textStream.map(x => encoding.decode[Payload[Res]](x).value))
+      .collect {
+        case TextMessage.Streamed(textStream)   => textStream.map(x => encoding.decodeText[Payload[Res]](x).value)
+        case BinaryMessage.Streamed(dataStream) => dataStream.map(x => encoding.decodeBinary[Payload[Res]](x).value)
+      }
+      .flatMapConcat(identity)
   }
 }

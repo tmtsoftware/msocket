@@ -23,7 +23,7 @@ class WsServerFlow[T: Decoder: Encoder, RR <: T: ClassTag, RS <: T: ClassTag](so
     Flow[Message]
       .mapAsync(1000) {
         case message: TextMessage.Strict =>
-          handler.handle(JsonText.decode[Payload[T]](message.text)).map(List(_))
+          handler.handle(JsonText.decodeText[Payload[T]](message.text)).map(List(_))
         case message: TextMessage.Streamed =>
           message.textStream.runWith(Sink.ignore)
           Future.successful(List.empty)

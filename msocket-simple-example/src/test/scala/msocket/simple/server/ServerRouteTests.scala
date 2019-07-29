@@ -14,7 +14,8 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
     WS(s"/websocket", wsClient.flow) ~> wiring.simpleServer.routesForTesting ~> check {
       wsClient.sendMessage(JsonText.strict(Payload(GetNumbers(3))))
       isWebSocketUpgrade shouldBe true
-      wsClient.expectMessage().asTextMessage.getStreamedText.asScala.runForeach(println)
+      wsClient.expectMessage().asBinaryMessage.getStreamedData.asScala.runForeach(x => println(x.utf8String))
+//      wsClient.expectMessage().asTextMessage.getStreamedText.asScala.runForeach(println)
 
       Thread.sleep(100000)
     }

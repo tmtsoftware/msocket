@@ -5,10 +5,10 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.core.api.Encoding.JsonText
-import msocket.core.api.{Encoding, Payload}
+import msocket.core.api.Encoding.{JsonBinary, JsonText}
+import msocket.core.api.Payload
 
-class ClientSocketImpl[T: Encoder](webSocketRequest: WebSocketRequest)(implicit actorSystem: ActorSystem, encoding: Encoding)
+class ClientSocketImpl[T: Encoder](webSocketRequest: WebSocketRequest)(implicit actorSystem: ActorSystem)
     extends ClientSocket[T] {
 
   private val setup = new ClientSocketSetup(webSocketRequest)
@@ -19,7 +19,7 @@ class ClientSocketImpl[T: Encoder](webSocketRequest: WebSocketRequest)(implicit 
       .request(JsonText.strictMessage(Payload(request)))
       .collect {
         case TextMessage.Strict(text)   => JsonText.decodeText(text).value
-        case BinaryMessage.Strict(data) => encoding.decodeBinary(data).value
+        case BinaryMessage.Strict(data) => JsonBinary.decodeBinary(data).value
       }
   }
 }

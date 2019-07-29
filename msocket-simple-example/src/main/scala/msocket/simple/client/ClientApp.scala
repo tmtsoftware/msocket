@@ -4,8 +4,6 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.WebSocketRequest
 import akka.stream.ActorMaterializer
 import csw.simple.api.{Codecs, Protocol}
-import msocket.core.api.Encoding
-import msocket.core.api.Encoding.{JsonBinary, JsonText}
 import msocket.core.client.{ClientSocket, ClientSocketImpl}
 
 object ClientApp extends Codecs {
@@ -14,7 +12,6 @@ object ClientApp extends Codecs {
     implicit val system: ActorSystem    = ActorSystem()
     implicit val mat: ActorMaterializer = ActorMaterializer()
     import system.dispatcher
-    implicit val encoding: Encoding = JsonText
 
     val socket: ClientSocket[Protocol] = new ClientSocketImpl[Protocol](WebSocketRequest("ws://localhost:5000/websocket"))
 

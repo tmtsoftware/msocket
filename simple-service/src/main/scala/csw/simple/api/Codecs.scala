@@ -17,12 +17,6 @@ trait Codecs {
     @silent implicit val getNamesCodec: Codec[GetNames]     = deriveCodec[GetNames]
     @silent implicit val getNumbersCodec: Codec[GetNumbers] = deriveCodec[GetNumbers]
 
-    @silent implicit val pingCodec: Codec[Ping]       = deriveCodec[Ping]
-    @silent implicit val publishCodec: Codec[Publish] = deriveCodec[Publish]
-
-    @silent implicit val helloAllCodec: Codec[HelloAll]   = deriveCodec[HelloAll]
-    @silent implicit val squareAllCodec: Codec[SquareAll] = deriveCodec[SquareAll]
-
     deriveCodec[Protocol]
   }
 }

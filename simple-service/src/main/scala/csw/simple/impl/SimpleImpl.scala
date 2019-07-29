@@ -1,8 +1,8 @@
 package csw.simple.impl
 
+import akka.NotUsed
 import akka.stream.DelayOverflowStrategy
 import akka.stream.scaladsl.Source
-import akka.{Done, NotUsed}
 import csw.simple.api.SimpleApi
 
 import scala.concurrent.Future
@@ -29,23 +29,5 @@ class SimpleImpl extends SimpleApi {
     Source
       .fromIterator(() => Iterator.from(1).filter(_ % divisibleBy == 0))
       .delay(1.second, DelayOverflowStrategy.backpressure)
-  }
-
-  /////////////////
-  override def helloAll(names: Source[String, NotUsed]): Source[String, NotUsed] = {
-    names.mapAsync(1)(hello)
-  }
-  override def squareAll(numbers: Source[Int, NotUsed]): Source[Int, NotUsed] = {
-    numbers.mapAsync(1)(square)
-  }
-
-  /////////////////
-  override def ping(msg: String): Future[Done] = Future.successful {
-    println(s"received ping: $msg")
-    Done
-  }
-  override def publish(number: Int): Future[Done] = Future.successful {
-    println(s"published $number")
-    Done
   }
 }

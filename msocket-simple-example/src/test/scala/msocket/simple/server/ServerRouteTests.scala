@@ -2,7 +2,7 @@ package msocket.simple.server
 
 import akka.http.scaladsl.testkit.{ScalatestRouteTest, WSProbe}
 import csw.simple.api.Codecs
-import csw.simple.api.Protocol.GetNumbers
+import csw.simple.api.RequestProtocol.GetNumbers
 import msocket.core.api.Encoding.JsonText
 import msocket.core.api.Payload
 import org.scalatest.{FunSuite, Matchers}

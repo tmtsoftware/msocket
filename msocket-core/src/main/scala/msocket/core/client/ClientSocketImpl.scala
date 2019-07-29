@@ -8,12 +8,12 @@ import io.bullet.borer.{Decoder, Encoder}
 import msocket.core.api.Encoding.{JsonBinary, JsonText}
 import msocket.core.api.Payload
 
-class ClientSocketImpl[T: Encoder](webSocketRequest: WebSocketRequest)(implicit actorSystem: ActorSystem)
-    extends ClientSocket[T] {
+class ClientSocketImpl[Req: Encoder](webSocketRequest: WebSocketRequest)(implicit actorSystem: ActorSystem)
+    extends ClientSocket[Req] {
 
   private val setup = new ClientSocketSetup(webSocketRequest)
 
-  override def requestStream[Res: Decoder: Encoder](request: T): Source[Res, NotUsed] = {
+  override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, NotUsed] = {
     println(JsonText.strictMessage(Payload(request)))
     setup
       .request(JsonText.strictMessage(Payload(request)))

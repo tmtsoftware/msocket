@@ -12,7 +12,6 @@ sealed abstract class Encoding(val target: Target) {
   def streamed(input: Source[Payload[_], NotUsed]): Message
 
   def decode[T: Decoder](input: String): T = target.decode(ByteString(input)).to[T].value
-  def isBinary: Boolean
 
   protected def bytes(input: Payload[_]): ByteString = target.encode(input).to[ByteString].result
   protected def text(input: Payload[_]): String      = bytes(input).utf8String
@@ -20,13 +19,11 @@ sealed abstract class Encoding(val target: Target) {
 
 object Encoding {
   sealed abstract class BinaryEncoding(target: Target) extends Encoding(target) {
-    override def isBinary: Boolean                                       = true
     override def strict(input: Payload[_]): Message                    = BinaryMessage.Strict(bytes(input))
     override def streamed(input: Source[Payload[_], NotUsed]): Message = BinaryMessage.Streamed(input.map(bytes))
   }
 
   case object JsonText extends Encoding(Json) {
-    override def isBinary: Boolean                                       = false
     override def strict(input: Payload[_]): Message                    = TextMessage.Strict(text(input))
     override def streamed(input: Source[Payload[_], NotUsed]): Message = TextMessage.Streamed(input.map(text))
   }

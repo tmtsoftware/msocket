@@ -6,6 +6,7 @@ import akka.http.scaladsl.model.ws.{TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
+import msocket.core.api.Encoding.JsonText
 import msocket.core.api.{Encoding, Payload}
 
 import scala.concurrent.Future
@@ -20,7 +21,7 @@ class ClientSocketImpl[RR: Encoder, RS: Encoder](webSocketRequest: WebSocketRequ
 
   override def requestResponse[Res: Decoder: Encoder](request: RR): Future[Res] = {
     setup
-      .request(encoding.strict(Payload(request)))
+      .request(JsonText.strict(Payload(request)))
       .collectType[TextMessage.Strict]
       .map(x => encoding.decode[Payload[Res]](x.text).value)
       .runWith(Sink.head)
@@ -28,7 +29,7 @@ class ClientSocketImpl[RR: Encoder, RS: Encoder](webSocketRequest: WebSocketRequ
 
   override def requestStream[Res: Decoder: Encoder](request: RS): Source[Res, NotUsed] = {
     setup
-      .request(encoding.strict(Payload(request)))
+      .request(JsonText.strict(Payload(request)))
       .collectType[TextMessage.Streamed]
       .flatMapConcat(xs => xs.textStream.map(x => encoding.decode[Payload[Res]](x).value))
   }

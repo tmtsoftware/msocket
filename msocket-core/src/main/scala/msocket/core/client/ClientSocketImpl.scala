@@ -23,8 +23,8 @@ class ClientSocketImpl[RR: Encoder, RS: Encoder](webSocketRequest: WebSocketRequ
     setup
       .request(JsonText.strict(Payload(request)))
       .collect {
-        case TextMessage.Strict(text)   => encoding.decodeText[Payload[Res]](text).value
-        case BinaryMessage.Strict(data) => encoding.decodeBinary[Payload[Res]](data).value
+        case TextMessage.Strict(text)   => JsonText.decodeText(text).value
+        case BinaryMessage.Strict(data) => encoding.decodeBinary(data).value
       }
       .runWith(Sink.head)
   }
@@ -33,8 +33,8 @@ class ClientSocketImpl[RR: Encoder, RS: Encoder](webSocketRequest: WebSocketRequ
     setup
       .request(JsonText.strict(Payload(request)))
       .collect {
-        case TextMessage.Streamed(textStream)   => textStream.map(x => encoding.decodeText[Payload[Res]](x).value)
-        case BinaryMessage.Streamed(dataStream) => dataStream.map(x => encoding.decodeBinary[Payload[Res]](x).value)
+        case TextMessage.Streamed(textStream)   => textStream.map(x => JsonText.decodeText(x).value)
+        case BinaryMessage.Streamed(dataStream) => dataStream.map(x => encoding.decodeBinary(x).value)
       }
       .flatMapConcat(identity)
   }

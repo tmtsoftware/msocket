@@ -5,14 +5,14 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import io.bullet.borer.compat.akka._
-import io.bullet.borer.{Cbor, Decoder, Json, Target}
+import io.bullet.borer.{Cbor, Decoder, Encoder, Json, Target}
 
 sealed abstract class Encoding(val target: Target) {
   def strict(input: Payload[_]): Message
   def streamed(input: Source[Payload[_], NotUsed]): Message
 
-  def decodeBinary[T: Decoder](input: ByteString): T = target.decode(input).to[T].value
-  def decodeText[T: Decoder](input: String): T       = decodeBinary(ByteString(input))
+  def decodeBinary[T: Decoder: Encoder](input: ByteString): Payload[T] = target.decode(input).to[Payload[T]].value
+  def decodeText[T: Decoder: Encoder](input: String): Payload[T]       = decodeBinary(ByteString(input))
 
   protected def encodeBinary(input: Payload[_]): ByteString = target.encode(input).to[ByteString].result
   protected def encodeText(input: Payload[_]): String       = encodeBinary(input).utf8String

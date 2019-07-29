@@ -14,7 +14,7 @@ class Wiring extends Codecs {
   implicit lazy val actorSystem: ActorSystem = ActorSystem("server")
   implicit lazy val ec: ExecutionContext     = actorSystem.dispatcher
   implicit lazy val mat: Materializer        = ActorMaterializer()
-  implicit lazy val encoding: Encoding       = JsonBinary
+  implicit lazy val encoding: Encoding       = JsonText
 
   lazy val simpleImpl   = new SimpleImpl
   lazy val socket       = new SimpleServerSocket(simpleImpl)

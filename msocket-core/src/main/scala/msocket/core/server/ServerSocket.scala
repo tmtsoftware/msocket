@@ -6,7 +6,6 @@ import msocket.core.api.Payload
 
 import scala.concurrent.Future
 
-trait ServerSocket[RR, RS] {
-  def requestResponse(request: RR): Future[Payload[_]]
-  def requestStream(request: RS): Source[Payload[_], NotUsed]
+trait ServerSocket[T] {
+  def requestStream(request: T): Source[Payload[_], NotUsed]
 }

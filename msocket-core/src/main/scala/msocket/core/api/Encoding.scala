@@ -8,8 +8,8 @@ import io.bullet.borer.compat.akka._
 import io.bullet.borer.{Cbor, Decoder, Encoder, Json, Target}
 
 sealed abstract class Encoding(val target: Target) {
-  def strict(input: Payload[_]): Message
-  def streamed(input: Source[Payload[_], NotUsed]): Message
+  def strictMessage(input: Payload[_]): Message
+  def strictMessageStream(input: Source[Payload[_], NotUsed]): Source[Message, NotUsed] = input.map(strictMessage)
 
   def decodeBinary[T: Decoder: Encoder](input: ByteString): Payload[T] = target.decode(input).to[Payload[T]].value
   def decodeText[T: Decoder: Encoder](input: String): Payload[T]       = decodeBinary(ByteString(input))
@@ -20,13 +20,11 @@ sealed abstract class Encoding(val target: Target) {
 
 object Encoding {
   sealed abstract class BinaryEncoding(target: Target) extends Encoding(target) {
-    override def strict(input: Payload[_]): Message                    = BinaryMessage.Strict(encodeBinary(input))
-    override def streamed(input: Source[Payload[_], NotUsed]): Message = BinaryMessage.Streamed(input.map(encodeBinary))
+    override def strictMessage(input: Payload[_]): Message = BinaryMessage.Strict(encodeBinary(input))
   }
 
   case object JsonText extends Encoding(Json) {
-    override def strict(input: Payload[_]): Message                    = TextMessage.Strict(encodeText(input))
-    override def streamed(input: Source[Payload[_], NotUsed]): Message = TextMessage.Streamed(input.map(encodeText))
+    override def strictMessage(input: Payload[_]): Message = TextMessage.Strict(encodeText(input))
   }
 
   case object JsonBinary extends BinaryEncoding(Json)

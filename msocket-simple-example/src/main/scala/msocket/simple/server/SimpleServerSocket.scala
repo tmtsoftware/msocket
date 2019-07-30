@@ -20,9 +20,3 @@ class SimpleServerSocket(simpleApi: SimpleApi)(implicit ec: ExecutionContext) ex
   }
 
 }
-
-
-/*
-routes =
-get/hello/ ==>
- */

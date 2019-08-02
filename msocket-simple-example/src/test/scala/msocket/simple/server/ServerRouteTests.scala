@@ -12,9 +12,10 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
   test("demo") {
 
     val wsClient = WSProbe()
+    val encoding = JsonText
 
-    WS(s"/websocket", wsClient.flow) ~> wiring.simpleServer.routesForTesting ~> check {
-      wsClient.sendMessage(JsonText.strictMessage(Payload(GetNumbers(3))))
+    WS(s"/websocket/${encoding.Name}", wsClient.flow) ~> wiring.simpleServer.routesForTesting ~> check {
+      wsClient.sendMessage(encoding.strictMessage(Payload(GetNumbers(3))))
       isWebSocketUpgrade shouldBe true
 //      wsClient.expectMessage().asBinaryMessage.getStreamedData.asScala.runForeach(x => println(x.utf8String))
       println(wsClient.expectMessage())

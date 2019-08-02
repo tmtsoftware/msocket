@@ -5,21 +5,19 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.core.api.Encoding.{JsonBinary, JsonText}
-import msocket.core.api.Payload
+import msocket.core.api.{Encoding, Payload}
 
-class ClientSocketImpl[Req: Encoder](webSocketRequest: WebSocketRequest)(implicit actorSystem: ActorSystem)
+class ClientSocketImpl[Req: Encoder](baseUri: String, encoding: Encoding)(implicit actorSystem: ActorSystem)
     extends ClientSocket[Req] {
 
-  private val setup = new ClientSocketSetup(webSocketRequest)
+  private val setup = new ClientSocketSetup(WebSocketRequest(s"$baseUri/${encoding.Name}"))
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, NotUsed] = {
-    println(JsonText.strictMessage(Payload(request)))
     setup
-      .request(JsonText.strictMessage(Payload(request)))
+      .request(encoding.strictMessage(Payload(request)))
       .collect {
-        case TextMessage.Strict(text)   => JsonText.decodeText(text).value
-        case BinaryMessage.Strict(data) => JsonBinary.decodeBinary(data).value
+        case BinaryMessage.Strict(data) if !encoding.isBinary => encoding.decodeBinary(data).value
+        case TextMessage.Strict(text) if !encoding.isBinary   => encoding.decodeText(text).value
       }
   }
 }

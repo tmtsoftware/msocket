@@ -17,7 +17,7 @@ object ClientApp extends Codecs {
 
     val client = new SimpleClient(socket)
 
-    client.getNumbers(3).runForeach(println)
+    client.getNumbers(3).mapMaterializedValue(_.onComplete(println)).runForeach(println)
 //    client.getNames(5).runForeach(println)
 
 //    Thread.sleep(2000)

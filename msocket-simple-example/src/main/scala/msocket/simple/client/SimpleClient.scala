@@ -13,6 +13,9 @@ class SimpleClient(socket: ClientSocket[RequestProtocol])(implicit mat: Material
   override def hello(name: String): Future[String] = socket.requestResponse[String](Hello(name))
   override def square(number: Int): Future[Int]    = socket.requestResponse[Int](Square(number))
 
-  override def getNames(size: Int): Source[String, NotUsed]       = socket.requestStream[String](GetNames(size))
-  override def getNumbers(divisibleBy: Int): Source[Int, NotUsed] = socket.requestStream[Int](GetNumbers(divisibleBy))
+  override def getNames(size: Int): Source[String, NotUsed] = socket.requestStream[String](GetNames(size))
+
+  override def getNumbers(divisibleBy: Int): Source[Int, Future[Option[String]]] = {
+    socket.requestStreamWithError[Int, String](GetNumbers(divisibleBy))
+  }
 }

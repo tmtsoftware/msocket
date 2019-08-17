@@ -25,9 +25,16 @@ class SimpleImpl extends SimpleApi {
       .map(_ => Random.alphanumeric.take(size).mkString)
       .mapMaterializedValue(_ => NotUsed)
   }
-  override def getNumbers(divisibleBy: Int): Source[Int, NotUsed] = {
-    Source
-      .fromIterator(() => Iterator.from(1).filter(_ % divisibleBy == 0))
-      .delay(1.second, DelayOverflowStrategy.backpressure)
+
+  override def getNumbers(divisibleBy: Int): Source[Int, Future[Option[String]]] = {
+    if (divisibleBy == 0) {
+      Source.empty[Int].mapMaterializedValue(_ => Future.successful(Some("divide by zero error")))
+    } else {
+      Source
+        .fromIterator(() => Iterator.from(1).filter(_ % divisibleBy == 0))
+        .delay(1.second, DelayOverflowStrategy.backpressure)
+        .mapMaterializedValue(_ => Future.successful(None))
+    }
   }
+
 }

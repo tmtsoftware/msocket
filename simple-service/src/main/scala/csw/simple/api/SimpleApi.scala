@@ -10,5 +10,5 @@ trait SimpleApi {
   def square(number: Int): Future[Int]
 
   def getNames(size: Int): Source[String, NotUsed]
-  def getNumbers(divisibleBy: Int): Source[Int, NotUsed]
+  def getNumbers(divisibleBy: Int): Source[Int, Future[Option[String]]]
 }

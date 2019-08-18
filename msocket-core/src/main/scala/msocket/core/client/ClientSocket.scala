@@ -18,9 +18,9 @@ trait ClientSocket[Req] {
     val streamOfStreams = requestStream[Result[Res, Err]](request).prefixAndTail(1).map {
       case (xs, stream) =>
         xs.toList match {
-          case Error(e) :: _   => Source.empty[Res].mapMaterializedValue(_ => Some(e))
+          case Error(e) :: _   => Source.empty.mapMaterializedValue(_ => Some(e))
           case Success(r) :: _ => Source.single(r).concat(stream.collect { case Success(r) => r }).mapMaterializedValue(_ => None)
-          case Nil             => Source.empty[Res].mapMaterializedValue(_ => None)
+          case Nil             => Source.empty.mapMaterializedValue(_ => None)
         }
     }
     Source.fromFutureSource(streamOfStreams.runWith(Sink.head))

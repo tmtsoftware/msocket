@@ -8,7 +8,7 @@ import msocket.core.api.Result.{Error, Success}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object ToResponse {
+object ToPayload {
   implicit class FutureToPayload[T](future: Future[T]) {
     def payload(implicit ec: ExecutionContext, encoder: Encoder[T]): Source[Payload[T], NotUsed] = {
       Source.fromFuture(future.map(x => Payload(x)))

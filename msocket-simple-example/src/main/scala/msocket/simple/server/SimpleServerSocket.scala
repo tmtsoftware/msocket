@@ -6,7 +6,7 @@ import akka.stream.scaladsl.Source
 import csw.simple.api.RequestProtocol._
 import csw.simple.api.{RequestProtocol, SimpleApi}
 import msocket.core.api.Payload
-import msocket.core.api.ToResponse.{FutureToPayload, SourceToPayload, SourceWithErrorToPayload}
+import msocket.core.api.ToPayload.{FutureToPayload, SourceToPayload, SourceWithErrorToPayload}
 import msocket.core.server.ServerSocket
 
 import scala.concurrent.ExecutionContext

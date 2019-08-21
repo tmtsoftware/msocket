@@ -2,18 +2,18 @@ package msocket.simple.server
 
 import io.bullet.borer.Dom.{MapElem, StringElem}
 import io.bullet.borer.derivation.MapBasedCodecs
-import io.bullet.borer.{Cbor, Codec, Decoder, Encoder, Json}
+import io.bullet.borer.{Cbor, Codec, Encoder, Json}
 import org.scalatest.FunSuite
 
-trait ErrMsg {
+trait WithMessage {
   def msg: String
 }
 
-object ErrMsg {
-  def codec[T <: ErrMsg](codec: Codec[T]): Codec[T] = Codec(encoder(codec.encoder), decoder(codec.decoder))
+object WithMessage {
+  def codec[T <: WithMessage](defaultCodec: Codec[T]): Codec[T] = Codec(encoder(defaultCodec.encoder), defaultCodec.decoder)
 
-  def encoder[T <: ErrMsg](encoder: Encoder[T]): Encoder[T] = implicitly[Encoder[MapElem]].contramapWithWriter { (w, msg) =>
-    val bytes         = w.target.encode(msg)(encoder).toByteArray
+  def encoder[T <: WithMessage](defaultEncoder: Encoder[T]): Encoder[T] = implicitly[Encoder[MapElem]].contramapWithWriter { (w, msg) =>
+    val bytes         = w.target.encode(msg)(defaultEncoder).toByteArray
     val mapElem       = w.target.decode(bytes).to[MapElem].value
     val updatedMapElm = mapElem.toMap + (StringElem("msg") -> StringElem(msg.msg))
     mapElem match {
@@ -21,19 +21,14 @@ object ErrMsg {
       case _: MapElem.Unsized => MapElem.Unsized(updatedMapElm)
     }
   }
-
-  def decoder[T <: ErrMsg](decoder: Decoder[T]): Decoder[T] = implicitly[Decoder[MapElem]].mapWithReader { (r, mapElm) =>
-    val bytes = r.target.encode(mapElm).toByteArray
-    r.target.decode(bytes).to[T](decoder).value
-  }
 }
 
-case class Book(name: String) extends ErrMsg {
+case class Book(name: String) extends WithMessage {
   override def msg: String = "this is a book"
 }
 
-class ErrMsgTest extends FunSuite {
-  implicit lazy val bookCodec: Codec[Book] = ErrMsg.codec(MapBasedCodecs.deriveCodec)
+class WithMessageTest extends FunSuite {
+  implicit lazy val bookCodec: Codec[Book] = WithMessage.codec(MapBasedCodecs.deriveCodec)
 
   test("json") {
     val utf8String = Json.encode(Book("abc")).toUtf8String

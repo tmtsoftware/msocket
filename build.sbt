@@ -77,7 +77,8 @@ lazy val `simple-service` = project.aggregate(
   `simple-service-api`.jvm,
   `simple-service-api`.js,
   `simple-service-impl`,
-  `simple-service-server`
+  `simple-service-server`,
+  `simple-service-app-jvm`
 )
 
 lazy val `simple-service-api` = crossProject(JSPlatform, JVMPlatform)
@@ -92,6 +93,17 @@ lazy val `simple-service-impl` = project
 lazy val `simple-service-server` = project
   .in(file("simple-service/simple-service-server"))
   .dependsOn(`simple-service-impl`, `msocket-impl`)
+  .settings(
+    libraryDependencies ++= Seq(
+      `scalatest`           % Test,
+      `akka-http-testkit`   % Test,
+      `akka-stream-testkit` % Test
+    )
+  )
+
+lazy val `simple-service-app-jvm` = project
+  .in(file("simple-service/simple-service-app-jvm"))
+  .dependsOn(`simple-service-api`.jvm, `msocket-impl`)
   .settings(
     libraryDependencies ++= Seq(
       `scalatest`           % Test,

@@ -11,7 +11,7 @@ import msocket.api.{EitherCodecs, PostClient}
 
 import scala.concurrent.Future
 
-class PostClientImpl(uri: Uri)(implicit actorSystem: ActorSystem) extends PostClient with HttpCodecs with EitherCodecs {
+class PostClientJvm(uri: Uri)(implicit actorSystem: ActorSystem) extends PostClient with HttpCodecs with EitherCodecs {
   import actorSystem.dispatcher
   implicit lazy val mat: Materializer = ActorMaterializer()
   override def requestResponse[Req: Encoder, Res: Decoder](req: Req): Future[Res] = {

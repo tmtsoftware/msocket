@@ -11,7 +11,7 @@ import msocket.api.Result.{Error, Success}
 
 import scala.concurrent.Future
 
-class WebsocketClientImpl[Req: Encoder](baseUri: String, encoding: Encoding)(implicit actorSystem: ActorSystem)
+class WebsocketClientJvm[Req: Encoder](baseUri: String, encoding: Encoding)(implicit actorSystem: ActorSystem)
     extends WebsocketClient[Req] {
 
   implicit lazy val matL: Materializer = ActorMaterializer()

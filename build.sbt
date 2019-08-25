@@ -79,6 +79,7 @@ lazy val `msocket-impl-js` = project
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(`msocket-api`.js)
   .settings(
+    scalacOptions += "-P:scalajs:sjsDefinedByDefault",
     libraryDependencies ++= Seq(
       `scalajs-dom`.value
     )

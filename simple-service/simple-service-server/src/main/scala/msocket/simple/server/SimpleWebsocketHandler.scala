@@ -3,17 +3,17 @@ package msocket.simple.server
 import akka.NotUsed
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
-import csw.simple.api.RequestProtocol._
-import csw.simple.api.{RequestProtocol, SimpleApi}
+import csw.simple.api.WebsocketRequest._
+import csw.simple.api.{WebsocketRequest, SimpleApi}
 import msocket.api.{Payload, WebsocketHandler}
 import mscoket.impl.ToPayload._
 
 import scala.concurrent.ExecutionContext
 
-class SimpleServerSocket(simpleApi: SimpleApi)(implicit ec: ExecutionContext, mat: Materializer) extends WebsocketHandler[RequestProtocol] {
+class SimpleWebsocketHandler(simpleApi: SimpleApi)(implicit ec: ExecutionContext, mat: Materializer)
+    extends WebsocketHandler[WebsocketRequest] {
 
-  override def handle(message: RequestProtocol): Source[Payload[_], NotUsed] = message match {
-    case Hello(name)             => simpleApi.hello(name).payload
+  override def handle(message: WebsocketRequest): Source[Payload[_], NotUsed] = message match {
     case Square(number)          => simpleApi.square(number).payload
     case GetNames(size)          => simpleApi.getNames(size).payloads
     case GetNumbers(divisibleBy) => simpleApi.getNumbers(divisibleBy).resultPayloads

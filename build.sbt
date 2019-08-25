@@ -44,8 +44,8 @@ lazy val `akka-js` = project.enablePlugins(ScalaJSPlugin)
 lazy val `msocket` = project.aggregate(
   `msocket-api`.jvm,
   `msocket-api`.js,
-  `msocket-impl-akka`,
-  `msocket-impl-web`
+  `msocket-impl-jvm`,
+  `msocket-impl-js`
 )
 
 lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
@@ -64,8 +64,8 @@ lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
     )
   )
 
-lazy val `msocket-impl-akka` = project
-  .in(file("msocket/msocket-impl-akka"))
+lazy val `msocket-impl-jvm` = project
+  .in(file("msocket/msocket-impl-jvm"))
   .dependsOn(`msocket-api`.jvm)
   .settings(
     libraryDependencies ++= Seq(
@@ -74,10 +74,15 @@ lazy val `msocket-impl-akka` = project
     )
   )
 
-lazy val `msocket-impl-web` = project
-  .in(file("msocket/msocket-impl-web"))
+lazy val `msocket-impl-js` = project
+  .in(file("msocket/msocket-impl-js"))
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(`msocket-api`.js)
+  .settings(
+    libraryDependencies ++= Seq(
+      `scalajs-dom`.value
+    )
+  )
 
 //************* simple-service *****************************************************
 
@@ -100,10 +105,10 @@ lazy val `simple-service-impl` = project
 
 lazy val `simple-service-server` = project
   .in(file("simple-service/simple-service-server"))
-  .dependsOn(`simple-service-impl`, `msocket-impl-akka`)
+  .dependsOn(`simple-service-impl`, `msocket-impl-jvm`)
   .settings(
     libraryDependencies ++= Seq(
-      `scalatest`           % Test,
+      `scalatest`.value     % Test,
       `akka-http-testkit`   % Test,
       `akka-stream-testkit` % Test
     )
@@ -111,11 +116,18 @@ lazy val `simple-service-server` = project
 
 lazy val `simple-service-app-jvm` = project
   .in(file("simple-service/simple-service-app-jvm"))
-  .dependsOn(`simple-service-api`.jvm, `msocket-impl-akka`)
+  .dependsOn(`simple-service-api`.jvm, `msocket-impl-jvm`)
   .settings(
     libraryDependencies ++= Seq(
-      `scalatest`           % Test,
-      `akka-http-testkit`   % Test,
-      `akka-stream-testkit` % Test
+      `scalatest`.value % Test
+    )
+  )
+
+lazy val `simple-service-app-js` = project
+  .in(file("simple-service/simple-service-app-js"))
+  .dependsOn(`simple-service-api`.js, `msocket-impl-js`)
+  .settings(
+    libraryDependencies ++= Seq(
+      `scalatest`.value % Test
     )
   )

@@ -1,0 +1,3 @@
+package akka
+
+class NotUsed

@@ -1,5 +1,6 @@
 import Dependencies._
 import Borer._
+import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
   Seq(
@@ -29,23 +30,30 @@ inThisBuild(
 lazy val `root` = project
   .in(file("."))
   .aggregate(
-    `msocket-api`,
+    `akka-api-js`,
+    `akka-api-jvm`,
+    `msocket-api-js`,
+    `msocket-api-jvm`,
     `msocket-impl`,
     `msocket-simple-example`,
     `simple-service`
   )
 
-lazy val `msocket-api` = project
+lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .dependsOn(`akka-api`)
   .settings(
     libraryDependencies ++= Seq(
-      `akka-stream`,
       `borer-core`,
       `borer-derivation`
     )
   )
 
+lazy val `msocket-api-js`  = `msocket-api`.js
+lazy val `msocket-api-jvm` = `msocket-api`.jvm
+
 lazy val `msocket-impl` = project
-  .dependsOn(`msocket-api`)
+  .dependsOn(`msocket-api-jvm`)
   .settings(
     libraryDependencies ++= Seq(
       `akka-http`,
@@ -70,3 +78,11 @@ lazy val `simple-service` = project
       `akka-stream`
     )
   )
+
+lazy val `akka-api` = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Dummy)
+  .jvmSettings(libraryDependencies ++= Seq(`akka-stream`))
+  .settings(fork := false)
+
+lazy val `akka-api-js`  = `akka-api`.js
+lazy val `akka-api-jvm` = `akka-api`.jvm

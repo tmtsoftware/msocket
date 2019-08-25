@@ -30,17 +30,29 @@ inThisBuild(
 lazy val `root` = project
   .in(file("."))
   .aggregate(
-    `akka-api-js`,
-    `akka-api-jvm`,
-    `msocket-api-js`,
-    `msocket-api-jvm`,
-    `msocket-impl`,
-    `msocket-simple-example`,
+    `akka-api`.jvm,
+    `akka-api`.js,
+    `msocket`,
     `simple-service`
   )
 
+//************* akka-api *****************************************************
+
+lazy val `akka-api` = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Dummy)
+  .jvmSettings(libraryDependencies ++= Seq(`akka-stream`))
+
+//************* msocket *****************************************************
+
+lazy val `msocket` = project.aggregate(
+  `msocket-api`.jvm,
+  `msocket-api`.js,
+  `msocket-impl`
+)
+
 lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
+  .in(file("msocket/msocket-api"))
   .dependsOn(`akka-api`)
   .settings(
     libraryDependencies ++= Seq(
@@ -49,11 +61,9 @@ lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
     )
   )
 
-lazy val `msocket-api-js`  = `msocket-api`.js
-lazy val `msocket-api-jvm` = `msocket-api`.jvm
-
 lazy val `msocket-impl` = project
-  .dependsOn(`msocket-api-jvm`)
+  .in(file("msocket/msocket-impl"))
+  .dependsOn(`msocket-api`.jvm)
   .settings(
     libraryDependencies ++= Seq(
       `akka-http`,
@@ -61,8 +71,33 @@ lazy val `msocket-impl` = project
     )
   )
 
-lazy val `msocket-simple-example` = project
-  .dependsOn(`simple-service`, `msocket-impl`)
+//************* simple-service *****************************************************
+
+lazy val `simple-service` = project.aggregate(
+  `simple-service-api`.jvm,
+  `simple-service-api`.js,
+  `simple-service-impl`,
+  `simple-service-server`
+)
+
+lazy val `simple-service-api` = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("simple-service/simple-service-api"))
+  .dependsOn(`akka-api`)
+  .settings(
+    libraryDependencies ++= Seq(
+      `borer-core`,
+      `borer-derivation`
+    )
+  )
+
+lazy val `simple-service-impl` = project
+  .in(file("simple-service/simple-service-impl"))
+  .dependsOn(`simple-service-api`.jvm)
+
+lazy val `simple-service-server` = project
+  .in(file("simple-service/simple-service-server"))
+  .dependsOn(`simple-service-impl`, `msocket-impl`)
   .settings(
     libraryDependencies ++= Seq(
       `scalatest`           % Test,
@@ -70,19 +105,3 @@ lazy val `msocket-simple-example` = project
       `akka-stream-testkit` % Test
     )
   )
-lazy val `simple-service` = project
-  .settings(
-    libraryDependencies ++= Seq(
-      `borer-core`,
-      `borer-derivation`,
-      `akka-stream`
-    )
-  )
-
-lazy val `akka-api` = crossProject(JSPlatform, JVMPlatform)
-  .crossType(CrossType.Dummy)
-  .jvmSettings(libraryDependencies ++= Seq(`akka-stream`))
-  .settings(fork := false)
-
-lazy val `akka-api-js`  = `akka-api`.js
-lazy val `akka-api-jvm` = `akka-api`.jvm

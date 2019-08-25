@@ -5,6 +5,8 @@ addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "0.6.28")
 
 libraryDependencies += "com.sun.activation" % "javax.activation" % "1.2.0"
 
+addSbtCoursier
+
 scalacOptions ++= Seq(
   "-encoding",
   "UTF-8",

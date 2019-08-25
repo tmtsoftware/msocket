@@ -83,13 +83,7 @@ lazy val `simple-service` = project.aggregate(
 lazy val `simple-service-api` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("simple-service/simple-service-api"))
-  .dependsOn(`akka-api`)
-  .settings(
-    libraryDependencies ++= Seq(
-      `borer-core`,
-      `borer-derivation`
-    )
-  )
+  .dependsOn(`msocket-api`)
 
 lazy val `simple-service-impl` = project
   .in(file("simple-service/simple-service-impl"))

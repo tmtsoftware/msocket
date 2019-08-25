@@ -1,4 +1,4 @@
-package msocket.simple.client
+package csw.simple.api.client
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source

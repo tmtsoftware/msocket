@@ -2,6 +2,7 @@ package msocket.simple.client
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import csw.simple.api.client.SimpleClient
 import csw.simple.api.{Codecs, RequestProtocol}
 import mscoket.impl.Encoding.JsonText
 import mscoket.impl.WebsocketClientImpl

@@ -3,8 +3,8 @@ package msocket.simple.server
 import akka.http.scaladsl.testkit.{ScalatestRouteTest, WSProbe}
 import csw.simple.api.Codecs
 import csw.simple.api.RequestProtocol.GetNumbers
-import msocket.core.api.Encoding.JsonText
-import msocket.core.api.Payload
+import mscoket.impl.Encoding.JsonText
+import msocket.api.Payload
 import org.scalatest.{FunSuite, Matchers}
 
 class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers with Codecs {

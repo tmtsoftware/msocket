@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
 import csw.simple.api.Codecs
 import csw.simple.impl.SimpleImpl
-import msocket.core.server.WsServerFlow
+import mscoket.impl.WsServerFlow
 
 import scala.concurrent.ExecutionContext
 

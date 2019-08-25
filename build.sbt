@@ -29,24 +29,32 @@ inThisBuild(
 lazy val `root` = project
   .in(file("."))
   .aggregate(
-    `msocket-core`,
+    `msocket-api`,
+    `msocket-impl`,
     `msocket-simple-example`,
     `simple-service`
   )
 
-lazy val `msocket-core` = project
+lazy val `msocket-api` = project
   .settings(
     libraryDependencies ++= Seq(
       `akka-stream`,
-      `akka-http`,
       `borer-core`,
-      `borer-derivation`,
+      `borer-derivation`
+    )
+  )
+
+lazy val `msocket-impl` = project
+  .dependsOn(`msocket-api`)
+  .settings(
+    libraryDependencies ++= Seq(
+      `akka-http`,
       `borer-compat-akka`
     )
   )
 
 lazy val `msocket-simple-example` = project
-  .dependsOn(`simple-service`, `msocket-core`)
+  .dependsOn(`simple-service`, `msocket-impl`)
   .settings(
     libraryDependencies ++= Seq(
       `scalatest`           % Test,

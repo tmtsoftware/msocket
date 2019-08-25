@@ -11,5 +11,8 @@ object WebsocketRequest {
 sealed trait PostRequest
 
 object PostRequest {
-  case class Hello(name: String) extends PostRequest
+  case class Hello(name: String)       extends PostRequest
+  case class HelloStream(name: String) extends PostRequest
 }
+
+case class HelloStreamResponse(message: String)

@@ -1,7 +1,7 @@
 package csw.simple.api
 
 import com.github.ghik.silencer.silent
-import csw.simple.api.PostRequest.Hello
+import csw.simple.api.PostRequest.{Hello, HelloStream}
 import csw.simple.api.WebsocketRequest._
 import io.bullet.borer.derivation.MapBasedCodecs._
 import io.bullet.borer.{Codec, Json, Target}
@@ -23,7 +23,10 @@ trait Codecs {
   implicit def postRequestCodec[T <: PostRequest]: Codec[T] = postRequestCodecValue.asInstanceOf[Codec[T]]
 
   lazy val postRequestCodecValue: Codec[PostRequest] = {
-    @silent implicit lazy val helloCodec: Codec[Hello] = deriveCodec[Hello]
+    @silent implicit lazy val helloCodec: Codec[Hello]             = deriveCodec[Hello]
+    @silent implicit lazy val helloStreamCodec: Codec[HelloStream] = deriveCodec[HelloStream]
     deriveCodec[PostRequest]
   }
+
+  implicit lazy val helloStreamResponseCodec: Codec[HelloStreamResponse] = deriveCodec[HelloStreamResponse]
 }

@@ -3,7 +3,7 @@ package csw.simple.impl
 import akka.NotUsed
 import akka.stream.DelayOverflowStrategy
 import akka.stream.scaladsl.Source
-import csw.simple.api.SimpleApi
+import csw.simple.api.{HelloStreamResponse, SimpleApi}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
@@ -14,6 +14,16 @@ class SimpleImpl extends SimpleApi {
   override def hello(name: String): Future[String] = {
     Future.successful(s"Hello $name")
   }
+
+  override def helloStream(name: String): Source[HelloStreamResponse, NotUsed] = {
+    Source
+      .tick(1.second, 1.second, ())
+      .map(_ => HelloStreamResponse(s"hello $name again"))
+      .mapMaterializedValue(_ => NotUsed)
+  }
+
+  /////////////////
+
   override def square(number: Int): Future[Int] = {
     Future.successful(number * number)
   }

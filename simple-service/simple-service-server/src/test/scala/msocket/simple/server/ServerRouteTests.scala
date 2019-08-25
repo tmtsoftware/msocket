@@ -1,15 +1,20 @@
 package msocket.simple.server
 
+import akka.NotUsed
 import akka.http.scaladsl.testkit.{ScalatestRouteTest, WSProbe}
-import csw.simple.api.Codecs
+import akka.stream.scaladsl.Source
+import csw.simple.api.PostRequest.HelloStream
+import csw.simple.api.{Codecs, HelloStreamResponse}
 import csw.simple.api.WebsocketRequest.GetNumbers
 import mscoket.impl.Encoding.JsonText
+import mscoket.impl.HttpCodecs
 import msocket.api.Payload
 import org.scalatest.{FunSuite, Matchers}
 
-class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers with Codecs {
+class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers with Codecs with HttpCodecs {
   private val wiring = new Wiring
-  test("demo") {
+
+  test("websocket") {
 
     val wsClient = WSProbe()
     val encoding = JsonText
@@ -25,6 +30,12 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
       println(wsClient.expectMessage())
 
       Thread.sleep(100000)
+    }
+  }
+
+  test("http-streaming") {
+    Post("/post", HelloStream("mushtaq")) ~> wiring.simpleServer.routesForTesting ~> check {
+      responseAs[Source[HelloStreamResponse, NotUsed]].runForeach(println)
     }
   }
 }

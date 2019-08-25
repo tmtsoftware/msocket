@@ -27,6 +27,7 @@ object ClientApp extends Codecs {
 
 //    Thread.sleep(2000)
     simpleClient.hello("msuhtaq").onComplete(println)
+    simpleClient.helloStream("mushtaq").runForeach(println)
 //    simpleClient.hello("msuhtaq1").onComplete(println)
 //    simpleClient.square(3).onComplete(println)
 //    simpleClient.square(4).onComplete(println)

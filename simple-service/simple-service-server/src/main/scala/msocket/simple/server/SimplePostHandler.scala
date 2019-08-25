@@ -1,14 +1,15 @@
 package msocket.simple.server
 
-import akka.http.scaladsl.server.StandardRoute
-import csw.simple.api.{PostRequest, SimpleApi}
-import csw.simple.api.PostRequest.Hello
-import msocket.api.PostHandler
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.StandardRoute
+import csw.simple.api.PostRequest.{Hello, HelloStream}
+import csw.simple.api.{Codecs, PostRequest, SimpleApi}
 import mscoket.impl.HttpCodecs
+import msocket.api.PostHandler
 
-class SimplePostHandler(simpleApi: SimpleApi) extends PostHandler[PostRequest, StandardRoute] with HttpCodecs {
+class SimplePostHandler(simpleApi: SimpleApi) extends PostHandler[PostRequest, StandardRoute] with HttpCodecs with Codecs {
   override def handle(request: PostRequest): StandardRoute = request match {
-    case Hello(name) => complete(simpleApi.hello(name))
+    case Hello(name)       => complete(simpleApi.hello(name))
+    case HelloStream(name) => complete(simpleApi.helloStream(name))
   }
 }

@@ -1,14 +1,19 @@
 package mscoket.impl
 
+import akka.NotUsed
+import akka.http.scaladsl.common.{EntityStreamingSupport, JsonEntityStreamingSupport}
 import akka.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.model.{ContentTypeRange, MediaType}
 import akka.http.scaladsl.unmarshalling.{FromEntityUnmarshaller, Unmarshaller}
+import akka.http.scaladsl.util.FastFuture
+import akka.stream.scaladsl.{Flow, Keep, Source}
 import akka.util.ByteString
 import io.bullet.borer.compat.akka._
 import io.bullet.borer.{Decoder, Encoder, Json}
 
 import scala.collection.immutable.Seq
+import scala.concurrent.Future
 
 trait HttpCodecs {
 
@@ -26,4 +31,24 @@ trait HttpCodecs {
       .oneOf(mediaTypes: _*)(Marshaller.byteStringMarshaller(_))
       .compose(Json.encode(_).to[ByteString].result)
   }
+
+  implicit val jsonStreamingSupport: JsonEntityStreamingSupport = EntityStreamingSupport.json()
+
+  implicit def borerSourceReader[T: Decoder](implicit support: EntityStreamingSupport): FromEntityUnmarshaller[Source[T, NotUsed]] =
+    Unmarshaller.withMaterializer { implicit ec => implicit mat => e =>
+      if (support.supported.matches(e.contentType)) {
+        val frames = e.dataBytes.via(support.framingDecoder)
+
+        def unmarshal(byteString: ByteString) = Future(Json.decode(byteString).to[T].value)
+        val unmarshallingFlow = if (support.unordered) {
+          Flow[ByteString].mapAsyncUnordered(support.parallelism)(unmarshal)
+        } else {
+          Flow[ByteString].mapAsync(support.parallelism)(unmarshal)
+        }
+
+        FastFuture.successful(frames.viaMat(unmarshallingFlow)(Keep.right))
+      } else {
+        FastFuture.failed(Unmarshaller.UnsupportedContentTypeException(support.supported))
+      }
+    }
 }

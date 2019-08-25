@@ -1,5 +1,7 @@
 package msocket.impl
 
+import akka.NotUsed
+import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder, Json}
 import msocket.api.PostClient
 import org.scalajs.dom.experimental.{Fetch, HttpMethod}
@@ -46,4 +48,6 @@ class PostClientJs(uri: String)(implicit ec: ExecutionContext) extends PostClien
         case NonFatal(AjaxException(req)) => throw new RuntimeException(req.responseText)
       }
   }
+
+  override def requestStream[Req: Encoder, Res: Decoder](req: Req): Source[Res, NotUsed] = ???
 }

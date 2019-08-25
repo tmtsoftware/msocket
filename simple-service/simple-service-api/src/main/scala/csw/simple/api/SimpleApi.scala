@@ -7,6 +7,8 @@ import scala.concurrent.Future
 
 trait SimpleApi {
   def hello(name: String): Future[String]
+  def helloStream(name: String): Source[HelloStreamResponse, NotUsed]
+
   def square(number: Int): Future[Int]
 
   def getNames(size: Int): Source[String, NotUsed]

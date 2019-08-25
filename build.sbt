@@ -70,7 +70,8 @@ lazy val `msocket-impl-jvm` = project
   .settings(
     libraryDependencies ++= Seq(
       `akka-http`,
-      `borer-compat-akka`
+      `borer-compat-akka`,
+      `akka-http-spray-json`
     )
   )
 

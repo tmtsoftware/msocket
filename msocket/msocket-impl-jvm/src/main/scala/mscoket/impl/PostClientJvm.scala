@@ -17,6 +17,7 @@ import scala.concurrent.Future
 class PostClientJvm[Req: Encoder](uri: Uri)(implicit actorSystem: ActorSystem) extends PostClient[Req] with HttpCodecs with EitherCodecs {
   import actorSystem.dispatcher
   implicit lazy val mat: Materializer = ActorMaterializer()
+
   override def requestResponse[Res: Decoder](req: Req): Future[Res] = {
     Marshal(req).to[RequestEntity].flatMap { requestEntity =>
       val request = HttpRequest(HttpMethods.POST, uri = uri, entity = requestEntity)

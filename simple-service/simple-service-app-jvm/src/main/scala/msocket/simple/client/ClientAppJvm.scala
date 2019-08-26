@@ -8,7 +8,7 @@ import csw.simple.api.{Codecs, PostRequest, WebsocketRequest}
 import mscoket.impl.Encoding.JsonText
 import mscoket.impl.{PostClientJvm, WebsocketClientJvm}
 
-object ClientApp extends Codecs {
+object ClientAppJvm extends Codecs {
 
   def main(args: Array[String]): Unit = {
     implicit val system: ActorSystem    = ActorSystem()

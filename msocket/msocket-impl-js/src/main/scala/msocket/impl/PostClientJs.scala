@@ -50,4 +50,6 @@ class PostClientJs[Req: Encoder](uri: String)(implicit ec: ExecutionContext) ext
   }
 
   override def requestStream[Res: Decoder](req: Req): Source[Res, NotUsed] = ???
+
+  override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = ???
 }

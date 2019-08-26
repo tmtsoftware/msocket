@@ -6,10 +6,11 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.scaladsl.Source
+import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.{EitherCodecs, PostClient}
+import msocket.api.Result.{Error, Success}
+import msocket.api.{EitherCodecs, PostClient, Result}
 
 import scala.concurrent.Future
 
@@ -35,5 +36,17 @@ class PostClientJvm[Req: Encoder](uri: Uri)(implicit actorSystem: ActorSystem) e
       }
     }
     Source.fromFutureSource(futureSource).mapMaterializedValue(_ => NotUsed)
+  }
+
+  override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {
+    val streamOfStreams = requestStream[Result[Res, Err]](request).prefixAndTail(1).map {
+      case (xs, stream) =>
+        xs.toList match {
+          case Error(e) :: _   => Source.empty.mapMaterializedValue(_ => Some(e))
+          case Success(r) :: _ => Source.single(r).concat(stream.collect { case Success(r) => r }).mapMaterializedValue(_ => None)
+          case Nil             => Source.empty.mapMaterializedValue(_ => None)
+        }
+    }
+    Source.fromFutureSource(streamOfStreams.runWith(Sink.head))
   }
 }

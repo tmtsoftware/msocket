@@ -3,9 +3,9 @@ package mscoket.impl
 import akka.NotUsed
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
-import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.{Payload, Result}
+import io.bullet.borer.Encoder
 import msocket.api.Result.{Error, Success}
+import msocket.api.{Payload, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -26,8 +26,6 @@ object ToPayload {
     def resultPayloads(
         implicit encS: Encoder[S],
         encE: Encoder[E],
-        decS: Decoder[S],
-        decE: Decoder[E],
         mat: Materializer
     ): Source[Payload[Result[S, E]], NotUsed] = {
       val (matF, source) = stream.preMaterialize()

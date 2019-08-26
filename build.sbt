@@ -59,8 +59,8 @@ lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
   )
   .settings(
     libraryDependencies ++= Seq(
-      `borer-core`,
-      `borer-derivation`
+      `borer-core`.value,
+      `borer-derivation`.value
     )
   )
 
@@ -71,7 +71,8 @@ lazy val `msocket-impl-jvm` = project
     libraryDependencies ++= Seq(
       `akka-http`,
       `borer-compat-akka`,
-      `akka-http-spray-json`
+      `akka-http-spray-json`,
+      `akka-http-cors`
     )
   )
 
@@ -128,8 +129,42 @@ lazy val `simple-service-app-jvm` = project
 lazy val `simple-service-app-js` = project
   .in(file("simple-service/simple-service-app-js"))
   .dependsOn(`simple-service-api`.js, `msocket-impl-js`)
+  .configure(baseJsSettings, bundlerSettings)
   .settings(
+    npmDependencies in Compile ++= Seq(
+      "can-ndjson-stream" -> "1.0.1"
+    ),
     libraryDependencies ++= Seq(
       `scalatest`.value % Test
     )
   )
+
+///////////////
+
+lazy val baseJsSettings: Project => Project =
+  _.enablePlugins(ScalaJSPlugin)
+    .settings(
+      scalaJSUseMainModuleInitializer := true,
+      scalaJSModuleKind := ModuleKind.CommonJSModule,
+      scalaJSLinkerConfig ~= { _.withESFeatures(_.withUseECMAScript2015(true)) },
+      /* disabled because it somehow triggers many warnings */
+      emitSourceMaps := false,
+      /* in preparation for scala.js 1.0 */
+      scalacOptions += "-P:scalajs:sjsDefinedByDefault",
+      /* for ScalablyTyped */
+      resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")
+    )
+
+lazy val bundlerSettings: Project => Project =
+  _.enablePlugins(ScalaJSBundlerPlugin)
+    .settings(
+      /* Specify current versions and modes */
+      startWebpackDevServer / version := "3.1.10",
+      webpack / version := "4.26.1",
+      Compile / fastOptJS / webpackExtraArgs += "--mode=development",
+      Compile / fullOptJS / webpackExtraArgs += "--mode=production",
+      Compile / fastOptJS / webpackDevServerExtraArgs += "--mode=development",
+      Compile / fullOptJS / webpackDevServerExtraArgs += "--mode=production",
+      useYarn := true,
+      Compile / jsSourceDirectories += baseDirectory.value / "html" / "index.html"
+    )

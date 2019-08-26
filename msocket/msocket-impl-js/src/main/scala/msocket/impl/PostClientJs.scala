@@ -5,32 +5,12 @@ import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder, Json}
 import msocket.api.PostClient
 import org.scalajs.dom.experimental.{Fetch, HttpMethod}
-import org.scalajs.dom.ext.{Ajax, AjaxException}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
-import scala.util.control.NonFatal
 
 class PostClientJs[Req: Encoder](uri: String)(implicit ec: ExecutionContext) extends PostClient[Req] {
-  override def requestResponse[Res: Decoder](req: Req): Future[Res] = {
-    Ajax
-      .post(
-        url = uri,
-        data = Json.encode(req).toUtf8String,
-        headers = Map("content-type" -> "application/json")
-      )
-      .map { xhr =>
-        xhr.getResponseHeader("content-type") match {
-          case "application/json" => Json.decode(xhr.responseText.getBytes()).to[Res].value
-          case _                  => Json.decode(s""""${xhr.responseText}"""".getBytes()).to[Res].value
-        }
-      }
-      .recover {
-        case NonFatal(AjaxException(req)) => throw new RuntimeException(req.responseText)
-      }
-  }
-
-  def requestResponse2[Res: Decoder](req: Req): Future[Res] = {
+  def requestResponse[Res: Decoder](req: Req): Future[Res] = {
     val request = new FetchRequest {
       method = HttpMethod.POST
       body = Json.encode(req).toUtf8String
@@ -43,9 +23,6 @@ class PostClientJs[Req: Encoder](uri: String)(implicit ec: ExecutionContext) ext
         x.text().toFuture.map { y =>
           Json.decode(y.getBytes()).to[Res].value
         }
-      }
-      .recover {
-        case NonFatal(AjaxException(req)) => throw new RuntimeException(req.responseText)
       }
   }
 

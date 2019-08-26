@@ -9,6 +9,9 @@ object ClientAppJs extends Codecs {
 
   def main(args: Array[String]): Unit = {
 
+    println("abc")
+    println("abc")
+
     val websocketClient = new WebsocketClientJs[WebsocketRequest]("ws://localhost:5000/websocket")
     val postClient      = new PostClientJs[PostRequest]("http://localhost:5000/post")
     val simpleClient    = new SimpleClient(websocketClient, postClient)

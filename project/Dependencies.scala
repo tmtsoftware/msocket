@@ -5,6 +5,7 @@ import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 object Dependencies {
   val `scalatest`            = dep("org.scalatest" %%% "scalatest" % "3.0.8")
   val `akka-http`            = "com.typesafe.akka" %% "akka-http" % "10.1.9"
+  val `akka-http-cors`       = "ch.megard" %% "akka-http-cors" % "0.4.1"
   val `akka-http-spray-json` = "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.9"
   val `akka-http-testkit`    = "com.typesafe.akka" %% "akka-http-testkit" % "10.1.9"
   val `akka-stream`          = "com.typesafe.akka" %% "akka-stream" % "2.5.23"
@@ -18,7 +19,7 @@ object Borer {
   val Version = "0.11.1"
   val Org     = "io.bullet"
 
-  val `borer-core`        = Org %% "borer-core"        % Version
-  val `borer-derivation`  = Org %% "borer-derivation"  % Version
+  val `borer-core`        = dep(Org %%% "borer-core" % Version)
+  val `borer-derivation`  = dep(Org %%% "borer-derivation" % Version)
   val `borer-compat-akka` = Org %% "borer-compat-akka" % Version
 }

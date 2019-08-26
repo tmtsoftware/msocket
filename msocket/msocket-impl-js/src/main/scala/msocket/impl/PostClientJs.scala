@@ -11,8 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
 import scala.util.control.NonFatal
 
-class PostClientJs(uri: String)(implicit ec: ExecutionContext) extends PostClient {
-  override def requestResponse[Req: Encoder, Res: Decoder](req: Req): Future[Res] = {
+class PostClientJs[Req: Encoder](uri: String)(implicit ec: ExecutionContext) extends PostClient[Req] {
+  override def requestResponse[Res: Decoder](req: Req): Future[Res] = {
     Ajax
       .post(
         url = uri,
@@ -30,7 +30,7 @@ class PostClientJs(uri: String)(implicit ec: ExecutionContext) extends PostClien
       }
   }
 
-  def requestResponse2[Req: Encoder, Res: Decoder](req: Req): Future[Res] = {
+  def requestResponse2[Res: Decoder](req: Req): Future[Res] = {
     val request = new FetchRequest {
       method = HttpMethod.POST
       body = Json.encode(req).toUtf8String
@@ -49,5 +49,5 @@ class PostClientJs(uri: String)(implicit ec: ExecutionContext) extends PostClien
       }
   }
 
-  override def requestStream[Req: Encoder, Res: Decoder](req: Req): Source[Res, NotUsed] = ???
+  override def requestStream[Res: Decoder](req: Req): Source[Res, NotUsed] = ???
 }

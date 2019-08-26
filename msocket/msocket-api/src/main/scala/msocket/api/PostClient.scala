@@ -6,7 +6,7 @@ import io.bullet.borer.{Decoder, Encoder}
 
 import scala.concurrent.Future
 
-trait PostClient {
-  def requestResponse[Req: Encoder, Res: Decoder](req: Req): Future[Res]
-  def requestStream[Req: Encoder, Res: Decoder](req: Req): Source[Res, NotUsed]
+abstract class PostClient[Req: Encoder] {
+  def requestResponse[Res: Decoder](req: Req): Future[Res]
+  def requestStream[Res: Decoder](req: Req): Source[Res, NotUsed]
 }

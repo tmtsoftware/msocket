@@ -8,25 +8,25 @@ import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
 import mscoket.impl.Encoding.JsonText
 import msocket.api.Result.{Error, Success}
-import msocket.api.{Payload, Result, WebsocketClient}
+import msocket.api.{Result, RequestClient}
 
 import scala.concurrent.Future
 
-class WebsocketClientJvm[Req: Encoder](baseUri: String)(implicit actorSystem: ActorSystem) extends WebsocketClient[Req] {
+class WebsocketRequestClientJvm[Req: Encoder](baseUri: String)(implicit actorSystem: ActorSystem) extends RequestClient[Req] {
 
   implicit lazy val matL: Materializer = ActorMaterializer()
 
   private val setup = new WebsocketClientSetup(WebSocketRequest(baseUri))
 
-  override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, NotUsed] = {
+  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
     setup
-      .request(JsonText.strictMessage(Payload(request)))
+      .request(JsonText.strictMessage(request))
       .collect {
-        case TextMessage.Strict(text) => JsonText.decodeText(text).value
+        case TextMessage.Strict(text) => JsonText.decodeText(text)
       }
   }
 
-  def requestStreamWithError[Res: Decoder: Encoder, Err: Decoder: Encoder](request: Req): Source[Res, Future[Option[Err]]] = {
+  def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {
     val streamOfStreams = requestStream[Result[Res, Err]](request).prefixAndTail(1).map {
       case (xs, stream) =>
         xs.toList match {
@@ -38,7 +38,7 @@ class WebsocketClientJvm[Req: Encoder](baseUri: String)(implicit actorSystem: Ac
     Source.fromFutureSource(streamOfStreams.runWith(Sink.head))
   }
 
-  def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
+  def requestResponse[Res: Decoder](request: Req): Future[Res] = {
     requestStream(request).runWith(Sink.head)
   }
 }

@@ -1,31 +1,27 @@
 package mscoket.impl
 
-import akka.NotUsed
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
-import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import io.bullet.borer.compat.akka._
 import io.bullet.borer._
-import msocket.api.Payload
+import io.bullet.borer.compat.akka._
 
 sealed abstract class Encoding(val target: Target, val Name: String, val isBinary: Boolean) {
-  def strictMessage(input: Payload[_]): Message
-  def strictMessageStream(input: Source[Payload[_], NotUsed]): Source[Message, NotUsed] = input.map(strictMessage)
+  def strictMessage[T: Encoder](input: T): Message
 
-  def decodeBinary[T: Decoder: Encoder](input: ByteString): Payload[T] = target.decode(input).to[Payload[T]].value
-  def decodeText[T: Decoder: Encoder](input: String): Payload[T]       = decodeBinary(ByteString(input))
+  def decodeBinary[T: Decoder](input: ByteString): T = target.decode(input).to[T].value
+  def decodeText[T: Decoder](input: String): T       = decodeBinary(ByteString(input))
 
-  protected def encodeBinary(payload: Payload[_]): ByteString = target.encode(payload).to[ByteString].result
-  protected def encodeText(payload: Payload[_]): String       = encodeBinary(payload).utf8String
+  protected def encodeBinary[T: Encoder](payload: T): ByteString = target.encode(payload).to[ByteString].result
+  protected def encodeText[T: Encoder](payload: T): String       = encodeBinary(payload).utf8String
 }
 
 object Encoding {
   sealed abstract class BinaryEncoding(target: Target, name: String) extends Encoding(target, name, true) {
-    override def strictMessage(input: Payload[_]): Message = BinaryMessage.Strict(encodeBinary(input))
+    override def strictMessage[T: Encoder](input: T): Message = BinaryMessage.Strict(encodeBinary(input))
   }
 
   case object JsonText extends Encoding(Json, "json-text", false) {
-    override def strictMessage(input: Payload[_]): Message = TextMessage.Strict(encodeText(input))
+    override def strictMessage[T: Encoder](input: T): Message = TextMessage.Strict(encodeText(input))
   }
 
   case object JsonBinary extends BinaryEncoding(Json, "json-binary")

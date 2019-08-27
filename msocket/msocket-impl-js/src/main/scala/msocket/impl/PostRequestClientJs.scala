@@ -3,13 +3,13 @@ package msocket.impl
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder, Json}
-import msocket.api.PostClient
+import msocket.api.RequestClient
 import org.scalajs.dom.experimental.{Fetch, HttpMethod}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
 
-class PostClientJs[Req: Encoder](uri: String)(implicit ec: ExecutionContext) extends PostClient[Req] {
+class PostRequestClientJs[Req: Encoder](uri: String)(implicit ec: ExecutionContext) extends RequestClient[Req] {
   def requestResponse[Res: Decoder](req: Req): Future[Res] = {
     val request = new FetchRequest {
       method = HttpMethod.POST

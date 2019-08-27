@@ -10,11 +10,11 @@ import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Result.{Error, Success}
-import msocket.api.{EitherCodecs, PostClient, Result}
+import msocket.api.{EitherCodecs, RequestClient, Result}
 
 import scala.concurrent.Future
 
-class PostClientJvm[Req: Encoder](uri: Uri)(implicit actorSystem: ActorSystem) extends PostClient[Req] with HttpCodecs with EitherCodecs {
+class PostRequestClientJvm[Req: Encoder](uri: Uri)(implicit actorSystem: ActorSystem) extends RequestClient[Req] with HttpCodecs with EitherCodecs {
   import actorSystem.dispatcher
   implicit lazy val mat: Materializer = ActorMaterializer()
 

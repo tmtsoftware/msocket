@@ -8,7 +8,6 @@ import csw.simple.api.{Codecs, HelloStreamResponse}
 import csw.simple.api.WebsocketRequest.GetNumbers
 import mscoket.impl.Encoding.JsonText
 import mscoket.impl.HttpCodecs
-import msocket.api.Payload
 import org.scalatest.{FunSuite, Matchers}
 
 class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers with Codecs with HttpCodecs {
@@ -17,10 +16,9 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
   test("websocket") {
 
     val wsClient = WSProbe()
-    val encoding = JsonText
 
-    WS(s"/websocket/${encoding.Name}", wsClient.flow) ~> wiring.simpleServer.routesForTesting ~> check {
-      wsClient.sendMessage(encoding.strictMessage(Payload(GetNumbers(3))))
+    WS(s"/websocket", wsClient.flow) ~> wiring.simpleServer.routesForTesting ~> check {
+      wsClient.sendMessage(JsonText.strictMessage(GetNumbers(3)))
       isWebSocketUpgrade shouldBe true
 //      wsClient.expectMessage().asBinaryMessage.getStreamedData.asScala.runForeach(x => println(x.utf8String))
       println(wsClient.expectMessage())

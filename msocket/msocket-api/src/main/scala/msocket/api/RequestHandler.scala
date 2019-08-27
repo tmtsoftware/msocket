@@ -1,5 +1,5 @@
 package msocket.api
 
-trait PostHandler[Req, Res] {
+trait RequestHandler[Req, Res] {
   def handle(request: Req): Res
 }

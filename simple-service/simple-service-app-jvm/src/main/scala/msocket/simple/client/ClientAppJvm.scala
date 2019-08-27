@@ -5,7 +5,6 @@ import akka.http.scaladsl.model.Uri
 import akka.stream.ActorMaterializer
 import csw.simple.api.client.SimpleClient
 import csw.simple.api.{Codecs, PostRequest, WebsocketRequest}
-import mscoket.impl.Encoding.JsonText
 import mscoket.impl.{PostClientJvm, WebsocketClientJvm}
 
 object ClientAppJvm extends Codecs {
@@ -15,7 +14,7 @@ object ClientAppJvm extends Codecs {
     implicit val mat: ActorMaterializer = ActorMaterializer()
     import system.dispatcher
 
-    val websocketClient = new WebsocketClientJvm[WebsocketRequest]("ws://localhost:5000/websocket", JsonText)
+    val websocketClient = new WebsocketClientJvm[WebsocketRequest]("ws://localhost:5000/websocket")
     val postClient      = new PostClientJvm[PostRequest](Uri("http://localhost:5000/post"))
     val simpleClient    = new SimpleClient(websocketClient, postClient)
 

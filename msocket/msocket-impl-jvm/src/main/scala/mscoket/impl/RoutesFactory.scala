@@ -13,9 +13,9 @@ class RoutesFactory[PostReq: Decoder, WebsocketReq: Encoder: Decoder](
 
   val route: Route = cors() {
     get {
-      path("websocket" / Segment) { encoding =>
+      path("websocket") {
         handleWebSocketMessages {
-          new WsServerFlow(websocketHandler).flow(Encoding.fromString(encoding))
+          new WsServerFlow(websocketHandler).flow
         }
       }
     } ~

@@ -2,28 +2,27 @@ package mscoket.impl
 
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
+import akka.http.scaladsl.model.ws.{TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.{WebsocketClient, Payload, Result}
+import mscoket.impl.Encoding.JsonText
 import msocket.api.Result.{Error, Success}
+import msocket.api.{Payload, Result, WebsocketClient}
 
 import scala.concurrent.Future
 
-class WebsocketClientJvm[Req: Encoder](baseUri: String, encoding: Encoding)(implicit actorSystem: ActorSystem)
-    extends WebsocketClient[Req] {
+class WebsocketClientJvm[Req: Encoder](baseUri: String)(implicit actorSystem: ActorSystem) extends WebsocketClient[Req] {
 
   implicit lazy val matL: Materializer = ActorMaterializer()
 
-  private val setup = new WebsocketClientSetup(WebSocketRequest(s"$baseUri/${encoding.Name}"))
+  private val setup = new WebsocketClientSetup(WebSocketRequest(baseUri))
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, NotUsed] = {
     setup
-      .request(encoding.strictMessage(Payload(request)))
+      .request(JsonText.strictMessage(Payload(request)))
       .collect {
-        case BinaryMessage.Strict(data) if !encoding.isBinary => encoding.decodeBinary(data).value
-        case TextMessage.Strict(text) if !encoding.isBinary   => encoding.decodeText(text).value
+        case TextMessage.Strict(text) => JsonText.decodeText(text).value
       }
   }
 

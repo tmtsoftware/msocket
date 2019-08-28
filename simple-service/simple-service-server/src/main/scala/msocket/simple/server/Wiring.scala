@@ -19,8 +19,8 @@ class Wiring extends Codecs {
   implicit lazy val mat: Materializer        = ActorMaterializer()
 
   lazy val simpleImpl: SimpleApi                                                     = new SimpleImpl
-  lazy val websocketHandler: RequestHandler[StreamRequest, Source[Message, NotUsed]] = new SimpleWebsocketRequestHandler(simpleImpl)
-  lazy val postHandler: RequestHandler[PostRequest, StandardRoute]                   = new SimplePostRequestHandler(simpleImpl)
+  lazy val websocketHandler: RequestHandler[StreamRequest, Source[Message, NotUsed]] = new SimpleWebsocketHandler(simpleImpl)
+  lazy val postHandler: RequestHandler[PostRequest, StandardRoute]                   = new SimplePostHandler(simpleImpl)
   lazy val routesFactory                                                             = new RoutesFactory(postHandler, websocketHandler)
   lazy val simpleServer                                                              = new SimpleServer(routesFactory.route)
 }

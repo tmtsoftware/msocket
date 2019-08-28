@@ -1,17 +1,6 @@
-package msocket.impl
+package msocket.impl.post
 
-import org.scalajs.dom.experimental.{
-  AbortSignal,
-  BodyInit,
-  HeadersInit,
-  HttpMethod,
-  ReferrerPolicy,
-  RequestCache,
-  RequestCredentials,
-  RequestInit,
-  RequestMode,
-  RequestRedirect
-}
+import org.scalajs.dom.experimental._
 
 import scala.scalajs.js
 import scala.scalajs.js.UndefOr

@@ -1,4 +1,4 @@
-package msocket.impl
+package msocket.impl.post
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source

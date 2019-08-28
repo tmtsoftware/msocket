@@ -3,7 +3,8 @@ package msocket.simple.client
 import akka.stream.scaladsl.Source
 import csw.simple.api.client.SimpleClient
 import csw.simple.api.{Codecs, PostRequest, StreamRequest}
-import msocket.impl.{PostClientJs, WebsocketClientJs}
+import msocket.impl.post.PostClientJs
+import msocket.impl.ws.WebsocketClientJs
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

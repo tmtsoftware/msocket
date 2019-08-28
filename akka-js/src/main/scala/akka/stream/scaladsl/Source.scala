@@ -1,3 +1,6 @@
 package akka.stream.scaladsl
 
-class Source[+Out, +Mat]
+trait Source[Out, Mat] {
+  var onMessage: Out => Unit
+  val mat: Mat
+}

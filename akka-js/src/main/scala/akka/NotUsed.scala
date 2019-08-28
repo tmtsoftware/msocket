@@ -1,3 +1,4 @@
 package akka
 
-class NotUsed
+sealed abstract class NotUsed
+case object NotUsed extends NotUsed

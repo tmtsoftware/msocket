@@ -167,5 +167,5 @@ lazy val bundlerSettings: Project => Project =
       Compile / fastOptJS / webpackDevServerExtraArgs += "--mode=development",
       Compile / fullOptJS / webpackDevServerExtraArgs += "--mode=production",
       useYarn := true,
-      Compile / jsSourceDirectories += baseDirectory.value / "html" / "index.html"
+      Compile / jsSourceDirectories += baseDirectory.value / "html"
     )

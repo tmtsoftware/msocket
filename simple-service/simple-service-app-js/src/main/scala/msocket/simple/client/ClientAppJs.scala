@@ -1,9 +1,12 @@
 package msocket.simple.client
 
+import akka.stream.scaladsl.Source
 import csw.simple.api.client.SimpleClient
 import csw.simple.api.{Codecs, PostRequest, WebsocketRequest}
 import msocket.impl.{PostClientJs, WebsocketClientJs}
+
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object ClientAppJs extends Codecs {
 
@@ -16,14 +19,20 @@ object ClientAppJs extends Codecs {
     val postClient      = new PostClientJs[PostRequest]("http://localhost:5000/post")
     val simpleClient    = new SimpleClient(websocketClient, postClient)
 
-//    simpleClient.getNumbers(3).mapMaterializedValue(_.onComplete(println)).runForeach(println)
-//    simpleClient.getNames(5).runForeach(println)
+    val numberStream: Source[Int, Future[Option[String]]] = simpleClient.getNumbers(3)
+    numberStream.mat.onComplete(println)
+    numberStream.onMessage = println
 
-//    Thread.sleep(2000)
-    simpleClient.hello("msuhtaq").onComplete(println)
-//    simpleClient.helloStream("mushtaq").runForeach(println)
-//    simpleClient.hello("msuhtaq1").onComplete(println)
-//    simpleClient.square(3).onComplete(println)
-//    simpleClient.square(4).onComplete(println)
+//    val nameStream: Source[String, NotUsed] = simpleClient.getNames(5)
+//    nameStream.onMessage = println
+
+    simpleClient.hello("mushtaq").onComplete(println)
+//    val postHelloStream: Source[HelloStreamResponse, NotUsed] = simpleClient.helloStream("mushtaq")
+//    postHelloStream.onMessage = _
+
+    simpleClient.hello("msuhtaq1").onComplete(println)
+    simpleClient.square(3).onComplete(println)
+    simpleClient.square(4).onComplete(println)
+
   }
 }

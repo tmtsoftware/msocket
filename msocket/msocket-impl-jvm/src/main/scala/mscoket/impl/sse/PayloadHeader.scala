@@ -1,4 +1,4 @@
-package mscoket.impl
+package mscoket.impl.sse
 
 import akka.http.scaladsl.model.headers.{ModeledCustomHeader, ModeledCustomHeaderCompanion}
 

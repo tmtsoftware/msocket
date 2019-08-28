@@ -1,4 +1,4 @@
-package mscoket.impl
+package mscoket.impl.ws
 
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.util.ByteString

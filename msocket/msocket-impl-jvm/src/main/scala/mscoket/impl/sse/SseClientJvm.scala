@@ -1,4 +1,4 @@
-package mscoket.impl
+package mscoket.impl.sse
 
 import akka.NotUsed
 import akka.actor.ActorSystem
@@ -9,6 +9,7 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
 import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.{Decoder, Encoder, Json}
+import mscoket.impl.AbstractClientJvm
 
 import scala.concurrent.Future
 

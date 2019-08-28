@@ -5,7 +5,8 @@ import akka.http.scaladsl.model.Uri
 import akka.stream.ActorMaterializer
 import csw.simple.api.client.SimpleClient
 import csw.simple.api.{Codecs, PostRequest, StreamRequest}
-import mscoket.impl.{PostClientJvm, SseClientJvm, WebsocketClientJvm}
+import mscoket.impl.post.PostClientJvm
+import mscoket.impl.sse.SseClientJvm
 
 object ClientAppJvm extends Codecs {
 
@@ -15,7 +16,7 @@ object ClientAppJvm extends Codecs {
     import system.dispatcher
 
     val postClient      = new PostClientJvm[PostRequest](Uri("http://localhost:5000/post"))
-    val websocketClient = new WebsocketClientJvm[StreamRequest]("ws://localhost:5000/websocket")
+//    val websocketClient = new WebsocketClientJvm[StreamRequest]("ws://localhost:5000/websocket")
     val sseClient       = new SseClientJvm[StreamRequest]("http://localhost:5000/sse")
 
     val simpleClient    = new SimpleClient(postClient, sseClient)

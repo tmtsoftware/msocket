@@ -8,6 +8,8 @@ import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder, Json}
 import msocket.api.RequestHandler
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
+import mscoket.impl.sse.PayloadHeader
+import mscoket.impl.ws.WsServerFlow
 
 class RoutesFactory[PostReq: Decoder, StreamReq: Encoder: Decoder](
     httpHandler: RequestHandler[PostReq, StandardRoute],

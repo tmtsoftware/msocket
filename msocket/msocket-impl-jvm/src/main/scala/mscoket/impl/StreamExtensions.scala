@@ -1,17 +1,13 @@
 package mscoket.impl
 
 import akka.NotUsed
-import akka.http.scaladsl.model.sse.ServerSentEvent
-import akka.http.scaladsl.model.ws.Message
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
-import io.bullet.borer.{Encoder, Json}
-import mscoket.impl.Encoding.JsonText
+import io.bullet.borer.Encoder
 import msocket.api.Result
 import msocket.api.Result.{Error, Success}
 
 import scala.concurrent.Future
-import scala.concurrent.duration.DurationLong
 
 trait StreamExtensions[M] {
   def stream[T, Mat](input: Source[T, Mat])(implicit encoder: Encoder[T]): Source[M, Mat]
@@ -34,16 +30,5 @@ trait StreamExtensions[M] {
   }
 }
 
-trait SseStreamExtensions extends StreamExtensions[ServerSentEvent] {
-  override def stream[T, Mat](input: Source[T, Mat])(implicit encoder: Encoder[T]): Source[ServerSentEvent, Mat] = {
-    input
-      .map(x => ServerSentEvent(Json.encode(x).toUtf8String))
-      .keepAlive(30.seconds, () => ServerSentEvent.heartbeat)
-  }
-}
 
-trait WebsocketStreamExtensions extends StreamExtensions[Message] {
-  override def stream[T, Mat](input: Source[T, Mat])(implicit encoder: Encoder[T]): Source[Message, Mat] = {
-    input.map(JsonText.strictMessage[T])
-  }
-}
+

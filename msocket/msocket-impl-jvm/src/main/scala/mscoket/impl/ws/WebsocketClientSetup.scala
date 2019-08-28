@@ -1,4 +1,4 @@
-package mscoket.impl
+package mscoket.impl.ws
 
 import akka.NotUsed
 import akka.actor.ActorSystem

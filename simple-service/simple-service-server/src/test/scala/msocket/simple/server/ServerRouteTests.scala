@@ -6,11 +6,11 @@ import akka.stream.scaladsl.Source
 import csw.simple.api.PostRequest.HelloStream
 import csw.simple.api.{Codecs, HelloStreamResponse}
 import csw.simple.api.StreamRequest.GetNumbers
-import mscoket.impl.Encoding.JsonText
 import mscoket.impl.HttpCodecs
 import org.scalatest.{FunSuite, Matchers}
-
 import akka.testkit.TestDuration
+import mscoket.impl.ws.Encoding.JsonText
+
 import scala.concurrent.duration.DurationLong
 
 class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers with Codecs with HttpCodecs {

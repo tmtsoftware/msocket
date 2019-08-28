@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.StandardRoute
 import akka.stream.Materializer
 import csw.simple.api.StreamRequest._
 import csw.simple.api.{SimpleApi, StreamRequest}
-import mscoket.impl.SseStreamExtensions
+import mscoket.impl.sse.SseStreamExtensions
 import msocket.api.RequestHandler
 
 class SimpleSseHandler(simpleApi: SimpleApi)(implicit mat: Materializer)

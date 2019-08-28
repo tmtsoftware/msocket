@@ -1,11 +1,12 @@
-package mscoket.impl
+package mscoket.impl.ws
 
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.{TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
-import mscoket.impl.Encoding.JsonText
+import mscoket.impl.AbstractClientJvm
+import mscoket.impl.ws.Encoding.JsonText
 
 import scala.concurrent.Future
 

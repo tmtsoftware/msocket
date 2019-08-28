@@ -1,4 +1,4 @@
-package mscoket.impl
+package mscoket.impl.post
 
 import akka.NotUsed
 import akka.actor.ActorSystem
@@ -8,6 +8,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
+import mscoket.impl.{AbstractClientJvm, HttpCodecs}
 
 import scala.concurrent.Future
 

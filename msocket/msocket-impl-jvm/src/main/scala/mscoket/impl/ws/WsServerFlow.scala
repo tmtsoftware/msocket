@@ -1,10 +1,10 @@
-package mscoket.impl
+package mscoket.impl.ws
 
 import akka.NotUsed
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.{Decoder, Encoder}
-import mscoket.impl.Encoding.JsonText
+import mscoket.impl.ws.Encoding.JsonText
 import msocket.api.RequestHandler
 
 class WsServerFlow[T: Decoder: Encoder](websocketClient: RequestHandler[T, Source[Message, NotUsed]]) {

@@ -6,7 +6,7 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import csw.simple.api.StreamRequest._
 import csw.simple.api.{SimpleApi, StreamRequest}
-import mscoket.impl.WebsocketStreamExtensions
+import mscoket.impl.ws.WebsocketStreamExtensions
 import msocket.api.RequestHandler
 
 class SimpleWebsocketHandler(simpleApi: SimpleApi)(implicit mat: Materializer)

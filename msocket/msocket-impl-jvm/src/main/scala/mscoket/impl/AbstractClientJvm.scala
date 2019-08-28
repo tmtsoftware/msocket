@@ -8,10 +8,12 @@ import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Result.{Error, Success}
 import msocket.api.{RequestClient, Result}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-abstract class AbstractClientJvm[Req: Encoder](uri: Uri)(implicit actorSystem: ActorSystem) extends RequestClient[Req] {
+abstract class AbstractClientJvm[Req: Encoder](uri: Uri)(implicit actorSystem: ActorSystem) extends RequestClient[Req] with HttpCodecs {
+
   implicit lazy val mat: Materializer = ActorMaterializer()
+  implicit val ec: ExecutionContext   = actorSystem.dispatcher
 
   override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {
     val streamOfStreams = requestStream[Result[Res, Err]](request).prefixAndTail(1).map {

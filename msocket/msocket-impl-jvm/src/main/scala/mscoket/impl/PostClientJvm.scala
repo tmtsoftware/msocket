@@ -13,8 +13,6 @@ import scala.concurrent.Future
 
 class PostClientJvm[Req: Encoder](uri: Uri)(implicit actorSystem: ActorSystem) extends AbstractClientJvm[Req](uri) with HttpCodecs {
 
-  import actorSystem.dispatcher
-
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
     getResponse(request).flatMap(Unmarshal(_).to[Res])
   }
@@ -26,8 +24,8 @@ class PostClientJvm[Req: Encoder](uri: Uri)(implicit actorSystem: ActorSystem) e
 
   private def getResponse(request: Req): Future[HttpResponse] = {
     Marshal(request).to[RequestEntity].flatMap { requestEntity =>
-      val request = HttpRequest(HttpMethods.POST, uri = uri, entity = requestEntity)
-      Http().singleRequest(request)
+      val httpRequest = HttpRequest(HttpMethods.POST, uri = uri, entity = requestEntity)
+      Http().singleRequest(httpRequest)
     }
   }
 }

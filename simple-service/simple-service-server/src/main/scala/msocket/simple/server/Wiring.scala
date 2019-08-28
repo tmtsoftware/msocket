@@ -20,7 +20,8 @@ class Wiring extends Codecs {
 
   lazy val simpleImpl: SimpleApi                                                     = new SimpleImpl
   lazy val websocketHandler: RequestHandler[StreamRequest, Source[Message, NotUsed]] = new SimpleWebsocketHandler(simpleImpl)
+  lazy val sseHandler: RequestHandler[StreamRequest, StandardRoute]                  = new SimpleSseHandler(simpleImpl)
   lazy val postHandler: RequestHandler[PostRequest, StandardRoute]                   = new SimplePostHandler(simpleImpl)
-  lazy val routesFactory                                                             = new RoutesFactory(postHandler, websocketHandler)
+  lazy val routesFactory                                                             = new RoutesFactory(postHandler, websocketHandler, sseHandler)
   lazy val simpleServer                                                              = new SimpleServer(routesFactory.route)
 }

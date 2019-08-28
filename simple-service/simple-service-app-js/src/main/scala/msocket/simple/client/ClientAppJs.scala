@@ -13,7 +13,7 @@ object ClientAppJs extends Codecs {
   def main(args: Array[String]): Unit = {
     val websocketClient = new WebsocketClientJs[StreamRequest]("ws://localhost:5000/websocket")
     val postClient      = new PostClientJs[PostRequest]("http://localhost:5000/post")
-    val simpleClient    = new SimpleClient(websocketClient, postClient)
+    val simpleClient    = new SimpleClient(postClient, websocketClient)
 
     val numberStream: Source[Int, Future[Option[String]]] = simpleClient.getNumbers(3)
     numberStream.mat.onComplete(println)

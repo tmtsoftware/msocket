@@ -9,16 +9,17 @@ import msocket.api.RequestClient
 
 import scala.concurrent.Future
 
-class SimpleClient(websocketClient: RequestClient[StreamRequest], postClient: RequestClient[PostRequest]) extends SimpleApi with Codecs {
+class SimpleClient(postClient: RequestClient[PostRequest], streamingClient: RequestClient[StreamRequest]) extends SimpleApi with Codecs {
+
   override def hello(name: String): Future[String] = postClient.requestResponse[String](Hello(name))
   override def helloStream(name: String): Source[HelloStreamResponse, NotUsed] =
     postClient.requestStream[HelloStreamResponse](HelloStream(name))
 
-  override def square(number: Int): Future[Int] = websocketClient.requestResponse[Int](Square(number))
+  override def square(number: Int): Future[Int] = streamingClient.requestResponse[Int](Square(number))
 
-  override def getNames(size: Int): Source[String, NotUsed] = websocketClient.requestStream[String](GetNames(size))
+  override def getNames(size: Int): Source[String, NotUsed] = streamingClient.requestStream[String](GetNames(size))
 
   override def getNumbers(divisibleBy: Int): Source[Int, Future[Option[String]]] = {
-    websocketClient.requestStreamWithError[Int, String](GetNumbers(divisibleBy))
+    streamingClient.requestStreamWithError[Int, String](GetNumbers(divisibleBy))
   }
 }

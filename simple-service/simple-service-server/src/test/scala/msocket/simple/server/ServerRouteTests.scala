@@ -1,7 +1,7 @@
 package msocket.simple.server
 
 import akka.NotUsed
-import akka.http.scaladsl.testkit.{ScalatestRouteTest, WSProbe}
+import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest, WSProbe}
 import akka.stream.scaladsl.Source
 import csw.simple.api.PostRequest.HelloStream
 import csw.simple.api.{Codecs, HelloStreamResponse}
@@ -9,6 +9,9 @@ import csw.simple.api.StreamRequest.GetNumbers
 import mscoket.impl.Encoding.JsonText
 import mscoket.impl.HttpCodecs
 import org.scalatest.{FunSuite, Matchers}
+
+import akka.testkit.TestDuration
+import scala.concurrent.duration.DurationLong
 
 class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers with Codecs with HttpCodecs {
   private val wiring = new Wiring
@@ -32,8 +35,9 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
   }
 
   test("http-streaming") {
+    implicit val timeout: RouteTestTimeout = RouteTestTimeout(10.seconds.dilated)
     Post("/post", HelloStream("mushtaq")) ~> wiring.simpleServer.routesForTesting ~> check {
-      responseAs[Source[HelloStreamResponse, NotUsed]].runForeach(println)
+      responseAs[Source[HelloStreamResponse, NotUsed]].take(3).runForeach(println)
     }
   }
 }

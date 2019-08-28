@@ -94,7 +94,8 @@ lazy val `simple-service` = project.aggregate(
   `simple-service-api`.js,
   `simple-service-impl`,
   `simple-service-server`,
-  `simple-service-app-jvm`
+  `simple-service-app-jvm`,
+  `simple-service-app-js`
 )
 
 lazy val `simple-service-api` = crossProject(JSPlatform, JVMPlatform)

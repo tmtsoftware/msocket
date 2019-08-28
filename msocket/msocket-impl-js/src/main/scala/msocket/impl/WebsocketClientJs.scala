@@ -7,7 +7,7 @@ import msocket.api.RequestClient
 
 import scala.concurrent.Future
 
-class WebsocketRequestClientJs[Req: Encoder](baseUri: String) extends RequestClient[Req] {
+class WebsocketClientJs[Req: Encoder](baseUri: String) extends RequestClient[Req] {
   override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed]                                    = ???
   override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = ???
   override def requestResponse[Res: Decoder](request: Req): Future[Res]                                           = ???

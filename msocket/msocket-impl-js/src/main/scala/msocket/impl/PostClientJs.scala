@@ -9,7 +9,7 @@ import org.scalajs.dom.experimental.{Fetch, HttpMethod}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
 
-class PostRequestClientJs[Req: Encoder](uri: String)(implicit ec: ExecutionContext) extends RequestClient[Req] {
+class PostClientJs[Req: Encoder](uri: String)(implicit ec: ExecutionContext) extends RequestClient[Req] {
   def requestResponse[Res: Decoder](req: Req): Future[Res] = {
     val request = new FetchRequest {
       method = HttpMethod.POST

@@ -2,7 +2,7 @@ package msocket.simple.client
 
 import csw.simple.api.client.SimpleClient
 import csw.simple.api.{Codecs, PostRequest, WebsocketRequest}
-import msocket.impl.{PostRequestClientJs, WebsocketRequestClientJs}
+import msocket.impl.{PostClientJs, WebsocketClientJs}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object ClientAppJs extends Codecs {
@@ -12,8 +12,8 @@ object ClientAppJs extends Codecs {
     println("abc")
     println("abc")
 
-    val websocketClient = new WebsocketRequestClientJs[WebsocketRequest]("ws://localhost:5000/websocket")
-    val postClient      = new PostRequestClientJs[PostRequest]("http://localhost:5000/post")
+    val websocketClient = new WebsocketClientJs[WebsocketRequest]("ws://localhost:5000/websocket")
+    val postClient      = new PostClientJs[PostRequest]("http://localhost:5000/post")
     val simpleClient    = new SimpleClient(websocketClient, postClient)
 
 //    simpleClient.getNumbers(3).mapMaterializedValue(_.onComplete(println)).runForeach(println)

@@ -3,13 +3,13 @@ package csw.simple.api.client
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import csw.simple.api.PostRequest.{Hello, HelloStream}
-import csw.simple.api.WebsocketRequest._
+import csw.simple.api.StreamRequest._
 import csw.simple.api._
 import msocket.api.RequestClient
 
 import scala.concurrent.Future
 
-class SimpleClient(websocketClient: RequestClient[WebsocketRequest], postClient: RequestClient[PostRequest]) extends SimpleApi with Codecs {
+class SimpleClient(websocketClient: RequestClient[StreamRequest], postClient: RequestClient[PostRequest]) extends SimpleApi with Codecs {
   override def hello(name: String): Future[String] = postClient.requestResponse[String](Hello(name))
   override def helloStream(name: String): Source[HelloStreamResponse, NotUsed] =
     postClient.requestStream[HelloStreamResponse](HelloStream(name))

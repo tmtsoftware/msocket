@@ -1,11 +1,11 @@
 package csw.simple.api
 
-sealed trait WebsocketRequest
+sealed trait StreamRequest
 
-object WebsocketRequest {
-  case class Square(number: Int)          extends WebsocketRequest
-  case class GetNames(size: Int)          extends WebsocketRequest
-  case class GetNumbers(divisibleBy: Int) extends WebsocketRequest
+object StreamRequest {
+  case class Square(number: Int)          extends StreamRequest
+  case class GetNames(size: Int)          extends StreamRequest
+  case class GetNumbers(divisibleBy: Int) extends StreamRequest
 }
 
 sealed trait PostRequest

@@ -2,7 +2,7 @@ package msocket.simple.client
 
 import akka.stream.scaladsl.Source
 import csw.simple.api.client.SimpleClient
-import csw.simple.api.{Codecs, PostRequest, WebsocketRequest}
+import csw.simple.api.{Codecs, PostRequest, StreamRequest}
 import msocket.impl.{PostClientJs, WebsocketClientJs}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -11,11 +11,7 @@ import scala.concurrent.Future
 object ClientAppJs extends Codecs {
 
   def main(args: Array[String]): Unit = {
-
-    println("abc")
-    println("abc")
-
-    val websocketClient = new WebsocketClientJs[WebsocketRequest]("ws://localhost:5000/websocket")
+    val websocketClient = new WebsocketClientJs[StreamRequest]("ws://localhost:5000/websocket")
     val postClient      = new PostClientJs[PostRequest]("http://localhost:5000/post")
     val simpleClient    = new SimpleClient(websocketClient, postClient)
 

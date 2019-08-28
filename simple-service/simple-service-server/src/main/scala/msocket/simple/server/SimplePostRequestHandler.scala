@@ -9,7 +9,9 @@ import msocket.api.RequestHandler
 
 class SimplePostRequestHandler(simpleApi: SimpleApi) extends RequestHandler[PostRequest, StandardRoute] with HttpCodecs with Codecs {
   override def handle(request: PostRequest): StandardRoute = request match {
-    case Hello(name)       => complete(simpleApi.hello(name))
-    case HelloStream(name) => complete(simpleApi.helloStream(name))
+    case Hello(name) => complete(simpleApi.hello(name))
+    case HelloStream(name) =>
+      println(name)
+      complete(simpleApi.helloStream(name))
   }
 }

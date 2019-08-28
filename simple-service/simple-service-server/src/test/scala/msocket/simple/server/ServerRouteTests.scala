@@ -5,7 +5,7 @@ import akka.http.scaladsl.testkit.{ScalatestRouteTest, WSProbe}
 import akka.stream.scaladsl.Source
 import csw.simple.api.PostRequest.HelloStream
 import csw.simple.api.{Codecs, HelloStreamResponse}
-import csw.simple.api.WebsocketRequest.GetNumbers
+import csw.simple.api.StreamRequest.GetNumbers
 import mscoket.impl.Encoding.JsonText
 import mscoket.impl.HttpCodecs
 import org.scalatest.{FunSuite, Matchers}

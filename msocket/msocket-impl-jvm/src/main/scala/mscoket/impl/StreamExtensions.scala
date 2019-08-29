@@ -29,6 +29,3 @@ trait StreamExtensions[M] {
     stream(resultStream)
   }
 }
-
-
-

@@ -1,5 +1,4 @@
 import Dependencies._
-import Borer._
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
@@ -10,6 +9,7 @@ inThisBuild(
     organizationName := "ThoughtWorks",
     resolvers += Resolver.jcenterRepo,
     scalafmtOnCompile := true,
+    resolvers += "jitpack" at "https://jitpack.io",
     scalacOptions ++= Seq(
       "-encoding",
       "UTF-8",
@@ -83,6 +83,7 @@ lazy val `msocket-impl-js` = project
   .settings(
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
     libraryDependencies ++= Seq(
+      `eventsource`.value,
       `scalajs-dom`.value
     )
   )
@@ -133,7 +134,7 @@ lazy val `simple-service-app-js` = project
   .configure(baseJsSettings, bundlerSettings)
   .settings(
     npmDependencies in Compile ++= Seq(
-      "can-ndjson-stream" -> "1.0.1"
+      "eventsource" -> "1.0.7"
     ),
     libraryDependencies ++= Seq(
       `scalatest`.value % Test

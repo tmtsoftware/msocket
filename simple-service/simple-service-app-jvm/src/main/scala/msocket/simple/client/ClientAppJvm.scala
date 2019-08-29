@@ -15,11 +15,11 @@ object ClientAppJvm extends Codecs {
     implicit val mat: ActorMaterializer = ActorMaterializer()
     import system.dispatcher
 
-    val postClient      = new PostClientJvm[PostRequest](Uri("http://localhost:5000/post"))
+    val postClient = new PostClientJvm[PostRequest](Uri("http://localhost:5000/post"))
 //    val websocketClient = new WebsocketClientJvm[StreamRequest]("ws://localhost:5000/websocket")
-    val sseClient       = new SseClientJvm[StreamRequest]("http://localhost:5000/sse")
+    val sseClient = new SseClientJvm[StreamRequest]("http://localhost:5000/sse")
 
-    val simpleClient    = new SimpleClient(postClient, sseClient)
+    val simpleClient = new SimpleClient(postClient, sseClient)
 
     simpleClient.getNumbers(3).mapMaterializedValue(_.onComplete(println)).runForeach(println)
 //    simpleClient.getNames(5).runForeach(println)

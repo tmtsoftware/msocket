@@ -9,7 +9,7 @@ import scala.scalajs.js
 
 class SseConnection[Req: Encoder](uri: String) extends Connection {
   override def start(req: Req, source: ConnectedSource[_, _]): Closeable = {
-    new Sse(uri, EventSourceInitDict(js.Dynamic.literal("payload" -> Json.encode(req).toUtf8String))) with Closeable {
+    new Sse(uri, EventSourceInitDict(js.Dynamic.literal("query" -> Json.encode(req).toUtf8String))) with Closeable {
 
       override def closeStream(): Unit = close()
 

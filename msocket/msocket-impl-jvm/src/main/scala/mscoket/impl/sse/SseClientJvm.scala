@@ -28,7 +28,7 @@ class SseClientJvm[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem)
   }
 
   private def getResponse(request: Req): Future[HttpResponse] = {
-    val payloadHeader = PayloadHeader(Json.encode(request).toUtf8String)
+    val payloadHeader = QueryHeader(Json.encode(request).toUtf8String)
     val httpRequest   = HttpRequest(HttpMethods.GET, uri = uri, headers = List(payloadHeader))
     Http().singleRequest(httpRequest)
   }

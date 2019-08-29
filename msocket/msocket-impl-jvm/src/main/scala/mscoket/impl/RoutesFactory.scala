@@ -8,7 +8,7 @@ import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder, Json}
 import msocket.api.RequestHandler
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
-import mscoket.impl.sse.PayloadHeader
+import mscoket.impl.sse.QueryHeader
 import mscoket.impl.ws.WsServerFlow
 
 class RoutesFactory[PostReq: Decoder, StreamReq: Encoder: Decoder](
@@ -38,6 +38,6 @@ class RoutesFactory[PostReq: Decoder, StreamReq: Encoder: Decoder](
   }
 
   private def extractPayloadFromHeader: Directive1[StreamReq] = headerValuePF {
-    case PayloadHeader(data) => Json.decode(data.getBytes()).to[StreamReq].value
+    case QueryHeader(query) => Json.decode(query.getBytes()).to[StreamReq].value
   }
 }

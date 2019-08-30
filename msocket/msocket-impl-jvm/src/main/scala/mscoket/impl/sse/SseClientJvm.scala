@@ -8,12 +8,17 @@ import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
 import akka.stream.scaladsl.{Sink, Source}
+import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder, Json}
-import mscoket.impl.AbstractClientJvm
+import mscoket.impl.StreamSplitter._
+import msocket.api.{RequestClient, Result}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class SseClientJvm[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends AbstractClientJvm[Req](uri) {
+class SseClientJvm[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends RequestClient[Req] {
+
+  implicit lazy val mat: Materializer = ActorMaterializer()
+  implicit val ec: ExecutionContext   = actorSystem.dispatcher
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
     val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
@@ -25,6 +30,10 @@ class SseClientJvm[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem)
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
     requestStream(request).runWith(Sink.head)
+  }
+
+  override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {
+    requestStream[Result[Res, Err]](request).split
   }
 
   private def getResponse(request: Req): Future[HttpResponse] = {

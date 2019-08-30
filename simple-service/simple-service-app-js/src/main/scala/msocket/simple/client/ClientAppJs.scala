@@ -24,7 +24,7 @@ object ClientAppJs extends Codecs {
 
     val numberStream: Source[Int, Future[Option[String]]] = simpleClient.getNumbers(3)
     numberStream.mat.onComplete(println)
-    numberStream.onMessage = println
+    numberStream.onMessage = x => println(s"*******$x")
 
 //    val nameStream: Source[String, NotUsed] = simpleClient.getNames(5)
 //    nameStream.onMessage = println

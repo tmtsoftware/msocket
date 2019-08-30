@@ -9,7 +9,7 @@ import scala.concurrent.{Future, Promise}
 
 abstract class ConnectedSource[Res, Mat] extends Source[Res, Mat] {
   def onTextMessage(res: String): Unit
-  var onMessage: Res => Unit = println
+  var onMessage: Res => Unit = x => ()
   var closeable: Closeable = new Closeable {
     override def closeStream(): Unit = ()
   }

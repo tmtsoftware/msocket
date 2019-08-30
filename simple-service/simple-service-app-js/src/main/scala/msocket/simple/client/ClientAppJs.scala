@@ -4,9 +4,9 @@ import akka.stream.scaladsl.Source
 import csw.simple.api.client.SimpleClient
 import csw.simple.api.{Codecs, PostRequest, StreamRequest}
 import msocket.impl.post.PostClientJs
-import msocket.impl.sse.SseConnection
+import msocket.impl.sse.SseConnectionFactory
 import msocket.impl.streaming.StreamingClientJs
-import msocket.impl.ws.WebsocketConnection
+import msocket.impl.ws.WebsocketConnectionFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -14,10 +14,10 @@ import scala.concurrent.Future
 object ClientAppJs extends Codecs {
 
   def main(args: Array[String]): Unit = {
-    val websocketConnection = new WebsocketConnection[StreamRequest]("ws://localhost:5000/websocket")
-    val sseConnection       = new SseConnection[StreamRequest]("http://localhost:5000/sse")
+    val websocketConnection = new WebsocketConnectionFactory[StreamRequest]("ws://localhost:5000/websocket")
+    val sseConnection       = new SseConnectionFactory[StreamRequest]("http://localhost:5000/sse")
 
-    val streamingClient = new StreamingClientJs[StreamRequest](sseConnection)
+    val streamingClient = new StreamingClientJs[StreamRequest](websocketConnection)
     val postClient      = new PostClientJs[PostRequest]("http://localhost:5000/post")
 
     val simpleClient = new SimpleClient(postClient, streamingClient)

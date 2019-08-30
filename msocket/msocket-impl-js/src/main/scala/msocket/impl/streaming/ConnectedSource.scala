@@ -2,7 +2,7 @@ package msocket.impl.streaming
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
-import io.bullet.borer.{Decoder, Encoder, Json}
+import io.bullet.borer.{Decoder, Json}
 import msocket.api.Result
 
 import scala.concurrent.{Future, Promise}
@@ -10,12 +10,8 @@ import scala.concurrent.{Future, Promise}
 abstract class ConnectedSource[Res, Mat] extends Source[Res, Mat] {
   def onTextMessage(res: String): Unit
   var onMessage: Res => Unit = println
-  private var closeable: Closeable = new Closeable {
+  var closeable: Closeable = new Closeable {
     override def closeStream(): Unit = ()
-  }
-  def connect[Req: Encoder](connectionFactory: Connection[Req], req: Req): ConnectedSource[Res, Mat] = {
-    closeable = connectionFactory.start(req, this)
-    this
   }
   def disconnect(): Unit = closeable.closeStream()
 }

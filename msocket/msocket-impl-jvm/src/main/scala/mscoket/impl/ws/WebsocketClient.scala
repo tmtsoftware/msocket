@@ -12,7 +12,7 @@ import msocket.api.{RequestClient, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class WebsocketClientJvm[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends RequestClient[Req] {
+class WebsocketClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends RequestClient[Req] {
 
   implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher

@@ -5,21 +5,21 @@ import akka.http.scaladsl.model.Uri
 import akka.stream.ActorMaterializer
 import csw.simple.api.client.SimpleClient
 import csw.simple.api.{Codecs, SimpleRequest}
-import mscoket.impl.post.PostClientJvm
-import mscoket.impl.sse.SseClientJvm
-import mscoket.impl.ws.WebsocketClientJvm
+import mscoket.impl.post.PostClient
+import mscoket.impl.sse.SseClient
+import mscoket.impl.ws.WebsocketClient
 import concurrent.duration.DurationLong
 
-object ClientAppJvm extends Codecs {
+object ClientApp extends Codecs {
 
   def main(args: Array[String]): Unit = {
     implicit val system: ActorSystem    = ActorSystem()
     implicit val mat: ActorMaterializer = ActorMaterializer()
     import system.dispatcher
 
-    val postClient      = new PostClientJvm[SimpleRequest](Uri("http://localhost:5000/post"))
-    val websocketClient = new WebsocketClientJvm[SimpleRequest]("ws://localhost:5000/websocket")
-    val sseClient       = new SseClientJvm[SimpleRequest]("http://localhost:5000/sse")
+    val postClient      = new PostClient[SimpleRequest](Uri("http://localhost:5000/post"))
+    val websocketClient = new WebsocketClient[SimpleRequest]("ws://localhost:5000/websocket")
+    val sseClient       = new SseClient[SimpleRequest]("http://localhost:5000/sse")
 
     val simpleClient = new SimpleClient(postClient)
 

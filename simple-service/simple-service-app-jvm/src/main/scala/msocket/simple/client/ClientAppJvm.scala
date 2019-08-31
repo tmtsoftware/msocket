@@ -7,6 +7,7 @@ import csw.simple.api.client.SimpleClient
 import csw.simple.api.{Codecs, PostRequest, StreamRequest}
 import mscoket.impl.post.PostClientJvm
 import mscoket.impl.sse.SseClientJvm
+import mscoket.impl.ws.WebsocketClientJvm
 
 object ClientAppJvm extends Codecs {
 
@@ -15,13 +16,13 @@ object ClientAppJvm extends Codecs {
     implicit val mat: ActorMaterializer = ActorMaterializer()
     import system.dispatcher
 
-    val postClient = new PostClientJvm[PostRequest](Uri("http://localhost:5000/post"))
-//    val websocketClient = new WebsocketClientJvm[StreamRequest]("ws://localhost:5000/websocket")
-    val sseClient = new SseClientJvm[StreamRequest]("http://localhost:5000/sse")
+    val postClient      = new PostClientJvm[PostRequest](Uri("http://localhost:5000/post"))
+    val websocketClient = new WebsocketClientJvm[StreamRequest]("ws://localhost:5000/websocket")
+    val sseClient       = new SseClientJvm[StreamRequest]("http://localhost:5000/sse")
 
-    val simpleClient = new SimpleClient(postClient, sseClient)
+    val simpleClient = new SimpleClient(postClient, null)
 
-    simpleClient.getNumbers(3).mapMaterializedValue(_.onComplete(println)).runForeach(println)
+//    simpleClient.getNumbers(3).mapMaterializedValue(_.onComplete(println)).runForeach(println)
 //    simpleClient.getNames(5).runForeach(println)
 
 //    Thread.sleep(2000)

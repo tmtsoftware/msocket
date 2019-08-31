@@ -1,4 +1,4 @@
-package msocket.impl.post
+package msocket.impl.ignored
 
 import scala.annotation.switch
 import scala.scalajs.js.typedarray.Uint8Array

@@ -17,7 +17,7 @@ class SimpleImpl extends SimpleApi {
 
   override def helloStream(name: String): Source[HelloStreamResponse, NotUsed] = {
     Source
-      .tick(1.second, 1.second, ())
+      .tick(10.millis, 10.millis, ())
       .map(_ => HelloStreamResponse(s"hello $name again"))
       .mapMaterializedValue(_ => NotUsed)
   }

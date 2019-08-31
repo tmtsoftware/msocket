@@ -9,7 +9,8 @@ import scala.concurrent.duration.FiniteDuration
 import scala.scalajs.js
 import scala.scalajs.js.timers
 
-class PostConnectionFactory[Req: Encoder](uri: String)(implicit ec: ExecutionContext, timeout: FiniteDuration) extends ConnectionFactory {
+class PostConnectionFactory[Req: Encoder](uri: String)(implicit ec: ExecutionContext, streamingDelay: FiniteDuration)
+    extends ConnectionFactory {
 
   override def connect[S <: ConnectedSource[_, _]](req: Req, source: S): S = {
     val request = new FetchRequest {
@@ -34,7 +35,7 @@ class PostConnectionFactory[Req: Encoder](uri: String)(implicit ec: ExecutionCon
               if (jsonString != "") {
                 source.onTextMessage(jsonString)
               }
-              timers.setTimeout(timeout) {
+              timers.setTimeout(streamingDelay) {
                 read()
               }
             }

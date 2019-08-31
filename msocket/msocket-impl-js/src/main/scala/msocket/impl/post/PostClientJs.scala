@@ -8,7 +8,7 @@ import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
 
-class PostClientJs[Req: Encoder](uri: String)(implicit ec: ExecutionContext, timeout: FiniteDuration)
+class PostClientJs[Req: Encoder](uri: String)(implicit ec: ExecutionContext, streamingDelay: FiniteDuration)
     extends StreamingClientJs[Req](new PostConnectionFactory[Req](uri)) {
   def requestResponse[Res: Decoder](req: Req): Future[Res] = {
     val request = new FetchRequest {

@@ -12,7 +12,7 @@ import scala.concurrent.Future
 trait StreamExtensions[M] {
   def stream[T, Mat](input: Source[T, Mat])(implicit encoder: Encoder[T]): Source[M, Mat]
 
-  def stream[T](input: Future[T])(implicit encoder: Encoder[T]): Source[M, NotUsed] = {
+  def futureAsStream[T](input: Future[T])(implicit encoder: Encoder[T]): Source[M, NotUsed] = {
     stream(Source.fromFuture(input))
   }
 

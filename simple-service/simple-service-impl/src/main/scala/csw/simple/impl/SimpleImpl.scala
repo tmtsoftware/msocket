@@ -1,38 +1,32 @@
 package csw.simple.impl
 
 import akka.NotUsed
+import akka.actor.ActorSystem
 import akka.stream.DelayOverflowStrategy
 import akka.stream.scaladsl.Source
-import csw.simple.api.{HelloStreamResponse, SimpleApi}
+import csw.simple.api.SimpleApi
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
-import scala.util.Random
 
-class SimpleImpl extends SimpleApi {
-  /////////////////
+class SimpleImpl(implicit actorSystem: ActorSystem) extends SimpleApi {
+  import actorSystem.dispatcher
+
   override def hello(name: String): Future[String] = {
     Future.successful(s"Hello $name")
   }
 
-  override def helloStream(name: String): Source[HelloStreamResponse, NotUsed] = {
+  override def square(number: Int): Future[Int] = {
+    akka.pattern.after(3.minutes, actorSystem.scheduler) {
+      Future.successful(number * number)
+    }
+  }
+
+  override def helloStream(name: String): Source[String, NotUsed] = {
     Source
       .tick(10.millis, 10.millis, ())
-      .map(_ => HelloStreamResponse(s"hello $name again"))
-      .mapMaterializedValue(_ => NotUsed)
-  }
-
-  /////////////////
-
-  override def square(number: Int): Future[Int] = {
-    Future.successful(number * number)
-  }
-
-  ///////////////////
-  override def getNames(size: Int): Source[String, NotUsed] = {
-    Source
-      .tick(1.second, 1.second, ())
-      .map(_ => Random.alphanumeric.take(size).mkString)
+      .scan(0)((acc, _) => acc + 1)
+      .map(x => s"hello \n $name again $x")
       .mapMaterializedValue(_ => NotUsed)
   }
 
@@ -46,5 +40,4 @@ class SimpleImpl extends SimpleApi {
         .mapMaterializedValue(_ => Future.successful(None))
     }
   }
-
 }

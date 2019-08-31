@@ -20,16 +20,20 @@ class SseClientJvm[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem)
   implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher
 
-  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
-    val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
-    val sseStream    = Source.fromFutureSource(futureSource)
-    sseStream
-      .map(event => Json.decode(event.data.getBytes()).to[Res].value)
-      .mapMaterializedValue(_ => NotUsed)
+  override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
+    requestResponseWithDelay(request)
   }
 
-  override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
+  override def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res] = {
     requestStream(request).runWith(Sink.head)
+  }
+
+  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
+    val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
+    Source
+      .fromFutureSource(futureSource)
+      .map(event => Json.decode(event.data.getBytes()).to[Res].value)
+      .mapMaterializedValue(_ => NotUsed)
   }
 
   override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {

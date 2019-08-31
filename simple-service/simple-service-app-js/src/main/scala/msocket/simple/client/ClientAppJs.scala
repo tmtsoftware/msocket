@@ -4,26 +4,24 @@ import akka.NotUsed
 import akka.stream.scaladsl.Source
 import csw.simple.api.client.SimpleClient
 import csw.simple.api.{Codecs, HelloStreamResponse, PostRequest, StreamRequest}
-import msocket.impl.post.PostConnectionFactory
-import msocket.impl.sse.SseConnectionFactory
-import msocket.impl.streaming.StreamingClientJs
-import msocket.impl.ws.WebsocketConnectionFactory
+import msocket.impl.post.PostClientJs
+import msocket.impl.sse.SseClientJs
+import msocket.impl.ws.WebsocketClientJs
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.FiniteDuration
-import concurrent.duration.DurationLong
+import scala.concurrent.duration.{DurationLong, FiniteDuration}
 
 object ClientAppJs extends Codecs {
 
   def main(args: Array[String]): Unit = {
     implicit val timeout: FiniteDuration = 1.second
 
-    val websocketConnectionFactory = new WebsocketConnectionFactory[StreamRequest]("ws://localhost:5000/websocket")
-    val sseConnectionFactory       = new SseConnectionFactory[StreamRequest]("http://localhost:5000/sse")
-    val postConnectionFactory      = new PostConnectionFactory[PostRequest]("http://localhost:5000/post")
+    val websocketClient = new WebsocketClientJs[StreamRequest]("ws://localhost:5000/websocket")
+    val sseClient       = new SseClientJs[StreamRequest]("http://localhost:5000/sse")
+    val postClient      = new PostClientJs[PostRequest]("http://localhost:5000/post")
 
     val simpleClient = new SimpleClient(
-      new StreamingClientJs(postConnectionFactory),
+      postClient,
       null
     )
 

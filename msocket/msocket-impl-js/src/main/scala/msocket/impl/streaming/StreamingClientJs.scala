@@ -7,16 +7,9 @@ import msocket.api.RequestClient
 
 import scala.concurrent.{Future, Promise}
 
-class StreamingClientJs[Req: Encoder](connectionFactory: ConnectionFactory[Req]) extends RequestClient[Req] {
-  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
-    connectionFactory.connect(request, new SimpleConnectedSource)
-  }
+abstract class StreamingClientJs[Req: Encoder](connectionFactory: ConnectionFactory[Req]) extends RequestClient[Req] {
 
-  override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {
-    connectionFactory.connect(request, new ConnectedSourceWithErr)
-  }
-
-  override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
+  override def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res] = {
     val promise: Promise[Res] = Promise()
     val connectedSource       = connectionFactory.connect(request, new SimpleConnectedSource)
     connectedSource.onMessage = { response =>
@@ -24,5 +17,13 @@ class StreamingClientJs[Req: Encoder](connectionFactory: ConnectionFactory[Req])
       connectedSource.disconnect()
     }
     promise.future
+  }
+
+  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
+    connectionFactory.connect(request, new SimpleConnectedSource)
+  }
+
+  override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {
+    connectionFactory.connect(request, new ConnectedSourceWithErr)
   }
 }

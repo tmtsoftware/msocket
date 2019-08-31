@@ -7,7 +7,7 @@ import org.scalajs.dom.experimental.{Fetch, HttpMethod, ReadableStreamReader}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 import scala.scalajs.js
-import scala.scalajs.js.{JSON, timers}
+import scala.scalajs.js.timers
 
 class PostConnectionFactory[Req: Encoder](uri: String)(implicit ec: ExecutionContext, timeout: FiniteDuration) extends ConnectionFactory {
 
@@ -30,7 +30,10 @@ class PostConnectionFactory[Req: Encoder](uri: String)(implicit ec: ExecutionCon
         def read(): Unit = {
           reader.read().toFuture.foreach { chunk =>
             if (!chunk.done) {
-              source.onTextMessage(JSON.stringify(chunk.value))
+              val jsonString = FetchEventJs(chunk.value).data
+              if (jsonString != "") {
+                source.onTextMessage(jsonString)
+              }
               timers.setTimeout(timeout) {
                 read()
               }

@@ -12,7 +12,7 @@ import mscoket.impl.sse.QueryHeader
 import mscoket.impl.ws.WsServerFlow
 
 class RoutesFactory[PostReq: Decoder, StreamReq: Encoder: Decoder](
-    httpHandler: RequestHandler[PostReq, StandardRoute],
+    postHandler: RequestHandler[PostReq, StandardRoute],
     websocketHandler: RequestHandler[StreamReq, Source[Message, NotUsed]],
     sseHandler: RequestHandler[StreamReq, StandardRoute]
 ) extends HttpCodecs {
@@ -32,7 +32,7 @@ class RoutesFactory[PostReq: Decoder, StreamReq: Encoder: Decoder](
     } ~
     post {
       path("post") {
-        entity(as[PostReq])(httpHandler.handle)
+        entity(as[PostReq])(postHandler.handle)
       }
     }
   }

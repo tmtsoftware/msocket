@@ -6,12 +6,12 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.scaladsl.Source
+import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
-import io.bullet.borer.{Decoder, Encoder}
+import io.bullet.borer.{Decoder, Encoder, Json}
 import mscoket.impl.HttpCodecs
 import mscoket.impl.StreamSplitter._
-import msocket.api.{RequestClient, Result}
+import msocket.api.{FetchEvent, RequestClient, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -24,9 +24,17 @@ class PostClientJvm[Req: Encoder](uri: Uri)(implicit actorSystem: ActorSystem) e
     getResponse(request).flatMap(Unmarshal(_).to[Res])
   }
 
+  override def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res] = {
+    requestStream(request).runWith(Sink.head)
+  }
+
   override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
-    val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[Res, NotUsed]])
-    Source.fromFutureSource(futureSource).mapMaterializedValue(_ => NotUsed)
+    val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[FetchEvent, NotUsed]])
+    Source
+      .fromFutureSource(futureSource)
+      .filter(_ != FetchEvent.Heartbeat)
+      .map(event => Json.decode(event.data.getBytes()).to[Res].value)
+      .mapMaterializedValue(_ => NotUsed)
   }
 
   override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {

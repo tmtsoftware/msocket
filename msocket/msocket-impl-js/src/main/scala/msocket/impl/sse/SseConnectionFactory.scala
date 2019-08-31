@@ -18,7 +18,10 @@ class SseConnectionFactory[Req: Encoder](uri: String) extends ConnectionFactory 
       }
 
       override def onmessage(evt: MessageEvent): js.Any = {
-        source.onTextMessage(evt.data.asInstanceOf[String])
+        val jsonString = evt.data.asInstanceOf[String]
+        if (jsonString != "") {
+          source.onTextMessage(jsonString)
+        }
       }
     }
     source

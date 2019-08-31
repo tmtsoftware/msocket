@@ -32,7 +32,7 @@ lazy val `root` = project
   .aggregate(
     `akka-js`,
     `msocket`,
-    `simple-service`
+    `example-service`
   )
 
 //************* akka-api *****************************************************
@@ -88,29 +88,29 @@ lazy val `msocket-impl-js` = project
     )
   )
 
-//************* simple-service *****************************************************
+//************* example-service *****************************************************
 
-lazy val `simple-service` = project.aggregate(
-  `simple-service-api`.jvm,
-  `simple-service-api`.js,
-  `simple-service-impl`,
-  `simple-service-server`,
-  `simple-service-app-jvm`,
-  `simple-service-app-js`
+lazy val `example-service` = project.aggregate(
+  `example-service-api`.jvm,
+  `example-service-api`.js,
+  `example-service-impl`,
+  `example-service-server`,
+  `example-service-app-jvm`,
+  `example-service-app-js`
 )
 
-lazy val `simple-service-api` = crossProject(JSPlatform, JVMPlatform)
+lazy val `example-service-api` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
-  .in(file("simple-service/simple-service-api"))
+  .in(file("example-service/example-service-api"))
   .dependsOn(`msocket-api`)
 
-lazy val `simple-service-impl` = project
-  .in(file("simple-service/simple-service-impl"))
-  .dependsOn(`simple-service-api`.jvm)
+lazy val `example-service-impl` = project
+  .in(file("example-service/example-service-impl"))
+  .dependsOn(`example-service-api`.jvm)
 
-lazy val `simple-service-server` = project
-  .in(file("simple-service/simple-service-server"))
-  .dependsOn(`simple-service-impl`, `msocket-impl-jvm`)
+lazy val `example-service-server` = project
+  .in(file("example-service/example-service-server"))
+  .dependsOn(`example-service-impl`, `msocket-impl-jvm`)
   .settings(
     libraryDependencies ++= Seq(
       `scalatest`.value     % Test,
@@ -119,18 +119,18 @@ lazy val `simple-service-server` = project
     )
   )
 
-lazy val `simple-service-app-jvm` = project
-  .in(file("simple-service/simple-service-app-jvm"))
-  .dependsOn(`simple-service-api`.jvm, `msocket-impl-jvm`)
+lazy val `example-service-app-jvm` = project
+  .in(file("example-service/example-service-app-jvm"))
+  .dependsOn(`example-service-api`.jvm, `msocket-impl-jvm`)
   .settings(
     libraryDependencies ++= Seq(
       `scalatest`.value % Test
     )
   )
 
-lazy val `simple-service-app-js` = project
-  .in(file("simple-service/simple-service-app-js"))
-  .dependsOn(`simple-service-api`.js, `msocket-impl-js`)
+lazy val `example-service-app-js` = project
+  .in(file("example-service/example-service-app-js"))
+  .dependsOn(`example-service-api`.js, `msocket-impl-js`)
   .configure(baseJsSettings, bundlerSettings)
   .settings(
     npmDependencies in Compile ++= Seq(

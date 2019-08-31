@@ -16,7 +16,7 @@ abstract class ConnectedSource[Res, Mat] extends Source[Res, Mat] {
   def disconnect(): Unit = closeable.closeStream()
 }
 
-class SimpleConnectedSource[Res: Decoder] extends ConnectedSource[Res, NotUsed] {
+class ExampleConnectedSource[Res: Decoder] extends ConnectedSource[Res, NotUsed] {
   override def onTextMessage(res: String): Unit = {
     onMessage(Json.decode(res.getBytes()).to[Res].value)
   }

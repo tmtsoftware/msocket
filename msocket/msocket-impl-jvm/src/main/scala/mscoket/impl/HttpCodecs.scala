@@ -35,7 +35,9 @@ trait HttpCodecs {
       .compose(Json.encode(_).to[ByteString].result)
   }
 
-  implicit val jsonStreamingSupport: JsonEntityStreamingSupport = EntityStreamingSupport.json()
+  implicit val jsonStreamingSupport: JsonEntityStreamingSupport = EntityStreamingSupport
+    .json(8 * 1024)
+    .withFramingRenderer(Flow[ByteString].intersperse(ByteString("\n")))
 
   implicit def borerJsonSourceReader[T: Decoder](implicit support: EntityStreamingSupport): FromEntityUnmarshaller[Source[T, NotUsed]] =
     Unmarshaller.withMaterializer { implicit ec => mat => e =>

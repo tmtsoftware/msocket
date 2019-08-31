@@ -134,7 +134,8 @@ lazy val `simple-service-app-js` = project
   .configure(baseJsSettings, bundlerSettings)
   .settings(
     npmDependencies in Compile ++= Seq(
-      "eventsource" -> "1.0.7"
+      "eventsource" -> "1.0.7",
+      "can-ndjson-stream" -> "1.0.1",
     ),
     libraryDependencies ++= Seq(
       `scalatest`.value % Test
@@ -161,8 +162,8 @@ lazy val bundlerSettings: Project => Project =
   _.enablePlugins(ScalaJSBundlerPlugin)
     .settings(
       /* Specify current versions and modes */
-      startWebpackDevServer / version := "3.1.10",
-      webpack / version := "4.26.1",
+      startWebpackDevServer / version := "3.8.0",
+      webpack / version := "4.39.3",
       Compile / fastOptJS / webpackExtraArgs += "--mode=development",
       Compile / fullOptJS / webpackExtraArgs += "--mode=production",
       Compile / fastOptJS / webpackDevServerExtraArgs += "--mode=development",

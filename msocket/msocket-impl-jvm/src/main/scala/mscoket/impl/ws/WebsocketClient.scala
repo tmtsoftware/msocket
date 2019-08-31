@@ -1,5 +1,7 @@
 package mscoket.impl.ws
 
+import java.util.UUID
+
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.{TextMessage, WebSocketRequest}
@@ -8,8 +10,8 @@ import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
 import mscoket.impl.StreamSplitter._
 import mscoket.impl.ws.Encoding.JsonText
-import msocket.api.RequestClient
 import msocket.api.utils.Result
+import msocket.api.{RequestClient, WebsocketEvent}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,9 +32,9 @@ class WebsocketClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSyst
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
     setup
-      .request(JsonText.strictMessage(request))
+      .request(JsonText.strictMessage(WebsocketEvent(UUID.randomUUID(), JsonText.encodeText(request))))
       .collect {
-        case TextMessage.Strict(text) => JsonText.decodeText(text)
+        case TextMessage.Strict(text) => JsonText.decodeText(JsonText.decodeText[WebsocketEvent](text).data)
       }
   }
 

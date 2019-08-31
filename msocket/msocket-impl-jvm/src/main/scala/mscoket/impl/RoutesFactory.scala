@@ -1,7 +1,6 @@
 package mscoket.impl
 
 import akka.NotUsed
-import akka.http.scaladsl.model.ws.Message
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive1, Route, StandardRoute}
 import akka.stream.scaladsl.Source
@@ -13,7 +12,7 @@ import msocket.api.RequestHandler
 
 class RoutesFactory[Req: Decoder](
     postHandler: RequestHandler[Req, StandardRoute],
-    websocketHandler: RequestHandler[Req, Source[Message, NotUsed]],
+    websocketHandler: RequestHandler[Req, Source[String, NotUsed]],
     sseHandler: RequestHandler[Req, StandardRoute]
 ) extends HttpCodecs {
 

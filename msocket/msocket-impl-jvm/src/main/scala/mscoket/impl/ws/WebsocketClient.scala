@@ -31,10 +31,14 @@ class WebsocketClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSyst
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
+    val id = UUID.randomUUID()
     setup
-      .request(JsonText.strictMessage(WebsocketEvent(UUID.randomUUID(), JsonText.encodeText(request))))
+      .request(JsonText.strictMessage(WebsocketEvent(id, JsonText.encodeText(request))))
       .collect {
-        case TextMessage.Strict(text) => JsonText.decodeText(JsonText.decodeText[WebsocketEvent](text).data)
+        case TextMessage.Strict(text) => JsonText.decodeText[WebsocketEvent](text)
+      }
+      .collect {
+        case WebsocketEvent(`id`, data) => JsonText.decodeText(data)
       }
   }
 

@@ -13,10 +13,10 @@ class WsServerFlow[T: Decoder](websocketClient: RequestHandler[T, Source[String,
       .collect {
         case TextMessage.Strict(text) => JsonText.decodeText[WebsocketEvent](text)
       }
-      .flatMapConcat { event =>
+      .flatMapMerge(1000, { event =>
         websocketClient.handle(JsonText.decodeText(event.data)).map { data =>
           JsonText.strictMessage(WebsocketEvent(event.id, data))
         }
-      }
+      })
   }
 }

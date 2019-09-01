@@ -6,8 +6,8 @@ object Dependencies {
   val `silencer-lib`    = "com.github.ghik" %% "silencer-lib"    % "1.4.1"
   val `silencer-plugin` = "com.github.ghik" %% "silencer-plugin" % "1.4.1"
 
-  val `akka-stream`         = "com.typesafe.akka" %% "akka-stream"         % "2.5.23"
-  val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.23"
+  val `akka-stream`         = "com.typesafe.akka" %% "akka-stream"         % "2.5.25"
+  val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.25"
 
   val `akka-http`            = "com.typesafe.akka" %% "akka-http"            % "10.1.9"
   val `akka-http-spray-json` = "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.9"
@@ -23,4 +23,8 @@ object Dependencies {
 
   val `eventsource` = dep("com.github.mushtaq.scalably-typed" %%% "eventsource" % "de25c8e")
   val `std`         = dep("com.github.mushtaq.scalably-typed" %%% "std"         % "de25c8e")
+
+  val `rsocket-transport-akka` = "com.github.mushtaq" % "rsocket-transport-akka" % "740a0a7"
+  val `rsocket-core`           = "io.rsocket"         % "rsocket-core"           % "0.11.18"
+  val `rsocket-test`           = "io.rsocket"         % "rsocket-test"           % "0.11.18"
 }

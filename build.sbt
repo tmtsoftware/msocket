@@ -88,6 +88,16 @@ lazy val `msocket-impl-js` = project
     )
   )
 
+lazy val `msocket-impl-rsocket` = project
+  .in(file("msocket/msocket-impl-rsocket"))
+  .dependsOn(`msocket-impl-jvm`)
+  .settings(
+    libraryDependencies ++= Seq(
+      `rsocket-transport-akka`,
+      `rsocket-core`
+    )
+  )
+
 //************* example-service *****************************************************
 
 lazy val `example-service` = project.aggregate(
@@ -110,7 +120,7 @@ lazy val `example-service-impl` = project
 
 lazy val `example-service-server` = project
   .in(file("example-service/example-service-server"))
-  .dependsOn(`example-service-impl`, `msocket-impl-jvm`)
+  .dependsOn(`example-service-impl`, `msocket-impl-jvm`, `msocket-impl-rsocket`)
   .settings(
     libraryDependencies ++= Seq(
       `scalatest`.value     % Test,
@@ -121,7 +131,7 @@ lazy val `example-service-server` = project
 
 lazy val `example-service-app-jvm` = project
   .in(file("example-service/example-service-app-jvm"))
-  .dependsOn(`example-service-api`.jvm, `msocket-impl-jvm`)
+  .dependsOn(`example-service-api`.jvm, `msocket-impl-jvm`, `msocket-impl-rsocket`)
   .settings(
     libraryDependencies ++= Seq(
       `scalatest`.value % Test
@@ -134,8 +144,8 @@ lazy val `example-service-app-js` = project
   .configure(baseJsSettings, bundlerSettings)
   .settings(
     npmDependencies in Compile ++= Seq(
-      "eventsource" -> "1.0.7",
-      "can-ndjson-stream" -> "1.0.1",
+      "eventsource"       -> "1.0.7",
+      "can-ndjson-stream" -> "1.0.1"
     ),
     libraryDependencies ++= Seq(
       `scalatest`.value % Test

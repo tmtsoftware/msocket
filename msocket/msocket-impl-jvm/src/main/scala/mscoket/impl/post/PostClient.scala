@@ -15,7 +15,7 @@ import msocket.api.{FetchEvent, RequestClient, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PostClient[Req: Encoder](uri: Uri)(implicit actorSystem: ActorSystem) extends RequestClient[Req] with HttpCodecs {
+class PostClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends RequestClient[Req] with HttpCodecs {
 
   implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher

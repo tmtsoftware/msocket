@@ -13,7 +13,7 @@ import mscoket.impl.ws.Encoding.JsonText
 import scala.concurrent.duration.DurationLong
 
 class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers with Codecs with HttpCodecs {
-  private val wiring = new Wiring
+  private val wiring = new ServerWiring
 
   test("websocket") {
 

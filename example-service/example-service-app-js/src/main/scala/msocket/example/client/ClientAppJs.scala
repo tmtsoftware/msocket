@@ -3,39 +3,28 @@ package msocket.example.client
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import csw.example.api.client.ExampleClient
-import csw.example.api.protocol.{Codecs, ExampleRequest}
-import msocket.impl.post.PostClientJs
-import msocket.impl.sse.SseClientJs
-import msocket.impl.ws.WebsocketClientJs
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.{DurationLong, FiniteDuration}
+import scala.concurrent.{ExecutionContext, Future}
 
-object ClientAppJs extends Codecs {
+class ClientAppJs(client: ExampleClient)(implicit ec: ExecutionContext) {
 
-  def main(args: Array[String]): Unit = {
-    implicit val streamingDelay: FiniteDuration = 1.second
+  def testRun(): Unit = {
+    client.hello("xyz").onComplete(println)
+    client.hello("abc").onComplete(println)
 
-    val websocketClient = new WebsocketClientJs[ExampleRequest]("ws://localhost:5000/websocket")
-    val sseClient       = new SseClientJs[ExampleRequest]("http://localhost:5000/sse")
-    val postClient      = new PostClientJs[ExampleRequest]("http://localhost:5000/post")
+    client.square(3).onComplete(println)
+    client.square(4).onComplete(println)
 
-    val exampleClient = new ExampleClient(postClient)
+    val numberStream: Source[Int, Future[Option[String]]] = client.getNumbers(3)
+    numberStream.mat.onComplete(println)
+    numberStream.onMessage = x => println(s"*******$x")
 
-//    val numberStream: Source[Int, Future[Option[String]]] = exampleClient.getNumbers(3)
-//    numberStream.mat.onComplete(println)
-//    numberStream.onMessage = x => println(s"*******$x")
+    client.hello("mushtaq").onComplete(println)
 
-//    val nameStream: Source[String, NotUsed] = exampleClient.getNames(5)
-//    nameStream.onMessage = println
-
-    exampleClient.hello("mushtaq").onComplete(println)
-    val postHelloStream: Source[String, NotUsed] = exampleClient.helloStream("mushtaq")
+    val postHelloStream: Source[String, NotUsed] = client.helloStream("mushtaq")
     postHelloStream.onMessage = x => println(s"******$x")
 
-    exampleClient.hello("msuhtaq1").onComplete(println)
-//    exampleClient.square(3).onComplete(println)
-//    exampleClient.square(4).onComplete(println)
-
+    client.hello("msuhtaq1").onComplete(println)
   }
+
 }

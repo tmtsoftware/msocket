@@ -2,7 +2,6 @@ package csw.example.impl
 
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.stream.DelayOverflowStrategy
 import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
 
@@ -26,7 +25,7 @@ class ExampleImpl(implicit actorSystem: ActorSystem) extends ExampleApi {
 
   override def helloStream(name: String): Source[String, NotUsed] = {
     Source
-      .tick(10.millis, 10.millis, ())
+      .tick(100.millis, 100.millis, ())
       .scan(0)((acc, _) => acc + 1)
       .map(x => s"hello \n $name again $x")
       .mapMaterializedValue(_ => NotUsed)
@@ -38,7 +37,7 @@ class ExampleImpl(implicit actorSystem: ActorSystem) extends ExampleApi {
     } else {
       Source
         .fromIterator(() => Iterator.from(1).filter(_ % divisibleBy == 0))
-        .delay(1.second, DelayOverflowStrategy.backpressure)
+        .throttle(1, 1.second)
         .mapMaterializedValue(_ => Future.successful(None))
     }
   }

@@ -1,19 +1,35 @@
 package mscoket.impl.rsocket.server
 
-import io.rsocket.transport.ServerTransport
-import io.rsocket.{Closeable, RSocketFactory, SocketAcceptor}
-
+import akka.NotUsed
+import akka.actor.ActorSystem
+import akka.stream.scaladsl.Source
+import akka.stream.{ActorMaterializer, Materializer}
+import io.bullet.borer.Decoder
+import io.rsocket.transport.akka.server.WebsocketServerTransport
+import io.rsocket.{Closeable, Payload, RSocket, RSocketFactory}
+import msocket.api.RequestHandler
+import reactor.core.publisher.Mono
 import scala.compat.java8.FutureConverters.CompletionStageOps
-import scala.concurrent.Future
 
-class RSocketServer(serverTransport: ServerTransport[_ <: Closeable], socketAcceptor: SocketAcceptor) {
-  def start: Future[Closeable] = {
+import scala.concurrent.{ExecutionContext, Future}
+
+class RSocketServer[Req: Decoder](requestHandler: RequestHandler[Req, Source[Payload, NotUsed]])(implicit actorSystem: ActorSystem) {
+
+  implicit val mat: Materializer    = ActorMaterializer()
+  implicit val ec: ExecutionContext = actorSystem.dispatcher
+
+  val socket: RSocket = new RSocketImpl(requestHandler)
+
+  def start(interface: String, port: Int): Unit = {
+    val transport = new WebsocketServerTransport(interface, port)
+
     RSocketFactory.receive
       .frameDecoder(_.retain)
-      .acceptor(socketAcceptor)
-      .transport(serverTransport)
+      .acceptor((_, _) => Mono.just(socket))
+      .transport(transport)
       .start
       .toFuture
       .toScala
+      .onComplete(println)
   }
 }

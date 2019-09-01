@@ -1,49 +1,40 @@
 package msocket.impl.post
 
-import io.bullet.borer.{Encoder, Json}
+import io.bullet.borer.Encoder
 import msocket.impl.streaming.{Closeable, ConnectedSource, ConnectionFactory}
-import org.scalajs.dom.experimental.{Fetch, HttpMethod, ReadableStreamReader}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
-import scala.scalajs.js
 import scala.scalajs.js.timers
 
 class PostConnectionFactory[Req: Encoder](uri: String)(implicit ec: ExecutionContext, streamingDelay: FiniteDuration)
     extends ConnectionFactory {
 
   override def connect[S <: ConnectedSource[_, _]](req: Req, source: S): S = {
-    val request = new FetchRequest {
-      method = HttpMethod.POST
-      body = Json.encode(req).toUtf8String
-      headers = js.Dictionary("content-type" -> "application/json")
-    }
-    Fetch
-      .fetch(uri, request)
-      .toFuture
-      .foreach { response =>
-        val reader: ReadableStreamReader[js.Object] = new CanNdJsonStream(response.body).getReader()
+    FetchHelper.postRequest(uri, req).foreach { response =>
+      val reader = new CanNdJsonStream(response.body).getReader()
 
-        source.closeable = new Closeable {
-          override def closeStream(): Unit = reader.cancel("cancelled")
-        }
+      source.closeable = new Closeable {
+        override def closeStream(): Unit = reader.cancel("cancelled")
+      }
 
-        def read(): Unit = {
-          reader.read().toFuture.foreach { chunk =>
-            if (!chunk.done) {
-              val jsonString = FetchEventJs(chunk.value).data
-              if (jsonString != "") {
-                source.onTextMessage(jsonString)
-              }
-              timers.setTimeout(streamingDelay) {
-                read()
-              }
+      def read(): Unit = {
+        reader.read().toFuture.foreach { chunk =>
+          if (!chunk.done) {
+            val jsonString = FetchEventJs(chunk.value).data
+            if (jsonString != "") {
+              source.onTextMessage(jsonString)
+            }
+            timers.setTimeout(streamingDelay) {
+              read()
             }
           }
         }
-
-        read()
       }
+
+      read()
+    }
+
     source
   }
 }

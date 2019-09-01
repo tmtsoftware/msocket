@@ -1,4 +1,4 @@
-package csw.example.api
+package csw.example.api.protocol
 
 sealed trait ExampleRequest
 

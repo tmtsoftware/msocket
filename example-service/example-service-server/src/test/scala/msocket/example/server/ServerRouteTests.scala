@@ -3,11 +3,11 @@ package msocket.example.server
 import akka.NotUsed
 import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest, WSProbe}
 import akka.stream.scaladsl.Source
-import csw.example.api.ExampleRequest.{GetNumbers, HelloStream}
 import mscoket.impl.HttpCodecs
 import org.scalatest.{FunSuite, Matchers}
 import akka.testkit.TestDuration
-import csw.example.api.Codecs
+import csw.example.api.protocol.Codecs
+import csw.example.api.protocol.ExampleRequest.{GetNumbers, HelloStream}
 import mscoket.impl.ws.Encoding.JsonText
 
 import scala.concurrent.duration.DurationLong

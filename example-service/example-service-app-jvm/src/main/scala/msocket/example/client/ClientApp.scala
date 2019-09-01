@@ -4,10 +4,11 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.Uri
 import akka.stream.ActorMaterializer
 import csw.example.api.client.ExampleClient
-import csw.example.api.{Codecs, ExampleRequest}
+import csw.example.api.protocol.{Codecs, ExampleRequest}
 import mscoket.impl.post.PostClient
 import mscoket.impl.sse.SseClient
 import mscoket.impl.ws.WebsocketClient
+
 import concurrent.duration.DurationLong
 
 object ClientApp extends Codecs {

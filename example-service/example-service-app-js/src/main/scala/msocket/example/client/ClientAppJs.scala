@@ -3,7 +3,7 @@ package msocket.example.client
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import csw.example.api.client.ExampleClient
-import csw.example.api.{Codecs, ExampleRequest}
+import csw.example.api.protocol.{Codecs, ExampleRequest}
 import msocket.impl.post.PostClientJs
 import msocket.impl.sse.SseClientJs
 import msocket.impl.ws.WebsocketClientJs

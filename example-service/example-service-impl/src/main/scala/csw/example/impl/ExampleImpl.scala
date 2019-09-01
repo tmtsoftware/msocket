@@ -22,6 +22,8 @@ class ExampleImpl(implicit actorSystem: ActorSystem) extends ExampleApi {
     }
   }
 
+  //////////////
+
   override def helloStream(name: String): Source[String, NotUsed] = {
     Source
       .tick(10.millis, 10.millis, ())

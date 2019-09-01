@@ -1,13 +1,11 @@
-package csw.example.api
+package csw.example.api.protocol
 
 import com.github.ghik.silencer.silent
-import csw.example.api.ExampleRequest._
-import io.bullet.borer.derivation.MapBasedCodecs._
-import io.bullet.borer.{Codec, Json, Target}
+import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
+import io.bullet.borer.Codec
+import io.bullet.borer.derivation.MapBasedCodecs.deriveCodec
 
 trait Codecs {
-  implicit val target: Target = Json
-
   implicit def websocketRequestCodec[T <: ExampleRequest]: Codec[T] = exampleCodecValuealue.asInstanceOf[Codec[T]]
 
   lazy val exampleCodecValuealue: Codec[ExampleRequest] = {

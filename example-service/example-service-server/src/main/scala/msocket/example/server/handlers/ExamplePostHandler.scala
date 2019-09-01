@@ -1,20 +1,22 @@
 package msocket.example.server.handlers
 
-import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling.toEventStream
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.StandardRoute
 import akka.stream.Materializer
-import csw.example.api.ExampleRequest._
-import csw.example.api.{ExampleApi, ExampleRequest}
-import mscoket.impl.sse.SseStreamExtensions
+import csw.example.api.ExampleApi
+import csw.example.api.protocol.ExampleRequest
+import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
+import mscoket.impl.HttpCodecs
+import mscoket.impl.post.PostStreamExtensions
 import msocket.api.RequestHandler
 
-class ExampleSseHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
+class ExamplePostHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
     extends RequestHandler[ExampleRequest, StandardRoute]
-    with SseStreamExtensions {
+    with HttpCodecs
+    with PostStreamExtensions {
 
-  override def handle(message: ExampleRequest): StandardRoute = message match {
-    case Hello(name)             => complete(futureAsStream(exampleApi.hello(name)))
+  override def handle(request: ExampleRequest): StandardRoute = request match {
+    case Hello(name)             => complete(exampleApi.hello(name))
     case Square(number)          => complete(futureAsStream(exampleApi.square(number)))
     case HelloStream(name)       => complete(stream(exampleApi.helloStream(name)))
     case GetNumbers(divisibleBy) => complete(streamWithError(exampleApi.getNumbers(divisibleBy)))

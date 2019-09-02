@@ -11,7 +11,7 @@ abstract class StreamingClientJs[Req: Encoder](connectionFactory: ConnectionFact
 
   override def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res] = {
     val promise: Promise[Res] = Promise()
-    val connectedSource       = connectionFactory.connect(request, new ExampleConnectedSource)
+    val connectedSource       = connectionFactory.connect(request, new PlainConnectedSource)
     connectedSource.onMessage = { response =>
       promise.trySuccess(response)
       connectedSource.disconnect()
@@ -20,7 +20,7 @@ abstract class StreamingClientJs[Req: Encoder](connectionFactory: ConnectionFact
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
-    connectionFactory.connect(request, new ExampleConnectedSource)
+    connectionFactory.connect(request, new PlainConnectedSource)
   }
 
   override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {

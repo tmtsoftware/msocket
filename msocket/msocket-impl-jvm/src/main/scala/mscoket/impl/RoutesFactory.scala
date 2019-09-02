@@ -5,16 +5,16 @@ import akka.http.scaladsl.model.ws.Message
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive1, Route, StandardRoute}
 import akka.stream.scaladsl.Source
-import io.bullet.borer.{Decoder, Encoder, Json}
-import msocket.api.RequestHandler
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
+import io.bullet.borer.{Decoder, Json}
 import mscoket.impl.sse.QueryHeader
 import mscoket.impl.ws.WsServerFlow
+import msocket.api.RequestHandler
 
-class RoutesFactory[PostReq: Decoder, StreamReq: Encoder: Decoder](
-    postHandler: RequestHandler[PostReq, StandardRoute],
-    websocketHandler: RequestHandler[StreamReq, Source[Message, NotUsed]],
-    sseHandler: RequestHandler[StreamReq, StandardRoute]
+class RoutesFactory[Req: Decoder](
+    postHandler: RequestHandler[Req, StandardRoute],
+    websocketHandler: RequestHandler[Req, Source[Message, NotUsed]],
+    sseHandler: RequestHandler[Req, StandardRoute]
 ) extends HttpCodecs {
 
   val route: Route = cors() {
@@ -32,12 +32,12 @@ class RoutesFactory[PostReq: Decoder, StreamReq: Encoder: Decoder](
     } ~
     post {
       path("post") {
-        entity(as[PostReq])(postHandler.handle)
+        entity(as[Req])(postHandler.handle)
       }
     }
   }
 
-  private def extractPayloadFromHeader: Directive1[StreamReq] = headerValuePF {
-    case QueryHeader(query) => Json.decode(query.getBytes()).to[StreamReq].value
+  private def extractPayloadFromHeader: Directive1[Req] = headerValuePF {
+    case QueryHeader(query) => Json.decode(query.getBytes()).to[Req].value
   }
 }

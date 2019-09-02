@@ -11,8 +11,8 @@ sealed abstract class Encoding(val target: Target, val Name: String, val isBinar
   def decodeBinary[T: Decoder](input: ByteString): T = target.decode(input).to[T].value
   def decodeText[T: Decoder](input: String): T       = decodeBinary(ByteString(input))
 
-  protected def encodeBinary[T: Encoder](payload: T): ByteString = target.encode(payload).to[ByteString].result
-  protected def encodeText[T: Encoder](payload: T): String       = encodeBinary(payload).utf8String
+  def encodeBinary[T: Encoder](payload: T): ByteString = target.encode(payload).to[ByteString].result
+  def encodeText[T: Encoder](payload: T): String       = encodeBinary(payload).utf8String
 }
 
 object Encoding {

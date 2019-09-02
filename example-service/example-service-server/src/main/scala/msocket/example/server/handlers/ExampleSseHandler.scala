@@ -15,8 +15,9 @@ class ExampleSseHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
     with SseStreamExtensions {
 
   override def handle(message: ExampleRequest): StandardRoute = message match {
-    case Hello(name)             => complete(futureAsStream(exampleApi.hello(name)))
-    case Square(number)          => complete(futureAsStream(exampleApi.square(number)))
+    case Hello(name)    => complete(futureAsStream(exampleApi.hello(name)))
+    case Square(number) => complete(futureAsStream(exampleApi.square(number)))
+
     case HelloStream(name)       => complete(stream(exampleApi.helloStream(name)))
     case GetNumbers(divisibleBy) => complete(streamWithError(exampleApi.getNumbers(divisibleBy)))
   }

@@ -8,7 +8,8 @@ import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
 import mscoket.impl.StreamSplitter._
 import mscoket.impl.ws.Encoding.JsonText
-import msocket.api.{RequestClient, Result}
+import msocket.api.RequestClient
+import msocket.api.utils.Result
 
 import scala.concurrent.{ExecutionContext, Future}
 

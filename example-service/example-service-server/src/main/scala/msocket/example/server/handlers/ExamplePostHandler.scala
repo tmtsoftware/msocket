@@ -16,8 +16,9 @@ class ExamplePostHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
     with PostStreamExtensions {
 
   override def handle(request: ExampleRequest): StandardRoute = request match {
-    case Hello(name)             => complete(exampleApi.hello(name))
-    case Square(number)          => complete(futureAsStream(exampleApi.square(number)))
+    case Hello(name)    => complete(exampleApi.hello(name))
+    case Square(number) => complete(futureAsStream(exampleApi.square(number)))
+
     case HelloStream(name)       => complete(stream(exampleApi.helloStream(name)))
     case GetNumbers(divisibleBy) => complete(streamWithError(exampleApi.getNumbers(divisibleBy)))
   }

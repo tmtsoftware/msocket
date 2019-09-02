@@ -11,7 +11,8 @@ import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import mscoket.impl.StreamSplitter._
-import msocket.api.{RequestClient, Result}
+import msocket.api.RequestClient
+import msocket.api.utils.Result
 
 import scala.concurrent.{ExecutionContext, Future}
 

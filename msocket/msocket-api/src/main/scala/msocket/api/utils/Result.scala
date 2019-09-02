@@ -1,15 +1,14 @@
-package msocket.api
+package msocket.api.utils
 
 import com.github.ghik.silencer.silent
 import io.bullet.borer.derivation.ArrayBasedCodecs.deriveUnaryEncoder
 import io.bullet.borer.derivation.MapBasedCodecs._
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.Result.{Error, Success}
 
 sealed trait Result[S, E] {
   def toEither: Either[E, S] = this match {
-    case Success(value) => Right(value)
-    case Error(value)   => Left(value)
+    case Result.Success(value) => Right(value)
+    case Result.Error(value)   => Left(value)
   }
 }
 

@@ -11,7 +11,8 @@ import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import mscoket.impl.HttpCodecs
 import mscoket.impl.StreamSplitter._
-import msocket.api.{FetchEvent, RequestClient, Result}
+import msocket.api.RequestClient
+import msocket.api.utils.{FetchEvent, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 

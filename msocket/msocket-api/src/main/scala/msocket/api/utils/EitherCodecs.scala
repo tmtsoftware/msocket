@@ -1,4 +1,4 @@
-package msocket.api
+package msocket.api.utils
 
 import io.bullet.borer.{Decoder, Encoder}
 

@@ -18,10 +18,9 @@ class RSocketServer[Req: Decoder](requestHandler: RequestHandler[Req, Source[Pay
   implicit val mat: Materializer    = ActorMaterializer()
   implicit val ec: ExecutionContext = actorSystem.dispatcher
 
-  val socket: RSocket = new RSocketImpl(requestHandler)
-
   def start(interface: String, port: Int): Unit = {
-    val transport = new WebsocketServerTransport(interface, port)
+    val socket: RSocket = new RSocketImpl(requestHandler)
+    val transport       = new WebsocketServerTransport(interface, port)
 
     RSocketFactory.receive
       .frameDecoder(_.retain)

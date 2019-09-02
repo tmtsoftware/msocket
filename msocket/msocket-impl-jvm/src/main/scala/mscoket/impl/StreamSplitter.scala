@@ -2,8 +2,7 @@ package mscoket.impl
 
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Sink, Source}
-import msocket.api.Result
-import msocket.api.Result.{Error, Success}
+import msocket.api.utils.Result
 
 import scala.concurrent.Future
 
@@ -13,9 +12,15 @@ object StreamSplitter {
       val streamOfStreams = stream.prefixAndTail(1).map {
         case (xs, stream) =>
           xs.toList match {
-            case Error(e) :: _   => Source.empty.mapMaterializedValue(_ => Some(e))
-            case Success(r) :: _ => Source.single(r).concat(stream.collect { case Success(r) => r }).mapMaterializedValue(_ => None)
-            case Nil             => Source.empty.mapMaterializedValue(_ => None)
+            case Result.Error(e) :: _ =>
+              Source.empty.mapMaterializedValue(_ => Some(e))
+            case Result.Success(r) :: _ =>
+              Source
+                .single(r)
+                .concat(stream.collect { case Result.Success(r) => r })
+                .mapMaterializedValue(_ => None)
+            case Nil =>
+              Source.empty.mapMaterializedValue(_ => None)
           }
       }
       Source.fromFutureSource(streamOfStreams.runWith(Sink.head))

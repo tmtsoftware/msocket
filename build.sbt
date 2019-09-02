@@ -84,6 +84,7 @@ lazy val `msocket-impl-js` = project
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
     libraryDependencies ++= Seq(
       `eventsource`.value,
+      `rsocket-websocket-client`.value,
       `scalajs-dom`.value
     )
   )
@@ -144,8 +145,9 @@ lazy val `example-service-app-js` = project
   .configure(baseJsSettings, bundlerSettings)
   .settings(
     npmDependencies in Compile ++= Seq(
-      "eventsource"       -> "1.0.7",
-      "can-ndjson-stream" -> "1.0.1"
+      "eventsource"              -> "1.0.7",
+      "can-ndjson-stream"        -> "1.0.1",
+      "rsocket-websocket-client" -> "0.0.10"
     ),
     libraryDependencies ++= Seq(
       `scalatest`.value % Test

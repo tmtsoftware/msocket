@@ -6,12 +6,12 @@ import akka.stream.scaladsl.Source
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.Decoder
 import io.rsocket.transport.akka.server.WebsocketServerTransport
-import io.rsocket.{Closeable, Payload, RSocket, RSocketFactory}
+import io.rsocket.{Payload, RSocket, RSocketFactory}
 import msocket.api.RequestHandler
 import reactor.core.publisher.Mono
-import scala.compat.java8.FutureConverters.CompletionStageOps
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.compat.java8.FutureConverters.CompletionStageOps
+import scala.concurrent.ExecutionContext
 
 class RSocketServer[Req: Decoder](requestHandler: RequestHandler[Req, Source[Payload, NotUsed]])(implicit actorSystem: ActorSystem) {
 

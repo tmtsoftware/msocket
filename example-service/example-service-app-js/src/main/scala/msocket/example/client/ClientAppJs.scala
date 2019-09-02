@@ -20,9 +20,8 @@ class ClientAppJs(client: ExampleClient)(implicit ec: ExecutionContext) {
     numberStream.onMessage = x => println(s"*******$x")
 
     client.hello("mushtaq").onComplete(println)
-
     val postHelloStream: Source[String, NotUsed] = client.helloStream("mushtaq")
-    postHelloStream.onMessage = x => println(s"******$x")
+    postHelloStream.onMessage = x => println(s"--------> $x")
 
     client.hello("msuhtaq1").onComplete(println)
   }

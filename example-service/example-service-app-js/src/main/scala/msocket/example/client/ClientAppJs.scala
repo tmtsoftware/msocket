@@ -17,7 +17,7 @@ class ClientAppJs(client: ExampleClient)(implicit ec: ExecutionContext) {
 
     val numberStream: Source[Int, Future[Option[String]]] = client.getNumbers(3)
     numberStream.mat.onComplete(println)
-    numberStream.onMessage = x => println(s"*******$x")
+    numberStream.onMessage = x => println(s"**********************  $x")
 
     client.hello("mushtaq").onComplete(println)
     val postHelloStream: Source[String, NotUsed] = client.helloStream("mushtaq")

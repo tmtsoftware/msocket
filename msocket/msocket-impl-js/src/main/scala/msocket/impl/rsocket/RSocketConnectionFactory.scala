@@ -17,12 +17,12 @@ class RSocketConnectionFactory[Req: Encoder](uri: String)(implicit ec: Execution
 
   private val client: RSocketClient[String, String] = new RSocketClient(
     ClientConfig(
-      setup = new Anon_DataMimeType {
-        override var dataMimeType: String     = "application/json"
-        override var keepAlive: Double        = 60000
-        override var lifetime: Double         = 1800000
-        override var metadataMimeType: String = "application/json"
-      },
+      setup = Anon_DataMimeType(
+        dataMimeType = "application/json",
+        keepAlive = 60000,
+        lifetime = 1800000,
+        metadataMimeType = "application/json"
+      ),
       transport = new RSocketWebSocketClient(ClientOptions(url = uri))
     )
   )
@@ -35,7 +35,7 @@ class RSocketConnectionFactory[Req: Encoder](uri: String)(implicit ec: Execution
     def onSubscribe(cancel: CancelCallback): Unit                = println("inside onSubscribe")
   }
 
-  client.connect().subscribe(PartialFactory.from(subscriber))
+  client.connect().subscribe(PartialOf(subscriber))
 
   def connect[S <: ConnectedSource[_, _]](req: Req, source: S): S = {
     socketPromise.future.foreach { socket =>

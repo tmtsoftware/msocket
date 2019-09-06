@@ -45,10 +45,10 @@ class PostClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) e
   private def getResponse(request: Req): Future[HttpResponse] = {
     Marshal(request).to[RequestEntity].flatMap { requestEntity =>
       val httpRequest = HttpRequest(HttpMethods.POST, uri = uri, entity = requestEntity)
-      Http().singleRequest(httpRequest).map { response =>
+      Http().singleRequest(httpRequest).flatMap { response =>
         response.status match {
-          case StatusCodes.OK => response
-          case statusCode     => throw HttpException(statusCode.intValue(), statusCode.reason(), statusCode.defaultMessage())
+          case StatusCodes.OK => Future.successful(response)
+          case statusCode     => Unmarshal(response).to[String].map(msg => throw HttpException(statusCode.intValue(), statusCode.reason(), msg))
         }
       }
     }

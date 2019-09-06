@@ -44,10 +44,10 @@ class SseClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) ex
   private def getResponse(request: Req): Future[HttpResponse] = {
     val payloadHeader = QueryHeader(Json.encode(request).toUtf8String)
     val httpRequest   = HttpRequest(HttpMethods.GET, uri = uri, headers = List(payloadHeader))
-    Http().singleRequest(httpRequest).map { response =>
+    Http().singleRequest(httpRequest).flatMap { response =>
       response.status match {
-        case StatusCodes.OK => response
-        case statusCode     => throw HttpException(statusCode.intValue(), statusCode.reason(), statusCode.defaultMessage())
+        case StatusCodes.OK => Future.successful(response)
+        case statusCode     => Unmarshal(response).to[String].map(msg => throw HttpException(statusCode.intValue(), statusCode.reason(), msg))
       }
     }
   }

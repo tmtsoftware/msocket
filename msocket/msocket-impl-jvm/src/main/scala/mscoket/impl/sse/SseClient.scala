@@ -12,7 +12,7 @@ import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import mscoket.impl.StreamSplitter._
 import msocket.api.RequestClient
-import msocket.api.utils.Result
+import msocket.api.utils.{HttpException, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,7 +44,12 @@ class SseClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) ex
   private def getResponse(request: Req): Future[HttpResponse] = {
     val payloadHeader = QueryHeader(Json.encode(request).toUtf8String)
     val httpRequest   = HttpRequest(HttpMethods.GET, uri = uri, headers = List(payloadHeader))
-    Http().singleRequest(httpRequest)
+    Http().singleRequest(httpRequest).map { response =>
+      response.status match {
+        case StatusCodes.OK => response
+        case statusCode     => throw HttpException(statusCode.intValue(), statusCode.reason(), statusCode.defaultMessage())
+      }
+    }
   }
 
 }

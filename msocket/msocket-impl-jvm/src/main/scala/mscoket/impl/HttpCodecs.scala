@@ -5,7 +5,7 @@ import akka.http.scaladsl.common.{EntityStreamingSupport, JsonEntityStreamingSup
 import akka.http.scaladsl.marshalling.{Marshaller, PredefinedToResponseMarshallers, ToEntityMarshaller, ToResponseMarshaller}
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.model.{ContentTypeRange, MediaType}
-import akka.http.scaladsl.unmarshalling.{FromEntityUnmarshaller, Unmarshaller}
+import akka.http.scaladsl.unmarshalling.{FromEntityUnmarshaller, FromMessageUnmarshaller, Unmarshaller}
 import akka.http.scaladsl.util.FastFuture
 import akka.stream.scaladsl.{Flow, Keep, Source}
 import akka.util.ByteString
@@ -20,8 +20,15 @@ trait HttpCodecs {
   lazy val mediaTypes: Seq[MediaType.WithFixedCharset]     = List(`application/json`)
   lazy val unmarshallerContentTypes: Seq[ContentTypeRange] = mediaTypes.map(ContentTypeRange.apply)
 
+  //this is copied from Akka implementation so that it gets higher priority
   implicit def liftMarshaller[T](implicit m: ToEntityMarshaller[T]): ToResponseMarshaller[T] =
     PredefinedToResponseMarshallers.fromToEntityMarshaller()
+
+  //this is copied from Akka implementation so that it gets higher priority
+  implicit def messageUnmarshallerFromEntityUnmarshaller[T](implicit um: FromEntityUnmarshaller[T]): FromMessageUnmarshaller[T] =
+    Unmarshaller.withMaterializer { implicit ec => implicit mat => request =>
+      um(request.entity)
+    }
 
   implicit def unmarshaller[A: Decoder]: FromEntityUnmarshaller[A] = {
     Unmarshaller.byteStringUnmarshaller

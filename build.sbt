@@ -27,7 +27,7 @@ inThisBuild(
   )
 )
 
-lazy val `root` = project
+lazy val `msocket-root` = project
   .in(file("."))
   .aggregate(
     `akka-js`,

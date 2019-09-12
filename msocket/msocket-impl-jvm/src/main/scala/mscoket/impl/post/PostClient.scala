@@ -14,6 +14,7 @@ import mscoket.impl.StreamSplitter._
 import msocket.api.RequestClient
 import msocket.api.utils.{FetchEvent, HttpException, Result}
 
+import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
 
 class PostClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends RequestClient[Req] with HttpCodecs {
@@ -48,7 +49,8 @@ class PostClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) e
       Http().singleRequest(httpRequest).flatMap { response =>
         response.status match {
           case StatusCodes.OK => Future.successful(response)
-          case statusCode     => Unmarshal(response).to[String].map(msg => throw HttpException(statusCode.intValue(), statusCode.reason(), msg))
+          case statusCode =>
+            response.entity.toStrict(1.seconds).map(x => throw HttpException(statusCode.intValue(), statusCode.reason(), x.toString()))
         }
       }
     }

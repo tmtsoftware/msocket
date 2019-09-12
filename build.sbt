@@ -5,7 +5,7 @@ inThisBuild(
   Seq(
     scalaVersion := "2.13.0",
     version := "0.1.0-SNAPSHOT",
-    organization := "com.github.mushtaq.msocket",
+    organization := "com.github.tmtsoftware.msocket",
     organizationName := "ThoughtWorks",
     resolvers += Resolver.jcenterRepo,
     scalafmtOnCompile := true,

@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.ws.{Message, WebSocketRequest}
-import akka.stream.scaladsl.{BroadcastHub, Flow, MergeHub, Sink, Source}
+import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 
 class WebsocketClientSetup(webSocketRequest: WebSocketRequest)(implicit actorSystem: ActorSystem) {
@@ -14,7 +14,13 @@ class WebsocketClientSetup(webSocketRequest: WebSocketRequest)(implicit actorSys
   val (connectionSink, connectionSource) =
     Source.asSubscriber[Message].mapMaterializedValue(Sink.fromSubscriber).preMaterialize()
 
-  val broadcastHub: Source[Message, NotUsed] = connectionSource.runWith(BroadcastHub.sink(2048))
+  val broadcastHub: Source[Message, NotUsed] = connectionSource
+    .watchTermination()(Keep.right)
+    .mapMaterializedValue { terminationF =>
+      terminationF.onComplete(x => println(s"-------> $x"))
+      NotUsed
+    }
+    .runWith(BroadcastHub.sink(2048))
 
   val (sink, source) =
     Source.asSubscriber[Message].mapMaterializedValue(Sink.fromSubscriber).preMaterialize()

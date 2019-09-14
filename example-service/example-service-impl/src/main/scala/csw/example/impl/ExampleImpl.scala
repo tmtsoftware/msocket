@@ -25,7 +25,7 @@ class ExampleImpl(implicit actorSystem: ActorSystem) extends ExampleApi {
 
   override def helloStream(name: String): Source[String, NotUsed] = {
     Source
-      .tick(100.millis, 100.millis, ())
+      .tick(10.millis, 10.millis, ())
       .scan(0)((acc, _) => acc + 1)
       .map(x => s"hello \n $name again $x")
       .mapMaterializedValue(_ => NotUsed)

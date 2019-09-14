@@ -21,7 +21,7 @@ object ClientMain extends Codecs {
     lazy val websocketClient = new WebsocketClient[ExampleRequest]("ws://localhost:5000/websocket")
     lazy val rSocketClient   = new RSocketClientFactory[ExampleRequest].client("ws://localhost:7000")
 
-    val exampleClient = new ExampleClient(rSocketClient)
+    val exampleClient = new ExampleClient(websocketClient)
     new ClientApp(exampleClient).testRun()
   }
 

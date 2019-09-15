@@ -4,7 +4,7 @@ import java.util.UUID
 
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.ws.{TextMessage, WebSocketRequest}
+import akka.http.scaladsl.model.ws.WebSocketRequest
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
@@ -32,14 +32,13 @@ class WebsocketClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSyst
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
     val id = UUID.randomUUID()
+    val Id = id.toString
     setup
       .request(JsonText.strictMessage(WebsocketEvent(id, JsonText.encodeText(request))))
       .collect {
-        case TextMessage.Strict(text) => JsonText.decodeText[WebsocketEvent](text)
+        case (Id, xs) => xs.map(x => JsonText.decodeText(x))
       }
-      .collect {
-        case WebsocketEvent(`id`, data) => JsonText.decodeText(data)
-      }
+      .flatMapConcat(identity)
   }
 
   override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {

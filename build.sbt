@@ -1,4 +1,5 @@
 import Dependencies._
+import csw._
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
@@ -7,9 +8,11 @@ inThisBuild(
     version := "0.1.0-SNAPSHOT",
     organization := "com.github.tmtsoftware.msocket",
     organizationName := "ThoughtWorks",
-    resolvers += Resolver.jcenterRepo,
+    resolvers ++= Seq(
+      Resolver.jcenterRepo,
+      "jitpack" at "https://jitpack.io"
+    ),
     scalafmtOnCompile := true,
-    resolvers += "jitpack" at "https://jitpack.io",
     scalacOptions ++= Seq(
       "-encoding",
       "UTF-8",
@@ -124,6 +127,8 @@ lazy val `example-service-server` = project
   .dependsOn(`example-service-impl`, `msocket-impl-jvm`, `msocket-impl-rsocket`)
   .settings(
     libraryDependencies ++= Seq(
+      `csw-location-client`,
+      `csw-aas-http`,
       `scalatest`.value     % Test,
       `akka-http-testkit`   % Test,
       `akka-stream-testkit` % Test
@@ -135,6 +140,10 @@ lazy val `example-service-app-jvm` = project
   .dependsOn(`example-service-api`.jvm, `msocket-impl-jvm`, `msocket-impl-rsocket`)
   .settings(
     libraryDependencies ++= Seq(
+      `csw-aas-installed`,
+      `case-app`,
+      `csw-location-client`,
+      pprint,
       `scalatest`.value % Test
     )
   )

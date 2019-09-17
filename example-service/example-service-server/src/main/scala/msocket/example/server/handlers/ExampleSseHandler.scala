@@ -2,7 +2,7 @@ package msocket.example.server.handlers
 
 import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling.toEventStream
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.StandardRoute
+import akka.http.scaladsl.server.{Route, StandardRoute}
 import akka.stream.Materializer
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest
@@ -11,7 +11,7 @@ import mscoket.impl.sse.SseStreamExtensions
 import msocket.api.RequestHandler
 
 class ExampleSseHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
-    extends RequestHandler[ExampleRequest, StandardRoute]
+    extends RequestHandler[ExampleRequest, Route]
     with SseStreamExtensions {
 
   override def handle(message: ExampleRequest): StandardRoute = message match {

@@ -5,6 +5,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
@@ -17,7 +18,9 @@ import msocket.api.utils.{FetchEvent, HttpException, Result}
 import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
 
-class PostClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends RequestClient[Req] with HttpCodecs {
+class PostClient[Req: Encoder](uri: String, tokenFactory: => Option[String])(implicit actorSystem: ActorSystem)
+    extends RequestClient[Req]
+    with HttpCodecs {
 
   implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher
@@ -45,7 +48,15 @@ class PostClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) e
 
   private def getResponse(request: Req): Future[HttpResponse] = {
     Marshal(request).to[RequestEntity].flatMap { requestEntity =>
-      val httpRequest = HttpRequest(HttpMethods.POST, uri = uri, entity = requestEntity)
+      val httpRequest = HttpRequest(
+        HttpMethods.POST,
+        uri = uri,
+        entity = requestEntity,
+        headers = tokenFactory match {
+          case Some(token) => Seq(Authorization(OAuth2BearerToken(token)))
+          case None        => Nil
+        }
+      )
       Http().singleRequest(httpRequest).flatMap { response =>
         response.status match {
           case StatusCodes.OK => Future.successful(response)

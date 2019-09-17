@@ -1,8 +1,9 @@
-import sbt._
-import sbt.Def.{setting => dep}
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
+import sbt.Def.{setting => dep}
+import sbt._
 
 object Dependencies {
+
   val `silencer-lib`    = "com.github.ghik" %% "silencer-lib"    % "1.4.1"
   val `silencer-plugin` = "com.github.ghik" %% "silencer-plugin" % "1.4.1"
 
@@ -25,7 +26,18 @@ object Dependencies {
   val `eventsource`              = dep("com.github.mushtaq.scalably-typed"      %%% "eventsource"              % "f91a5bf")
   val `rsocket-websocket-client` = dep("com.github.mushtaq.scalably-typed"      %%% "rsocket-websocket-client" % "f91a5bf")
 
-  val `rsocket-transport-akka` = "com.github.mushtaq" % "rsocket-transport-akka" % "740a0a7"
-  val `rsocket-core`           = "io.rsocket"         % "rsocket-core"           % "0.11.18"
-  val `rsocket-test`           = "io.rsocket"         % "rsocket-test"           % "0.11.18"
+  val `rsocket-transport-akka` = "com.github.mushtaq"         % "rsocket-transport-akka" % "740a0a7"
+  val `rsocket-core`           = "io.rsocket"                 % "rsocket-core"           % "0.11.18"
+  val `rsocket-test`           = "io.rsocket"                 % "rsocket-test"           % "0.11.18"
+  val pprint                   = "com.lihaoyi"                %% "pprint"                % "0.5.5"
+  val `case-app`               = "com.github.alexarchambault" %% "case-app"              % "2.0.0-M9"
+
+}
+
+object csw {
+  val cswVersion            = "bde0d27588"
+  private val Org           = "com.github.tmtsoftware.csw"
+  val `csw-aas-http`        = Org %% "csw-aas-http" % cswVersion
+  val `csw-aas-installed`   = Org %% "csw-aas-installed" % cswVersion
+  val `csw-location-client` = Org %% "csw-location-client" % cswVersion
 }

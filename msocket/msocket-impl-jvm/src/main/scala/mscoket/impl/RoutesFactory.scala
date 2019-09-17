@@ -12,9 +12,9 @@ import mscoket.impl.ws.WsServerFlow
 import msocket.api.RequestHandler
 
 class RoutesFactory[Req: Decoder](
-    postHandler: RequestHandler[Req, StandardRoute],
+    postHandler: RequestHandler[Req, Route],
     websocketHandler: RequestHandler[Req, Source[Message, NotUsed]],
-    sseHandler: RequestHandler[Req, StandardRoute]
+    sseHandler: RequestHandler[Req, Route]
 ) extends HttpCodecs {
 
   val route: Route = cors() {

@@ -8,10 +8,10 @@ import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
 import mscoket.impl.ws.WebsocketStreamExtensions
-import msocket.api.RequestHandler
+import msocket.api.MessageHandler
 
 class ExampleWebsocketHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
-    extends RequestHandler[ExampleRequest, Source[Message, NotUsed]]
+    extends MessageHandler[ExampleRequest, Source[Message, NotUsed]]
     with WebsocketStreamExtensions {
 
   override def handle(message: ExampleRequest): Source[Message, NotUsed] = message match {

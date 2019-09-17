@@ -6,7 +6,7 @@ import io.bullet.borer.{Decoder, Encoder}
 
 import scala.concurrent.Future
 
-abstract class RequestClient[Req: Encoder] {
+abstract class Transport[Req: Encoder] {
   def requestResponse[Res: Decoder](request: Req): Future[Res]
   def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res]
 

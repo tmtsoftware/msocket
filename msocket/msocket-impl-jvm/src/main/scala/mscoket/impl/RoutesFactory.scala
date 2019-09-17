@@ -9,12 +9,12 @@ import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 import io.bullet.borer.{Decoder, Json}
 import mscoket.impl.sse.QueryHeader
 import mscoket.impl.ws.WsServerFlow
-import msocket.api.RequestHandler
+import msocket.api.MessageHandler
 
 class RoutesFactory[Req: Decoder](
-    postHandler: RequestHandler[Req, Route],
-    websocketHandler: RequestHandler[Req, Source[Message, NotUsed]],
-    sseHandler: RequestHandler[Req, Route]
+    postHandler: MessageHandler[Req, Route],
+    websocketHandler: MessageHandler[Req, Source[Message, NotUsed]],
+    sseHandler: MessageHandler[Req, Route]
 ) extends HttpCodecs {
 
   val route: Route = cors() {

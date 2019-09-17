@@ -5,10 +5,10 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.{Decoder, Json}
 import io.rsocket.{AbstractRSocket, Payload}
-import msocket.api.RequestHandler
+import msocket.api.MessageHandler
 import reactor.core.publisher.Flux
 
-class RSocketImpl[Req: Decoder](requestHandler: RequestHandler[Req, Source[Payload, NotUsed]])(implicit mat: Materializer)
+class RSocketImpl[Req: Decoder](requestHandler: MessageHandler[Req, Source[Payload, NotUsed]])(implicit mat: Materializer)
     extends AbstractRSocket {
 
   override def requestStream(payload: Payload): Flux[Payload] = {

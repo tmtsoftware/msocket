@@ -15,7 +15,7 @@ import csw.location.client.scaladsl.HttpLocationServiceFactory
 import io.rsocket.Payload
 import mscoket.impl.RoutesFactory
 import mscoket.impl.rsocket.server.RSocketServer
-import msocket.api.RequestHandler
+import msocket.api.MessageHandler
 import msocket.example.server.handlers.{ExamplePostHandler, ExampleRSocketHandler, ExampleSseHandler, ExampleWebsocketHandler}
 
 import scala.concurrent.ExecutionContext
@@ -27,16 +27,16 @@ class ServerWiring extends Codecs {
 
   lazy val exampleImpl: ExampleApi = new ExampleImpl
 
-  lazy val locationService = HttpLocationServiceFactory.makeLocalClient(actorSystem.toTyped, mat)
+  lazy val locationService    = HttpLocationServiceFactory.makeLocalClient(actorSystem.toTyped, mat)
   lazy val securityDirectives = SecurityDirectives(locationService)
 
-  lazy val postHandler: RequestHandler[ExampleRequest, Route] = new ExamplePostHandler(exampleImpl, securityDirectives)
+  lazy val postHandler: MessageHandler[ExampleRequest, Route] = new ExamplePostHandler(exampleImpl, securityDirectives)
 
-  lazy val sseHandler: RequestHandler[ExampleRequest, Route] = new ExampleSseHandler(exampleImpl)
+  lazy val sseHandler: MessageHandler[ExampleRequest, Route] = new ExampleSseHandler(exampleImpl)
 
-  lazy val websocketHandler: RequestHandler[ExampleRequest, Source[Message, NotUsed]] = new ExampleWebsocketHandler(exampleImpl)
+  lazy val websocketHandler: MessageHandler[ExampleRequest, Source[Message, NotUsed]] = new ExampleWebsocketHandler(exampleImpl)
 
-  lazy val rSocketHandler: RequestHandler[ExampleRequest, Source[Payload, NotUsed]] = new ExampleRSocketHandler(exampleImpl)
+  lazy val rSocketHandler: MessageHandler[ExampleRequest, Source[Payload, NotUsed]] = new ExampleRSocketHandler(exampleImpl)
 
   lazy val routesFactory = new RoutesFactory(postHandler, websocketHandler, sseHandler)
   lazy val exampleServer = new ExampleServer(routesFactory.route)

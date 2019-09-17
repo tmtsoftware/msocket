@@ -7,10 +7,10 @@ import caseapp.{CommandApp, RemainingArgs}
 import csw.aas.installed.api.InstalledAppAuthAdapter
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{Codecs, ExampleRequest}
-import mscoket.impl.post.PostClient
-import mscoket.impl.rsocket.client.RSocketClientFactory
-import mscoket.impl.sse.SseClient
-import mscoket.impl.ws.WebsocketClient
+import mscoket.impl.post.HttpPostTransport
+import mscoket.impl.rsocket.client.RSocketTransportFactory
+import mscoket.impl.sse.SseTransport
+import mscoket.impl.ws.WebsocketTransport
 import msocket.example.client.CliCommand._
 import pprint.{pprintln => println}
 
@@ -31,12 +31,12 @@ object ClientMain extends CommandApp[CliCommand] with Codecs {
         system.terminate()
       case MakeCall() =>
         println(adapter.getAccessToken())
-        lazy val postClient      = new PostClient[ExampleRequest]("http://localhost:5000/post", adapter.getAccessTokenString())
-        lazy val sseClient       = new SseClient[ExampleRequest]("http://localhost:5000/sse")
-        lazy val websocketClient = new WebsocketClient[ExampleRequest]("ws://localhost:5000/websocket")
-        lazy val rSocketClient   = new RSocketClientFactory[ExampleRequest].client("ws://localhost:7000")
+        lazy val httpPostTransport  = new HttpPostTransport[ExampleRequest]("http://localhost:5000/post", adapter.getAccessTokenString())
+        lazy val sseTransport       = new SseTransport[ExampleRequest]("http://localhost:5000/sse")
+        lazy val websocketTransport = new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket")
+        lazy val rSocketTransport   = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")
 
-        val exampleClient = new ExampleClient(postClient)
+        val exampleClient = new ExampleClient(httpPostTransport)
         new ClientApp(exampleClient).testRun()
         Thread.sleep(3000)
         system.terminate()

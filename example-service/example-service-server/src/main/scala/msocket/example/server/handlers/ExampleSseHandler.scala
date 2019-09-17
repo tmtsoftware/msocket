@@ -8,10 +8,10 @@ import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
 import mscoket.impl.sse.SseStreamExtensions
-import msocket.api.RequestHandler
+import msocket.api.MessageHandler
 
 class ExampleSseHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
-    extends RequestHandler[ExampleRequest, Route]
+    extends MessageHandler[ExampleRequest, Route]
     with SseStreamExtensions {
 
   override def handle(message: ExampleRequest): StandardRoute = message match {

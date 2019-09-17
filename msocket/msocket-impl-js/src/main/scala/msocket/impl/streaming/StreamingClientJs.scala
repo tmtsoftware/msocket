@@ -3,11 +3,11 @@ package msocket.impl.streaming
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.RequestClient
+import msocket.api.Transport
 
 import scala.concurrent.{Future, Promise}
 
-abstract class StreamingClientJs[Req: Encoder](connectionFactory: ConnectionFactory[Req]) extends RequestClient[Req] {
+abstract class StreamingClientJs[Req: Encoder](connectionFactory: ConnectionFactory[Req]) extends Transport[Req] {
 
   override def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res] = {
     val promise: Promise[Res] = Promise()

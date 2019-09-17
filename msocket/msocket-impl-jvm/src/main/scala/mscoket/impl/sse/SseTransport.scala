@@ -11,12 +11,12 @@ import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import mscoket.impl.StreamSplitter._
-import msocket.api.RequestClient
+import msocket.api.Transport
 import msocket.api.utils.{HttpException, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SseClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends RequestClient[Req] {
+class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends Transport[Req] {
 
   implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher

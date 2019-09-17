@@ -10,10 +10,10 @@ import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
 import mscoket.impl.HttpCodecs
 import mscoket.impl.post.PostStreamExtensions
-import msocket.api.RequestHandler
+import msocket.api.MessageHandler
 
 class ExamplePostHandler(exampleApi: ExampleApi, securityDirectives: SecurityDirectives)(implicit mat: Materializer)
-    extends RequestHandler[ExampleRequest, Route]
+    extends MessageHandler[ExampleRequest, Route]
     with HttpCodecs
     with PostStreamExtensions {
 

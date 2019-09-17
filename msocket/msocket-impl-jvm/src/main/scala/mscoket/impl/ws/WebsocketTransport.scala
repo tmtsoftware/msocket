@@ -8,12 +8,12 @@ import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
 import mscoket.impl.StreamSplitter._
 import mscoket.impl.ws.Encoding.JsonText
-import msocket.api.RequestClient
+import msocket.api.Transport
 import msocket.api.utils.Result
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class WebsocketClient[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends RequestClient[Req] {
+class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends Transport[Req] {
 
   implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher

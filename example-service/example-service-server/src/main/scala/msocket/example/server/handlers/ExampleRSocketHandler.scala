@@ -8,10 +8,10 @@ import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
 import io.rsocket.Payload
 import mscoket.impl.rsocket.server.RSocketStreamExtensions
-import msocket.api.RequestHandler
+import msocket.api.MessageHandler
 
 class ExampleRSocketHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
-    extends RequestHandler[ExampleRequest, Source[Payload, NotUsed]]
+    extends MessageHandler[ExampleRequest, Source[Payload, NotUsed]]
     with RSocketStreamExtensions {
 
   override def handle(message: ExampleRequest): Source[Payload, NotUsed] = message match {

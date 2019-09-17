@@ -8,12 +8,12 @@ import io.bullet.borer.{Decoder, Encoder, Json}
 import io.rsocket.RSocket
 import io.rsocket.util.DefaultPayload
 import mscoket.impl.StreamSplitter._
-import msocket.api.RequestClient
+import msocket.api.Transport
 import msocket.api.utils.Result
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RSocketClient[Req: Encoder](rSocket: RSocket)(implicit actorSystem: ActorSystem) extends RequestClient[Req] {
+class RSocketClient[Req: Encoder](rSocket: RSocket)(implicit actorSystem: ActorSystem) extends Transport[Req] {
 
   implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher

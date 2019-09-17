@@ -5,9 +5,9 @@ import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.Decoder
 import mscoket.impl.ws.Encoding.JsonText
-import msocket.api.RequestHandler
+import msocket.api.MessageHandler
 
-class WsServerFlow[T: Decoder](websocketClient: RequestHandler[T, Source[Message, NotUsed]]) {
+class WsServerFlow[T: Decoder](websocketClient: MessageHandler[T, Source[Message, NotUsed]]) {
 
   val flow: Flow[Message, Message, NotUsed] = {
     Flow[Message]

@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.actor.typed.scaladsl.adapter.UntypedActorSystemOps
 import akka.http.scaladsl.model.ws.Message
-import akka.http.scaladsl.server.{Route, StandardRoute}
+import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.Source
 import akka.stream.{ActorMaterializer, Materializer}
 import csw.aas.http.SecurityDirectives

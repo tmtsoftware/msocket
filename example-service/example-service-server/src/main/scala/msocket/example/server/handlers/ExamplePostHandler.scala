@@ -3,7 +3,7 @@ package msocket.example.server.handlers
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
-import csw.aas.http.AuthorizationPolicy.{CustomPolicy, EmptyPolicy, RealmRolePolicy}
+import csw.aas.http.AuthorizationPolicy.RealmRolePolicy
 import csw.aas.http.SecurityDirectives
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest

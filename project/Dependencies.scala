@@ -14,9 +14,9 @@ object Dependencies {
   val `akka-http-spray-json` = "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.9"
   val `akka-http-testkit`    = "com.typesafe.akka" %% "akka-http-testkit"    % "10.1.9"
 
-  val `borer-core`        = dep("io.bullet" %%% "borer-core" % "0.11.1")
-  val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "0.11.1")
-  val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "0.11.1"
+  val `borer-core`        = dep("io.bullet" %%% "borer-core" % "1.0.0")
+  val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "1.0.0")
+  val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "1.0.0"
 
   val `akka-http-cors` = "ch.megard" %% "akka-http-cors" % "0.4.1"
   val `scalatest`      = dep("org.scalatest" %%% "scalatest" % "3.0.8")
@@ -35,7 +35,7 @@ object Dependencies {
 }
 
 object csw {
-  val cswVersion            = "bde0d27588"
+  val cswVersion            = "4d4c9df"
   private val Org           = "com.github.tmtsoftware.csw"
   val `csw-aas-http`        = Org %% "csw-aas-http" % cswVersion
   val `csw-aas-installed`   = Org %% "csw-aas-installed" % cswVersion

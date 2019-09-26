@@ -22,9 +22,9 @@ object Dependencies {
   val `scalatest`      = dep("org.scalatest" %%% "scalatest" % "3.0.8")
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "0.9.7")
 
-  val `std`                      = dep("com.github.mushtaq.scalably-typed-base" %%% "std"                      % "34f0305")
-  val `eventsource`              = dep("com.github.mushtaq.scalably-typed"      %%% "eventsource"              % "f91a5bf")
-  val `rsocket-websocket-client` = dep("com.github.mushtaq.scalably-typed"      %%% "rsocket-websocket-client" % "f91a5bf")
+  val `std`                      = dep("com.github.tmtsoftware.tmt-typed" %%% "std"                      % "8b87baf")
+  val `eventsource`              = dep("com.github.tmtsoftware.tmt-typed" %%% "eventsource"              % "8b87baf")
+  val `rsocket-websocket-client` = dep("com.github.tmtsoftware.tmt-typed" %%% "rsocket-websocket-client" % "8b87baf")
 
   val `rsocket-transport-akka` = "com.github.mushtaq"         % "rsocket-transport-akka" % "740a0a7"
   val `rsocket-core`           = "io.rsocket"                 % "rsocket-core"           % "0.11.18"

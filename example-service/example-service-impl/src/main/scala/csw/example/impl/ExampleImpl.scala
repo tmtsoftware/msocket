@@ -4,6 +4,7 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
+import msocket.api.utils.{StreamError, StreamStatus, StreamSuccess}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
@@ -31,14 +32,14 @@ class ExampleImpl(implicit actorSystem: ActorSystem) extends ExampleApi {
       .mapMaterializedValue(_ => NotUsed)
   }
 
-  override def getNumbers(divisibleBy: Int): Source[Int, Future[Option[String]]] = {
+  override def getNumbers(divisibleBy: Int): Source[Int, Future[StreamStatus]] = {
     if (divisibleBy == 0) {
-      Source.empty[Int].mapMaterializedValue(_ => Future.successful(Some("divide by zero error")))
+      Source.empty[Int].mapMaterializedValue(_ => Future.successful(StreamError("ArithmeticException", "divide by zero error")))
     } else {
       Source
         .fromIterator(() => Iterator.from(1).filter(_ % divisibleBy == 0))
         .throttle(1, 1.second)
-        .mapMaterializedValue(_ => Future.successful(None))
+        .mapMaterializedValue(_ => Future.successful(StreamSuccess))
     }
   }
 }

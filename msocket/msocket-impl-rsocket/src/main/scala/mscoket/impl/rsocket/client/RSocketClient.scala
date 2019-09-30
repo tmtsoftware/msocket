@@ -9,7 +9,7 @@ import io.rsocket.RSocket
 import io.rsocket.util.DefaultPayload
 import mscoket.impl.StreamSplitter._
 import msocket.api.Transport
-import msocket.api.utils.Result
+import msocket.api.utils.{Result, StreamStatus}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,8 +31,8 @@ class RSocketClient[Req: Encoder](rSocket: RSocket)(implicit actorSystem: ActorS
     Source.fromPublisher(value).map(x => Json.decode(x.getData).to[Res].value)
   }
 
-  override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {
-    requestStream[Result[Res, Err]](request).split
+  override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
+    requestStream[Result[Res, StreamStatus]](request).split
   }
 
 }

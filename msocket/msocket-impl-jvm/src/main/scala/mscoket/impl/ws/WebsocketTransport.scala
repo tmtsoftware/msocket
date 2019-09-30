@@ -9,7 +9,7 @@ import io.bullet.borer.{Decoder, Encoder}
 import mscoket.impl.StreamSplitter._
 import mscoket.impl.ws.Encoding.JsonText
 import msocket.api.Transport
-import msocket.api.utils.Result
+import msocket.api.utils.{Result, StreamStatus}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,8 +36,8 @@ class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorS
       }
   }
 
-  override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {
-    requestStream[Result[Res, Err]](request).split
+  override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
+    requestStream[Result[Res, StreamStatus]](request).split
   }
 
 }

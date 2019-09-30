@@ -3,7 +3,7 @@ package msocket.impl.streaming
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Json}
-import msocket.api.utils.Result
+import msocket.api.utils.{Result, StreamStatus, StreamSuccess}
 
 import scala.concurrent.{Future, Promise}
 
@@ -24,16 +24,16 @@ class PlainConnectedSource[Res: Decoder] extends ConnectedSource[Res, NotUsed] {
   override val mat: NotUsed = NotUsed
 }
 
-class ConnectedSourceWithErr[Res: Decoder, Err: Decoder] extends ConnectedSource[Res, Future[Option[Err]]] {
-  private val matPromise: Promise[Option[Err]] = Promise()
+class ConnectedSourceWithErr[Res: Decoder] extends ConnectedSource[Res, Future[StreamStatus]] {
+  private val matPromise: Promise[StreamStatus] = Promise()
 
   override def onTextMessage(res: String): Unit = {
-    val response = Json.decode(res.getBytes()).to[Result[Res, Err]].value
+    val response = Json.decode(res.getBytes()).to[Result[Res, StreamStatus]].value
     response match {
-      case Result.Success(value) => onMessage(value); matPromise.trySuccess(None)
-      case Result.Error(value)   => matPromise.trySuccess(Some(value)); disconnect()
+      case Result.Success(value) => onMessage(value); matPromise.trySuccess(StreamSuccess)
+      case Result.Error(error)   => matPromise.trySuccess(error); disconnect()
     }
   }
 
-  override val mat: Future[Option[Err]] = matPromise.future
+  override val mat: Future[StreamStatus] = matPromise.future
 }

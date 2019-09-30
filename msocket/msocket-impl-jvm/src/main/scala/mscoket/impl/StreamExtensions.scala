@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
-import msocket.api.utils.Result
+import msocket.api.utils.{Result, StreamError, StreamStatus, StreamSuccess}
 
 import scala.concurrent.Future
 
@@ -15,15 +15,11 @@ trait StreamExtensions[M] {
     stream(Source.fromFuture(input))
   }
 
-  def streamWithError[S, E](input: Source[S, Future[Option[E]]])(
-      implicit encS: Encoder[S],
-      encE: Encoder[E],
-      mat: Materializer
-  ): Source[M, NotUsed] = {
+  def streamWithError[S](input: Source[S, Future[StreamStatus]])(implicit encS: Encoder[S], mat: Materializer): Source[M, NotUsed] = {
     val (matF, source) = input.preMaterialize()
-    val resultStream: Source[Result[S, E], NotUsed] = Source.fromFuture(matF).flatMapConcat {
-      case Some(value) => Source.single(Result.Error(value))
-      case None        => source.map(Result.Success(_))
+    val resultStream: Source[Result[S, StreamStatus], NotUsed] = Source.fromFuture(matF).flatMapConcat {
+      case error: StreamError => Source.single(Result.Error(error))
+      case StreamSuccess      => source.map(Result.Success(_))
     }
     stream(resultStream)
   }

@@ -4,6 +4,7 @@ import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Transport
+import msocket.api.utils.StreamStatus
 
 import scala.concurrent.{Future, Promise}
 
@@ -23,7 +24,7 @@ abstract class StreamingClientJs[Req: Encoder](connectionFactory: ConnectionFact
     connectionFactory.connect(request, new PlainConnectedSource)
   }
 
-  override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {
+  override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
     connectionFactory.connect(request, new ConnectedSourceWithErr)
   }
 }

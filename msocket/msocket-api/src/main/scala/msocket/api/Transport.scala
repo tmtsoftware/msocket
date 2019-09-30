@@ -3,6 +3,7 @@ package msocket.api
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
+import msocket.api.utils.StreamStatus
 
 import scala.concurrent.Future
 
@@ -11,5 +12,5 @@ abstract class Transport[Req: Encoder] {
   def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res]
 
   def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed]
-  def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]]
+  def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]]
 }

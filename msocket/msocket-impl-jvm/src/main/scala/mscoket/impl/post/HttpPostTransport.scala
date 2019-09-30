@@ -13,7 +13,7 @@ import io.bullet.borer.{Decoder, Encoder, Json}
 import mscoket.impl.HttpCodecs
 import mscoket.impl.StreamSplitter._
 import msocket.api.Transport
-import msocket.api.utils.{FetchEvent, HttpException, Result}
+import msocket.api.utils.{FetchEvent, HttpException, Result, StreamStatus}
 
 import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,8 +42,8 @@ class HttpPostTransport[Req: Encoder](uri: String, tokenFactory: => Option[Strin
       .mapMaterializedValue(_ => NotUsed)
   }
 
-  override def requestStreamWithError[Res: Decoder, Err: Decoder](request: Req): Source[Res, Future[Option[Err]]] = {
-    requestStream[Result[Res, Err]](request).split
+  override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
+    requestStream[Result[Res, StreamStatus]](request).split
   }
 
   private def getResponse(request: Req): Future[HttpResponse] = {

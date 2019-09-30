@@ -3,6 +3,7 @@ package msocket.example.client
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import csw.example.api.client.ExampleClient
+import msocket.api.utils.StreamStatus
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -15,7 +16,7 @@ class ClientAppJs(client: ExampleClient)(implicit ec: ExecutionContext) {
     client.square(3).onComplete(println)
     client.square(4).onComplete(println)
 
-    val numberStream: Source[Int, Future[Option[String]]] = client.getNumbers(3)
+    val numberStream: Source[Int, Future[StreamStatus]] = client.getNumbers(3)
     numberStream.mat.onComplete(println)
     numberStream.onMessage = x => println(s"**********************  $x")
 

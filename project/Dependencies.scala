@@ -35,7 +35,7 @@ object Dependencies {
 }
 
 object csw {
-  val cswVersion            = "c94116c"
+  val cswVersion            = "e1b25ef"
   private val Org           = "com.github.tmtsoftware.csw"
   val `csw-aas-http`        = Org %% "csw-aas-http" % cswVersion
   val `csw-aas-installed`   = Org %% "csw-aas-installed" % cswVersion

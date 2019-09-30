@@ -9,7 +9,9 @@ case object StreamSuccess                             extends StreamStatus
 case class StreamError(name: String, message: String) extends StreamStatus
 
 object StreamStatus {
-  implicit lazy val streamErrorCodec: Codec[StreamStatus] = {
+  implicit def streamErrorCodec[T <: StreamStatus]: Codec[T] = streamErrorCodecValue.asInstanceOf[Codec[T]]
+
+  lazy val streamErrorCodecValue: Codec[StreamStatus] = {
     @silent implicit lazy val streamErrorCodec: Codec[StreamError]          = deriveCodec[StreamError]
     @silent implicit lazy val streamSuccessCodec: Codec[StreamSuccess.type] = deriveCodec[StreamSuccess.type]
     deriveCodec[StreamStatus]

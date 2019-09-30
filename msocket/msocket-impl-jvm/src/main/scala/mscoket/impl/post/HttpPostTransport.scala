@@ -12,7 +12,7 @@ import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import mscoket.impl.HttpCodecs
 import mscoket.impl.StreamSplitter._
-import msocket.api.{StreamStatus, Transport}
+import msocket.api.{StreamError, StreamStatus, Transport}
 import msocket.api.utils.{FetchEvent, HttpException, Result}
 
 import scala.concurrent.duration.DurationLong
@@ -43,7 +43,7 @@ class HttpPostTransport[Req: Encoder](uri: String, tokenFactory: => Option[Strin
   }
 
   override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
-    requestStream[Result[Res, StreamStatus]](request).split
+    requestStream[Result[Res, StreamError]](request).split
   }
 
   private def getResponse(request: Req): Future[HttpResponse] = {

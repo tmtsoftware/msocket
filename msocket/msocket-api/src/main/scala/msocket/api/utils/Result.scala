@@ -2,6 +2,7 @@ package msocket.api.utils
 
 import com.github.ghik.silencer.silent
 import io.bullet.borer.derivation.ArrayBasedCodecs.deriveUnaryEncoder
+import io.bullet.borer.derivation.ArrayBasedCodecs.deriveUnaryDecoder
 import io.bullet.borer.derivation.MapBasedCodecs._
 import io.bullet.borer.{Decoder, Encoder}
 
@@ -22,8 +23,8 @@ object Result {
   }
 
   implicit def resultDec[E: Decoder, S: Decoder]: Decoder[Result[S, E]] = {
-    @silent implicit lazy val errorEnc: Decoder[Error[S, E]]     = implicitly[Decoder[E]].map(Error(_))
-    @silent implicit lazy val successEnc: Decoder[Success[S, E]] = implicitly[Decoder[S]].map(Success(_))
+    @silent implicit lazy val errorEnc: Decoder[Error[S, E]]     = deriveUnaryDecoder[Error[S, E]]
+    @silent implicit lazy val successEnc: Decoder[Success[S, E]] = deriveUnaryDecoder[Success[S, E]]
     deriveDecoder[Result[S, E]]
   }
 

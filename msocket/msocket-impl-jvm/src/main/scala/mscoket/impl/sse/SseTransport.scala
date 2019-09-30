@@ -11,7 +11,7 @@ import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import mscoket.impl.StreamSplitter._
-import msocket.api.{StreamStatus, Transport}
+import msocket.api.{StreamError, StreamStatus, Transport}
 import msocket.api.utils.{HttpException, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,7 +38,7 @@ class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem)
   }
 
   override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
-    requestStream[Result[Res, StreamStatus]](request).split
+    requestStream[Result[Res, StreamError]](request).split
   }
 
   private def getResponse(request: Req): Future[HttpResponse] = {

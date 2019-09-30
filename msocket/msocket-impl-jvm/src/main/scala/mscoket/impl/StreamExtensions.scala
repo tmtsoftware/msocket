@@ -18,7 +18,7 @@ trait StreamExtensions[M] {
 
   def streamWithError[S](input: Source[S, Future[StreamStatus]])(implicit encS: Encoder[S], mat: Materializer): Source[M, NotUsed] = {
     val (matF, source) = input.preMaterialize()
-    val resultStream: Source[Result[S, StreamStatus], NotUsed] = Source.fromFuture(matF).flatMapConcat {
+    val resultStream: Source[Result[S, StreamError], NotUsed] = Source.fromFuture(matF).flatMapConcat {
       case error: StreamError     => Source.single(Result.Error(error))
       case success: StreamStarted => source.map(Result.Success(_))
     }

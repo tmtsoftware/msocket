@@ -8,7 +8,7 @@ import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
 import mscoket.impl.StreamSplitter._
 import mscoket.impl.ws.Encoding.JsonText
-import msocket.api.{StreamStatus, Transport}
+import msocket.api.{StreamError, StreamStatus, Transport}
 import msocket.api.utils.Result
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -18,7 +18,7 @@ class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorS
   implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher
 
-  private val setup = new WebsocketClientSetup(WebSocketRequest(uri))
+  private val setup = new WebsocketTransportSetup(WebSocketRequest(uri))
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
     requestResponseWithDelay(request)
@@ -37,7 +37,7 @@ class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorS
   }
 
   override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
-    requestStream[Result[Res, StreamStatus]](request).split
+    requestStream[Result[Res, StreamError]](request).split
   }
 
 }

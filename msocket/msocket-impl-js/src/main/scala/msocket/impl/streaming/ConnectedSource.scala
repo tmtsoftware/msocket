@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Json}
 import msocket.api.utils.Result
-import msocket.api.{StreamStatus, StreamStarted}
+import msocket.api.{StreamError, StreamStarted, StreamStatus}
 
 import scala.concurrent.{Future, Promise}
 
@@ -29,7 +29,7 @@ class ConnectedSourceWithErr[Res: Decoder] extends ConnectedSource[Res, Future[S
   private val matPromise: Promise[StreamStatus] = Promise()
 
   override def onTextMessage(res: String): Unit = {
-    val response = Json.decode(res.getBytes()).to[Result[Res, StreamStatus]].value
+    val response = Json.decode(res.getBytes()).to[Result[Res, StreamError]].value
     response match {
       case Result.Success(value) => onMessage(value); matPromise.trySuccess(StreamStarted(() => closeable.closeStream()))
       case Result.Error(error)   => matPromise.trySuccess(error); disconnect()

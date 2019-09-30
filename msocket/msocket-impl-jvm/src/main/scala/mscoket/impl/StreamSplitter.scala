@@ -3,12 +3,12 @@ package mscoket.impl
 import akka.stream.{KillSwitches, Materializer}
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import msocket.api.utils.Result
-import msocket.api.{StreamStatus, StreamStarted}
+import msocket.api.{StreamError, StreamStarted, StreamStatus}
 
 import scala.concurrent.Future
 
 object StreamSplitter {
-  implicit class ResultStream[S](stream: Source[Result[S, StreamStatus], _]) {
+  implicit class ResultStream[S](stream: Source[Result[S, StreamError], _]) {
     def split(implicit mat: Materializer): Source[S, Future[StreamStatus]] = {
       val streamOfStreams = stream.prefixAndTail(1).map {
         case (xs, stream) =>

@@ -10,6 +10,7 @@ class ClientApp(client: ExampleClient)(implicit ec: ExecutionContext, mat: Mater
 
   def testRun(): Unit = {
     client.getNumbers(3).mapMaterializedValue(_.onComplete(println)).runForeach(println)
+    client.getNumbers(0).mapMaterializedValue(_.onComplete(println)).runForeach(println)
     client.hello("msuhtaq").onComplete(println)
     client.helloStream("mushtaq").throttle(1, 1.second).runForeach(println)
     client.hello("msuhtaq1").onComplete(println)

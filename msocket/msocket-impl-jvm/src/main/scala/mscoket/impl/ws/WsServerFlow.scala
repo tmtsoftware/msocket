@@ -5,8 +5,7 @@ import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.Decoder
 import mscoket.impl.ws.Encoding.JsonText
-import msocket.api.MessageHandler
-import msocket.api.utils.StreamError
+import msocket.api.{MessageHandler, StreamError}
 
 import scala.util.control.NonFatal
 

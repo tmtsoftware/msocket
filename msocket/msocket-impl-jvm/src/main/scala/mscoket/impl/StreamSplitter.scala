@@ -1,8 +1,9 @@
 package mscoket.impl
 
-import akka.stream.Materializer
-import akka.stream.scaladsl.{Sink, Source}
-import msocket.api.utils.{Result, StreamStatus, StreamSuccess}
+import akka.stream.{KillSwitches, Materializer}
+import akka.stream.scaladsl.{Keep, Sink, Source}
+import msocket.api.utils.Result
+import msocket.api.{StreamStatus, StreamStarted}
 
 import scala.concurrent.Future
 
@@ -18,9 +19,10 @@ object StreamSplitter {
               Source
                 .single(r)
                 .concat(stream.collect { case Result.Success(r) => r })
-                .mapMaterializedValue(_ => StreamSuccess)
+                .viaMat(KillSwitches.single)(Keep.right)
+                .mapMaterializedValue(switch => StreamStarted(() => switch.shutdown()))
             case Nil =>
-              Source.empty.mapMaterializedValue(_ => StreamSuccess)
+              Source.empty.mapMaterializedValue(_ => StreamStarted(() => ()))
           }
       }
       Source.fromFutureSource(streamOfStreams.runWith(Sink.head))

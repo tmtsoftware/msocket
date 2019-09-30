@@ -5,8 +5,7 @@ import akka.stream.scaladsl.Source
 import csw.example.api._
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
 import csw.example.api.protocol.{Codecs, ExampleRequest}
-import msocket.api.Transport
-import msocket.api.utils.StreamStatus
+import msocket.api.{StreamStatus, Transport}
 
 import scala.concurrent.Future
 

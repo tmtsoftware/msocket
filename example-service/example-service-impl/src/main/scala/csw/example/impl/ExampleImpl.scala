@@ -2,9 +2,10 @@ package csw.example.impl
 
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.stream.scaladsl.Source
+import akka.stream.KillSwitches
+import akka.stream.scaladsl.{Keep, Source}
 import csw.example.api.ExampleApi
-import msocket.api.utils.{StreamError, StreamStatus, StreamSuccess}
+import msocket.api.{StreamError, StreamStatus, StreamStarted}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
@@ -39,7 +40,8 @@ class ExampleImpl(implicit actorSystem: ActorSystem) extends ExampleApi {
       Source
         .fromIterator(() => Iterator.from(1).filter(_ % divisibleBy == 0))
         .throttle(1, 1.second)
-        .mapMaterializedValue(_ => Future.successful(StreamSuccess))
+        .viaMat(KillSwitches.single)(Keep.right)
+        .mapMaterializedValue(switch => Future.successful(StreamStarted(() => switch.shutdown())))
     }
   }
 }

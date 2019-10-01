@@ -18,6 +18,6 @@ class RSocketTransportFactory[Req: Encoder](implicit actorSystem: ActorSystem) {
   def transport(uri: String): Transport[Req] = {
     val transport                       = new WebsocketClientTransport(WebSocketRequest.fromTargetUriString(uri))
     val eventualSocket: Future[RSocket] = RSocketFactoryS.client(transport)
-    Await.result(eventualSocket.map(x => new RSocketClient(x)), 5.seconds)
+    Await.result(eventualSocket.map(x => new RSocketTransport(x)), 5.seconds)
   }
 }

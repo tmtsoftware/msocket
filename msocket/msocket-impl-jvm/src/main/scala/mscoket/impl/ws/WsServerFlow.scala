@@ -10,7 +10,7 @@ import msocket.api.models.{Result, StreamError}
 
 import scala.util.control.NonFatal
 
-class WsServerFlow[T: Decoder](websocketClient: MessageHandler[T, Source[Message, NotUsed]]) {
+class WsServerFlow[T: Decoder](messageHandler: MessageHandler[T, Source[Message, NotUsed]]) {
 
   val flow: Flow[Message, Message, NotUsed] = {
     Flow[Message]
@@ -18,7 +18,7 @@ class WsServerFlow[T: Decoder](websocketClient: MessageHandler[T, Source[Message
         case TextMessage.Strict(text) =>
           try {
             val request = JsonText.decodeText(text)
-            websocketClient.handle(request)
+            messageHandler.handle(request)
           } catch {
             case NonFatal(ex) =>
               val error: Result[Unit, StreamError] = Result.Error(StreamError(ex.getClass.getSimpleName, ex.getMessage))

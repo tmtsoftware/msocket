@@ -13,7 +13,7 @@ import msocket.api.models.{Result, StreamError, StreamStatus}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RSocketClient[Req: Encoder](rSocket: RSocket)(implicit actorSystem: ActorSystem) extends Transport[Req] {
+class RSocketTransport[Req: Encoder](rSocket: RSocket)(implicit actorSystem: ActorSystem) extends Transport[Req] {
 
   implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher

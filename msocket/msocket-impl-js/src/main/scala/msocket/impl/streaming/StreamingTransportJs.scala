@@ -8,7 +8,7 @@ import msocket.api.models.StreamStatus
 
 import scala.concurrent.{Future, Promise}
 
-abstract class StreamingClientJs[Req: Encoder](connectionFactory: ConnectionFactory[Req]) extends Transport[Req] {
+abstract class StreamingTransportJs[Req: Encoder](connectionFactory: ConnectionFactory[Req]) extends Transport[Req] {
 
   override def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res] = {
     val promise: Promise[Res] = Promise()

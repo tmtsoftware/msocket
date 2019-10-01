@@ -31,7 +31,7 @@ class RSocketClient[Req: Encoder](rSocket: RSocket)(implicit actorSystem: ActorS
     Source.fromPublisher(value).map(x => Json.decode(x.getData).to[Res].value)
   }
 
-  override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
+  override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
     requestStream[Result[Res, StreamError]](request).split
   }
 

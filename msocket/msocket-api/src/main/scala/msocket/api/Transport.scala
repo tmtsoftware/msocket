@@ -11,5 +11,5 @@ abstract class Transport[Req: Encoder] {
   def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res]
 
   def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed]
-  def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]]
+  def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]]
 }

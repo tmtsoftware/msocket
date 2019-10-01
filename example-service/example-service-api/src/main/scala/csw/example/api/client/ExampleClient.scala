@@ -15,6 +15,6 @@ class ExampleClient(transport: Transport[ExampleRequest]) extends ExampleApi wit
 
   override def helloStream(name: String): Source[String, NotUsed] = transport.requestStream[String](HelloStream(name))
   override def getNumbers(divisibleBy: Int): Source[Int, Future[StreamStatus]] = {
-    transport.requestStreamWithError[Int](GetNumbers(divisibleBy))
+    transport.requestStreamWithStatus[Int](GetNumbers(divisibleBy))
   }
 }

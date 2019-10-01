@@ -42,7 +42,7 @@ class HttpPostTransport[Req: Encoder](uri: String, tokenFactory: => Option[Strin
       .mapMaterializedValue(_ => NotUsed)
   }
 
-  override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
+  override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
     requestStream[Result[Res, StreamError]](request).split
   }
 

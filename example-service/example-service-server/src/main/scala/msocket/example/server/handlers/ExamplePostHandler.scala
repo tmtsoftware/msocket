@@ -26,6 +26,6 @@ class ExamplePostHandler(exampleApi: ExampleApi, securityDirectives: SecurityDir
       }
     case Square(number)          => complete(futureAsStream(exampleApi.square(number)))
     case HelloStream(name)       => complete(stream(exampleApi.helloStream(name)))
-    case GetNumbers(divisibleBy) => complete(streamWithError(exampleApi.getNumbers(divisibleBy)))
+    case GetNumbers(divisibleBy) => complete(streamWithStatus(exampleApi.getNumbers(divisibleBy)))
   }
 }

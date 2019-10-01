@@ -37,7 +37,7 @@ class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem)
       .mapMaterializedValue(_ => NotUsed)
   }
 
-  override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
+  override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
     requestStream[Result[Res, StreamError]](request).split
   }
 

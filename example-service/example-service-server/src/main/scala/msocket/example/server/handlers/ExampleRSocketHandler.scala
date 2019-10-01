@@ -19,6 +19,6 @@ class ExampleRSocketHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
     case Square(number) => futureAsStream(exampleApi.square(number))
 
     case HelloStream(name)       => stream(exampleApi.helloStream(name))
-    case GetNumbers(divisibleBy) => streamWithError(exampleApi.getNumbers(divisibleBy))
+    case GetNumbers(divisibleBy) => streamWithStatus(exampleApi.getNumbers(divisibleBy))
   }
 }

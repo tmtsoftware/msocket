@@ -36,7 +36,7 @@ class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorS
       }
   }
 
-  override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
+  override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
     requestStream[Result[Res, StreamError]](request).split
   }
 

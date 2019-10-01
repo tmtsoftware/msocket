@@ -23,7 +23,7 @@ abstract class StreamingClientJs[Req: Encoder](connectionFactory: ConnectionFact
     connectionFactory.connect(request, new PlainConnectedSource)
   }
 
-  override def requestStreamWithError[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
+  override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
     connectionFactory.connect(request, new ConnectedSourceWithErr)
   }
 }

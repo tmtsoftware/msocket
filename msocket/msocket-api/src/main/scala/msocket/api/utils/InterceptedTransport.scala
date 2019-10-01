@@ -1,8 +1,9 @@
-package msocket.api
+package msocket.api.utils
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
+import msocket.api.Transport
 import msocket.api.models.StreamStatus
 
 import scala.concurrent.Future

@@ -4,6 +4,7 @@ import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.models.StreamStatus
+import msocket.api.utils.InterceptedTransport
 
 import scala.concurrent.Future
 
@@ -14,5 +15,5 @@ abstract class Transport[Req: Encoder] {
   def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed]
   def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]]
 
-  def interceptRequest(action: Req => Unit) = new InterceptedTransport(this, action)
+  def interceptRequest(action: Req => Unit): Transport[Req] = new InterceptedTransport(this, action)
 }

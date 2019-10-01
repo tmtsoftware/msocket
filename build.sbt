@@ -1,4 +1,4 @@
-import Dependencies._
+import Libs._
 import csw._
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 

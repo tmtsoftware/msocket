@@ -4,6 +4,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{Codecs, ExampleRequest}
+import io.bullet.borer.{Encoder, Json}
 import mscoket.impl.post.HttpPostTransport
 import mscoket.impl.rsocket.client.RSocketTransportFactory
 import mscoket.impl.sse.SseTransport
@@ -16,9 +17,11 @@ object ClientMain extends Codecs {
     lazy implicit val mat: ActorMaterializer = ActorMaterializer()
     import system.dispatcher
 
-    lazy val httpPostTransport  = new HttpPostTransport[ExampleRequest]("http://localhost:5000/post", None)
+    def action[Req: Encoder](req: Req): Unit = println(Json.encode(req).toUtf8String)
+
+    lazy val httpPostTransport  = new HttpPostTransport[ExampleRequest]("http://localhost:5000/post", None).interceptRequest(action)
     lazy val sseTransport       = new SseTransport[ExampleRequest]("http://localhost:5000/sse")
-    lazy val websocketTransport = new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket")
+    lazy val websocketTransport = new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket").interceptRequest(action)
     lazy val rSocketTransport   = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")
 
     val exampleClient = new ExampleClient(websocketTransport)

@@ -13,4 +13,6 @@ abstract class Transport[Req: Encoder] {
 
   def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed]
   def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]]
+
+  def interceptRequest(action: Req => Unit) = new InterceptedTransport(this, action)
 }

@@ -2,7 +2,7 @@ import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import sbt.Def.{setting => dep}
 import sbt._
 
-object Dependencies {
+object Libs {
 
   val `silencer-lib`    = "com.github.ghik" %% "silencer-lib"    % "1.4.2"
   val `silencer-plugin` = "com.github.ghik" %% "silencer-plugin" % "1.4.2"
@@ -35,7 +35,7 @@ object Dependencies {
 }
 
 object csw {
-  val cswVersion            = "5d18023"
+  val cswVersion            = "e285508"
   private val Org           = "com.github.tmtsoftware.csw"
   val `csw-aas-http`        = Org %% "csw-aas-http" % cswVersion
   val `csw-aas-installed`   = Org %% "csw-aas-installed" % cswVersion

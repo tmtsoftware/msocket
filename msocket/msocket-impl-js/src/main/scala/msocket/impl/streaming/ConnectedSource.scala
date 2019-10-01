@@ -21,7 +21,7 @@ class PlainConnectedSource[Res: Decoder] extends ConnectedSource[Res, NotUsed] {
   override val mat: NotUsed = NotUsed
 }
 
-class ConnectedSourceWithErr[Res: Decoder] extends ConnectedSource[Res, Future[StreamStatus]] {
+class ConnectedSourceWithStatus[Res: Decoder] extends ConnectedSource[Res, Future[StreamStatus]] {
   private val matPromise: Promise[StreamStatus] = Promise()
 
   override def onTextMessage(res: String): Unit = {

@@ -1,6 +1,7 @@
-package msocket.api.utils
+package msocket.api.codecs
 
 import io.bullet.borer.{Decoder, Encoder}
+import msocket.api.models.Result
 
 trait EitherCodecs {
   implicit def eitherEnc[E: Encoder, S: Encoder]: Encoder[Either[E, S]] =

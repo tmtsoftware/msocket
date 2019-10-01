@@ -5,7 +5,7 @@ import akka.actor.ActorSystem
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Source}
 import csw.example.api.ExampleApi
-import msocket.api.{StreamError, StreamStatus, StreamStarted}
+import msocket.api.models.{StreamError, StreamStarted, StreamStatus}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong

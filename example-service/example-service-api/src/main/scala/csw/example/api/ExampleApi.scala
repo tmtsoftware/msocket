@@ -2,7 +2,7 @@ package csw.example.api
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
-import msocket.api.StreamStatus
+import msocket.api.models.StreamStatus
 
 import scala.concurrent.Future
 

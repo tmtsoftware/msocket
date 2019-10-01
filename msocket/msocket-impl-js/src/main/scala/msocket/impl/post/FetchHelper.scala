@@ -1,7 +1,7 @@
 package msocket.impl.post
 
 import io.bullet.borer.{Encoder, Json}
-import msocket.api.utils.HttpException
+import msocket.api.models.HttpException
 import org.scalajs.dom.experimental.{Fetch, HttpMethod, Response}
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -4,8 +4,7 @@ import akka.NotUsed
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
-import msocket.api.utils.Result
-import msocket.api.{StreamError, StreamStatus, StreamStarted}
+import msocket.api.models.{Result, StreamError, StreamStarted, StreamStatus}
 
 import scala.concurrent.Future
 

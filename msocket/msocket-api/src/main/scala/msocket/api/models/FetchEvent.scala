@@ -1,4 +1,4 @@
-package msocket.api.utils
+package msocket.api.models
 
 import io.bullet.borer.Codec
 import io.bullet.borer.derivation.MapBasedCodecs.deriveCodec

@@ -3,7 +3,7 @@ package msocket.example.client
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import csw.example.api.client.ExampleClient
-import msocket.api.StreamStatus
+import msocket.api.models.StreamStatus
 
 import scala.concurrent.{ExecutionContext, Future}
 

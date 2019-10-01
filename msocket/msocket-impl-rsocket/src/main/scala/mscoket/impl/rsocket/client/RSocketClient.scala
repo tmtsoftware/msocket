@@ -8,8 +8,8 @@ import io.bullet.borer.{Decoder, Encoder, Json}
 import io.rsocket.RSocket
 import io.rsocket.util.DefaultPayload
 import mscoket.impl.StreamSplitter._
-import msocket.api.{StreamError, StreamStatus, Transport}
-import msocket.api.utils.Result
+import msocket.api.Transport
+import msocket.api.models.{Result, StreamError, StreamStatus}
 
 import scala.concurrent.{ExecutionContext, Future}
 

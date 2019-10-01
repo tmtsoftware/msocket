@@ -1,4 +1,4 @@
-package msocket.api
+package msocket.api.models
 
 trait Subscription {
   def cancel(): Unit

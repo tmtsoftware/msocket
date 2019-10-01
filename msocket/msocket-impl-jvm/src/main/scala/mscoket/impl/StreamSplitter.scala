@@ -2,8 +2,7 @@ package mscoket.impl
 
 import akka.stream.{KillSwitches, Materializer}
 import akka.stream.scaladsl.{Keep, Sink, Source}
-import msocket.api.utils.Result
-import msocket.api.{StreamError, StreamStarted, StreamStatus}
+import msocket.api.models.{Result, StreamError, StreamStarted, StreamStatus}
 
 import scala.concurrent.Future
 

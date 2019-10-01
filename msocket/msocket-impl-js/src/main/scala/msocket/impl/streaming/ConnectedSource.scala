@@ -3,8 +3,7 @@ package msocket.impl.streaming
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Json}
-import msocket.api.utils.Result
-import msocket.api.{StreamError, StreamStarted, StreamStatus}
+import msocket.api.models.{Result, StreamError, StreamStarted, StreamStatus}
 
 import scala.concurrent.{Future, Promise}
 

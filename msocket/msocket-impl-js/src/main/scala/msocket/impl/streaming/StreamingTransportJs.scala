@@ -15,7 +15,7 @@ abstract class StreamingTransportJs[Req: Encoder](connectionFactory: ConnectionF
     val connectedSource       = connectionFactory.connect(request, new PlainConnectedSource)
     connectedSource.onMessage = { response =>
       promise.trySuccess(response)
-      connectedSource.disconnect()
+      connectedSource.subscription.cancel()
     }
     promise.future
   }

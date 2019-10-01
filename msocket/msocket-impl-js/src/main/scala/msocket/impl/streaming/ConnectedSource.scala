@@ -3,17 +3,14 @@ package msocket.impl.streaming
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Json}
-import msocket.api.models.{Result, StreamError, StreamStarted, StreamStatus}
+import msocket.api.models.{Result, StreamError, StreamStarted, StreamStatus, Subscription}
 
 import scala.concurrent.{Future, Promise}
 
 abstract class ConnectedSource[Res, Mat] extends Source[Res, Mat] {
   def onTextMessage(res: String): Unit
-  var onMessage: Res => Unit = x => ()
-  var closeable: Closeable = new Closeable {
-    override def closeStream(): Unit = ()
-  }
-  def disconnect(): Unit = closeable.closeStream()
+  var onMessage: Res => Unit     = x => ()
+  var subscription: Subscription = () => ()
 }
 
 class PlainConnectedSource[Res: Decoder] extends ConnectedSource[Res, NotUsed] {
@@ -30,8 +27,8 @@ class ConnectedSourceWithErr[Res: Decoder] extends ConnectedSource[Res, Future[S
   override def onTextMessage(res: String): Unit = {
     val response = Json.decode(res.getBytes()).to[Result[Res, StreamError]].value
     response match {
-      case Result.Success(value) => onMessage(value); matPromise.trySuccess(StreamStarted(() => closeable.closeStream()))
-      case Result.Error(error)   => matPromise.trySuccess(error); disconnect()
+      case Result.Success(value) => onMessage(value); matPromise.trySuccess(StreamStarted(() => subscription.cancel()))
+      case Result.Error(error)   => matPromise.trySuccess(error); subscription.cancel()
     }
   }
 

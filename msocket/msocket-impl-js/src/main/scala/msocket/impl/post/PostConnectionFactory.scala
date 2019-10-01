@@ -1,7 +1,7 @@
 package msocket.impl.post
 
 import io.bullet.borer.Encoder
-import msocket.impl.streaming.{Closeable, ConnectedSource, ConnectionFactory}
+import msocket.impl.streaming.{ConnectedSource, ConnectionFactory}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
@@ -14,9 +14,7 @@ class PostConnectionFactory[Req: Encoder](uri: String)(implicit ec: ExecutionCon
     FetchHelper.postRequest(uri, req).foreach { response =>
       val reader = new CanNdJsonStream(response.body).getReader()
 
-      source.closeable = new Closeable {
-        override def closeStream(): Unit = reader.cancel("cancelled")
-      }
+      source.subscription = () => reader.cancel("cancelled")
 
       def read(): Unit = {
         reader.read().toFuture.foreach { chunk =>

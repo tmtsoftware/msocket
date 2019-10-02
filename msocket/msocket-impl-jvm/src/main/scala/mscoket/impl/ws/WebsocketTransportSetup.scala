@@ -16,7 +16,7 @@ class WebsocketTransportSetup(webSocketRequest: WebSocketRequest)(implicit actor
       Source.asSubscriber[Message].mapMaterializedValue(Sink.fromSubscriber).preMaterialize()
 
     val requestSource        = Source.single(message).concat(Source.maybe)
-    val flow                 = Flow.fromSinkAndSource(connectionSink, requestSource)
+    val flow                 = Flow.fromSinkAndSourceCoupled(connectionSink, requestSource)
     val (upgradeResponse, _) = Http().singleWebSocketRequest(webSocketRequest, flow)
 
     upgradeResponse.onComplete(println)

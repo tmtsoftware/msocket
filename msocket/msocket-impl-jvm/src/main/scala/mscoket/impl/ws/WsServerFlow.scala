@@ -25,6 +25,8 @@ class WsServerFlow[T: Decoder](messageHandler: MessageHandler[T, Source[Message,
               Source.single(JsonText.strictMessage(error))
           }
       }
-      .flatMapMerge(10000, identity)
+      .take(1)
+      .flatMapConcat(identity)
   }
+
 }

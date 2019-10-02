@@ -31,6 +31,7 @@ class ExampleImpl(implicit actorSystem: ActorSystem) extends ExampleApi {
       .scan(0)((acc, _) => acc + 1)
       .map(x => s"hello \n $name again $x")
       .mapMaterializedValue(_ => NotUsed)
+      .take(50)
   }
 
   override def getNumbers(divisibleBy: Int): Source[Int, Future[StreamStatus]] = {

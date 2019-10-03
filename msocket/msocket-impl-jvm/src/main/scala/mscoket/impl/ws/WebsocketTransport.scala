@@ -11,6 +11,7 @@ import mscoket.impl.ws.Encoding.JsonText
 import msocket.api.Transport
 import msocket.api.models.{Result, StreamError, StreamStatus}
 
+import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
 
 class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends Transport[Req] {
@@ -28,13 +29,13 @@ class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorS
     requestStream(request).runWith(Sink.head)
   }
 
-  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
+  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] =
     setup
       .request(JsonText.strictMessage(request))
       .collect {
-        case TextMessage.Strict(text) => JsonText.decodeText(text)
+        case msg: TextMessage => msg.toStrict(1.second).map(m => JsonText.decodeText(m.text))
       }
-  }
+      .mapAsync(16)(identity)
 
   override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
     requestStream[Result[Res, StreamError]](request).split

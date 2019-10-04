@@ -2,7 +2,7 @@ package mscoket.impl.ws
 
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.ws.{TextMessage, WebSocketRequest}
+import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
@@ -32,10 +32,10 @@ class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorS
   override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] =
     setup
       .request(JsonText.strictMessage(request))
-      .collect {
-        case msg: TextMessage => msg.toStrict(1.second).map(m => JsonText.decodeText(m.text))
+      .mapAsync(16) {
+        case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decodeText(m.text))
+        case msg: BinaryMessage => throw new RuntimeException("websocket transport currently does not handle binary messages")
       }
-      .mapAsync(16)(identity)
 
   override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
     requestStream[Result[Res, StreamError]](request).split

@@ -22,9 +22,9 @@ object Libs {
   val `scalatest`      = dep("org.scalatest" %%% "scalatest" % "3.0.8")
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "0.9.7")
 
-  val `std`                      = dep("com.github.tmtsoftware.tmt-typed" %%% "std"                      % "315a809")
-  val `eventsource`              = dep("com.github.tmtsoftware.tmt-typed" %%% "eventsource"              % "315a809")
-  val `rsocket-websocket-client` = dep("com.github.tmtsoftware.tmt-typed" %%% "rsocket-websocket-client" % "315a809")
+  val `std`                      = dep("com.github.tmtsoftware.tmt-typed" %%% "std"                      % "df98106")
+  val `eventsource`              = dep("com.github.tmtsoftware.tmt-typed" %%% "eventsource"              % "df98106")
+  val `rsocket-websocket-client` = dep("com.github.tmtsoftware.tmt-typed" %%% "rsocket-websocket-client" % "df98106")
 
   val `rsocket-transport-akka` = "com.github.mushtaq"         % "rsocket-transport-akka" % "740a0a7"
   val `rsocket-core`           = "io.rsocket"                 % "rsocket-core"           % "0.11.18"

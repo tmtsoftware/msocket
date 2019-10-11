@@ -22,14 +22,14 @@ object Result {
   }
 
   implicit def resultDec[E: Decoder, S: Decoder]: Decoder[Result[S, E]] = {
-    @silent implicit lazy val errorEnc: Decoder[Error[S, E]]     = deriveUnaryDecoder[Error[S, E]]
-    @silent implicit lazy val successEnc: Decoder[Success[S, E]] = deriveUnaryDecoder[Success[S, E]]
-    deriveDecoder[Result[S, E]]
+    @silent implicit lazy val errorEnc: Decoder[Error[S, E]]     = deriveUnaryDecoder
+    @silent implicit lazy val successEnc: Decoder[Success[S, E]] = deriveUnaryDecoder
+    deriveDecoder
   }
 
   implicit def resultEnc[E: Encoder, S: Encoder]: Encoder[Result[S, E]] = {
-    @silent implicit lazy val errorEnc: Encoder[Error[S, E]]     = deriveUnaryEncoder[Error[S, E]]
-    @silent implicit lazy val successEnc: Encoder[Success[S, E]] = deriveUnaryEncoder[Success[S, E]]
-    deriveEncoder[Result[S, E]]
+    @silent implicit lazy val errorEnc: Encoder[Error[S, E]]     = deriveUnaryEncoder
+    @silent implicit lazy val successEnc: Encoder[Success[S, E]] = deriveUnaryEncoder
+    deriveEncoder
   }
 }

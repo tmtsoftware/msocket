@@ -31,7 +31,8 @@ object CliMain extends CommandApp[CliCommand] with Codecs {
         system.terminate()
       case MakeCall() =>
         println(adapter.getAccessToken())
-        lazy val httpPostTransport  = new HttpPostTransport[ExampleRequest]("http://localhost:5000/post", adapter.getAccessToken().map(_.value))
+        lazy val httpPostTransport =
+          new HttpPostTransport[ExampleRequest]("http://localhost:5000/post", adapter.getAccessToken().map(_.value))
         lazy val sseTransport       = new SseTransport[ExampleRequest]("http://localhost:5000/sse")
         lazy val websocketTransport = new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket")
         lazy val rSocketTransport   = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")

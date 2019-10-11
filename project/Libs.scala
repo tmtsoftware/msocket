@@ -35,7 +35,7 @@ object Libs {
 }
 
 object csw {
-  val cswVersion            = "e285508"
+  val cswVersion            = "7749130"
   private val Org           = "com.github.tmtsoftware.csw"
   val `csw-aas-http`        = Org %% "csw-aas-http" % cswVersion
   val `csw-aas-installed`   = Org %% "csw-aas-installed" % cswVersion

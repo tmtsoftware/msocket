@@ -12,5 +12,5 @@ case class StreamStarted(subscription: Subscription) extends StreamStatus {
 case class StreamError(name: String, message: String) extends StreamStatus
 
 object StreamError {
-  implicit lazy val streamErrorCodec: Codec[StreamError] = deriveCodec[StreamError]
+  implicit lazy val streamErrorCodec: Codec[StreamError] = deriveCodec
 }

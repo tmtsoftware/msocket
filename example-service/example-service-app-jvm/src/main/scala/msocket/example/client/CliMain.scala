@@ -1,8 +1,7 @@
 package msocket.example.client
 
 import akka.actor.ActorSystem
-import akka.actor.typed.scaladsl.adapter.UntypedActorSystemOps
-import akka.stream.ActorMaterializer
+import akka.actor.typed.scaladsl.adapter._
 import caseapp.{CommandApp, RemainingArgs}
 import csw.aas.installed.api.InstalledAppAuthAdapter
 import csw.example.api.client.ExampleClient
@@ -17,7 +16,6 @@ import pprint.{pprintln => println}
 object CliMain extends CommandApp[CliCommand] with Codecs {
 
   implicit lazy val system: ActorSystem    = ActorSystem()
-  lazy implicit val mat: ActorMaterializer = ActorMaterializer()
   import system.dispatcher
   lazy val adapter: InstalledAppAuthAdapter = AdapterFactory.makeAdapter(system.toTyped)
 

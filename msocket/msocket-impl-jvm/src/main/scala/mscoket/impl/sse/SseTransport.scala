@@ -8,7 +8,6 @@ import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
 import akka.stream.scaladsl.{Sink, Source}
-import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import mscoket.impl.StreamSplitter._
 import msocket.api.Transport
@@ -18,7 +17,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends Transport[Req] {
 
-  implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
@@ -32,7 +30,7 @@ class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem)
   override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
     val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
     Source
-      .fromFutureSource(futureSource)
+      .futureSource(futureSource)
       .map(event => Json.decode(event.data.getBytes()).to[Res].value)
       .mapMaterializedValue(_ => NotUsed)
   }

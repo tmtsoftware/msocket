@@ -1,7 +1,6 @@
 package msocket.example.client
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{Codecs, ExampleRequest}
 import io.bullet.borer.{Encoder, Json}
@@ -14,7 +13,6 @@ object ClientMain extends Codecs {
 
   def main(args: Array[String]): Unit = {
     implicit lazy val system: ActorSystem    = ActorSystem()
-    lazy implicit val mat: ActorMaterializer = ActorMaterializer()
     import system.dispatcher
 
     def action[Req: Encoder](req: Req): Unit = println(Json.encode(req).toUtf8String)

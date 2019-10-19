@@ -8,12 +8,11 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.{Sink, Source}
-import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import mscoket.impl.HttpCodecs
 import mscoket.impl.StreamSplitter._
 import msocket.api.Transport
-import msocket.api.models.{FetchEvent, HttpException, Result, StreamError, StreamStatus}
+import msocket.api.models._
 
 import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
@@ -22,7 +21,6 @@ class HttpPostTransport[Req: Encoder](uri: String, tokenFactory: => Option[Strin
     extends Transport[Req]
     with HttpCodecs {
 
-  implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
@@ -36,7 +34,7 @@ class HttpPostTransport[Req: Encoder](uri: String, tokenFactory: => Option[Strin
   override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
     val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[FetchEvent, NotUsed]])
     Source
-      .fromFutureSource(futureSource)
+      .futureSource(futureSource)
       .filter(_ != FetchEvent.Heartbeat)
       .map(event => Json.decode(event.data.getBytes()).to[Res].value)
       .mapMaterializedValue(_ => NotUsed)

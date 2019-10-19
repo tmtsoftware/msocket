@@ -5,11 +5,9 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.ws.{Message, WebSocketRequest}
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import akka.stream.{ActorMaterializer, Materializer}
 
 class WebsocketTransportSetup(webSocketRequest: WebSocketRequest)(implicit actorSystem: ActorSystem) {
-  implicit val mat: Materializer = ActorMaterializer()
-  import mat.executionContext
+  import actorSystem.dispatcher
 
   def request(message: Message): Source[Message, NotUsed] = {
     val (connectionSink, connectionSource) =

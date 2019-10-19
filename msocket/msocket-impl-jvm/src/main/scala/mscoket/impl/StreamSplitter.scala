@@ -24,7 +24,7 @@ object StreamSplitter {
               Source.empty.mapMaterializedValue(_ => StreamStarted(() => ()))
           }
       }
-      Source.fromFutureSource(streamOfStreams.runWith(Sink.head))
+      Source.futureSource(streamOfStreams.runWith(Sink.head))
     }
   }
 }

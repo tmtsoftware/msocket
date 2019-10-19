@@ -3,7 +3,6 @@ package mscoket.impl.rsocket.client
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.{Sink, Source}
-import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import io.rsocket.RSocket
 import io.rsocket.util.DefaultPayload
@@ -15,7 +14,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RSocketTransport[Req: Encoder](rSocket: RSocket)(implicit actorSystem: ActorSystem) extends Transport[Req] {
 
-  implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {

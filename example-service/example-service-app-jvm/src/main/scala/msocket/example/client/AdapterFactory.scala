@@ -3,8 +3,6 @@ package msocket.example.client
 import java.nio.file.Paths
 
 import akka.actor.typed.ActorSystem
-import akka.stream.Materializer
-import akka.stream.typed.scaladsl.ActorMaterializer
 import csw.aas.installed.InstalledAppAuthAdapterFactory
 import csw.aas.installed.api.InstalledAppAuthAdapter
 import csw.aas.installed.scaladsl.FileAuthStore
@@ -16,8 +14,7 @@ import scala.concurrent.ExecutionContextExecutor
 object AdapterFactory {
   def makeAdapter(implicit actorSystem: ActorSystem[_]): InstalledAppAuthAdapter = {
     implicit val ec: ExecutionContextExecutor = actorSystem.executionContext
-    implicit val mat: Materializer            = ActorMaterializer()
-    val locationService: LocationService      = HttpLocationServiceFactory.makeLocalClient(actorSystem, mat)
+    val locationService: LocationService      = HttpLocationServiceFactory.makeLocalClient(actorSystem, implicitly)
     val authStore                             = new FileAuthStore(Paths.get("/tmp/demo-cli/auth"))
     InstalledAppAuthAdapterFactory.make(locationService, authStore)
   }

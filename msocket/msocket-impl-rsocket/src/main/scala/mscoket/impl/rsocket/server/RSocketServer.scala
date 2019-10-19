@@ -3,7 +3,6 @@ package mscoket.impl.rsocket.server
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
-import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.Decoder
 import io.rsocket.transport.akka.server.WebsocketServerTransport
 import io.rsocket.{Payload, RSocket, RSocketFactory}
@@ -15,7 +14,6 @@ import scala.concurrent.ExecutionContext
 
 class RSocketServer[Req: Decoder](requestHandler: MessageHandler[Req, Source[Payload, NotUsed]])(implicit actorSystem: ActorSystem) {
 
-  implicit val mat: Materializer    = ActorMaterializer()
   implicit val ec: ExecutionContext = actorSystem.dispatcher
 
   def start(interface: String, port: Int): Unit = {

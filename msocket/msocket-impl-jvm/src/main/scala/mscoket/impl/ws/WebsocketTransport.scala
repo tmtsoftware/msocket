@@ -4,7 +4,6 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.{Sink, Source}
-import akka.stream.{ActorMaterializer, Materializer}
 import io.bullet.borer.{Decoder, Encoder}
 import mscoket.impl.StreamSplitter._
 import mscoket.impl.ws.Encoding.JsonText
@@ -16,7 +15,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends Transport[Req] {
 
-  implicit lazy val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext   = actorSystem.dispatcher
 
   private val setup = new WebsocketTransportSetup(WebSocketRequest(uri))

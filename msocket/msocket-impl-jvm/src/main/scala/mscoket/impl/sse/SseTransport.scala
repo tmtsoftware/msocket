@@ -17,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends Transport[Req] {
 
-  implicit val ec: ExecutionContext   = actorSystem.dispatcher
+  implicit val ec: ExecutionContext = actorSystem.dispatcher
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
     requestResponseWithDelay(request)

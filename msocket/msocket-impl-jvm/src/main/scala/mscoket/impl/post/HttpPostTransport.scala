@@ -21,7 +21,7 @@ class HttpPostTransport[Req: Encoder](uri: String, tokenFactory: => Option[Strin
     extends Transport[Req]
     with HttpCodecs {
 
-  implicit val ec: ExecutionContext   = actorSystem.dispatcher
+  implicit val ec: ExecutionContext = actorSystem.dispatcher
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
     getResponse(request).flatMap(Unmarshal(_).to[Res])

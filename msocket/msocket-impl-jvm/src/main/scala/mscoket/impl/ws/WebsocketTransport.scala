@@ -15,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends Transport[Req] {
 
-  implicit val ec: ExecutionContext   = actorSystem.dispatcher
+  implicit val ec: ExecutionContext = actorSystem.dispatcher
 
   private val setup = new WebsocketTransportSetup(WebSocketRequest(uri))
 

@@ -15,7 +15,7 @@ import pprint.{pprintln => println}
 
 object CliMain extends CommandApp[CliCommand] with Codecs {
 
-  implicit lazy val system: ActorSystem    = ActorSystem()
+  implicit lazy val system: ActorSystem = ActorSystem()
   import system.dispatcher
   lazy val adapter: InstalledAppAuthAdapter = AdapterFactory.makeAdapter(system.toTyped)
 

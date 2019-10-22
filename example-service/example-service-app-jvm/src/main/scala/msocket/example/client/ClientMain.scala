@@ -12,7 +12,7 @@ import mscoket.impl.ws.WebsocketTransport
 object ClientMain extends Codecs {
 
   def main(args: Array[String]): Unit = {
-    implicit lazy val system: ActorSystem    = ActorSystem()
+    implicit lazy val system: ActorSystem = ActorSystem()
     import system.dispatcher
 
     def action[Req: Encoder](req: Req): Unit = println(Json.encode(req).toUtf8String)

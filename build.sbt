@@ -104,23 +104,27 @@ lazy val `msocket-impl-rsocket` = project
 
 //************* example-service *****************************************************
 
-lazy val `example-service` = project.aggregate(
-  `example-service-api`.jvm,
-  `example-service-api`.js,
-  `example-service-impl`,
-  `example-service-server`,
-  `example-service-app-jvm`,
-  `example-service-app-js`
-)
+lazy val `example-service` = project
+  .aggregate(
+    `example-service-api`.jvm,
+    `example-service-api`.js,
+    `example-service-impl`,
+    `example-service-server`,
+    `example-service-app-jvm`,
+    `example-service-app-js`
+  )
+  .settings(skip in publish := true)
 
 lazy val `example-service-api` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("example-service/example-service-api"))
   .dependsOn(`msocket-api`)
+  .settings(skip in publish := true)
 
 lazy val `example-service-impl` = project
   .in(file("example-service/example-service-impl"))
   .dependsOn(`example-service-api`.jvm)
+  .settings(skip in publish := true)
 
 lazy val `example-service-server` = project
   .in(file("example-service/example-service-server"))
@@ -134,6 +138,7 @@ lazy val `example-service-server` = project
       `akka-stream-testkit` % Test
     )
   )
+  .settings(skip in publish := true)
 
 lazy val `example-service-app-jvm` = project
   .in(file("example-service/example-service-app-jvm"))
@@ -147,6 +152,7 @@ lazy val `example-service-app-jvm` = project
       `scalatest`.value % Test
     )
   )
+  .settings(skip in publish := true)
 
 lazy val `example-service-app-js` = project
   .in(file("example-service/example-service-app-js"))
@@ -162,6 +168,7 @@ lazy val `example-service-app-js` = project
       `scalatest`.value % Test
     )
   )
+  .settings(skip in publish := true)
 
 ///////////////
 

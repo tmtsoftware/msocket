@@ -8,8 +8,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.{Sink, Source}
-import io.bullet.borer.{Decoder, Encoder, Json}
-import mscoket.impl.HttpCodecs
+import io.bullet.borer.{Decoder, Encoder, Json, Target}
 import mscoket.impl.StreamSplitter._
 import msocket.api.Transport
 import msocket.api.models._
@@ -17,9 +16,12 @@ import msocket.api.models._
 import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
 
-class HttpPostTransport[Req: Encoder](uri: String, tokenFactory: => Option[String])(implicit actorSystem: ActorSystem)
-    extends Transport[Req]
-    with HttpCodecs {
+class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Target, tokenFactory: () => Option[String])(
+    implicit actorSystem: ActorSystem
+) extends Transport[Req]
+    with ClientHttpCodecs {
+
+  override def encoding: Target = messageEncoding
 
   implicit val ec: ExecutionContext = actorSystem.dispatcher
 
@@ -50,7 +52,7 @@ class HttpPostTransport[Req: Encoder](uri: String, tokenFactory: => Option[Strin
         HttpMethods.POST,
         uri = uri,
         entity = requestEntity,
-        headers = tokenFactory match {
+        headers = tokenFactory() match {
           case Some(token) => Seq(Authorization(OAuth2BearerToken(token)))
           case None        => Nil
         }

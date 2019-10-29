@@ -3,16 +3,21 @@ package msocket.example.server
 import akka.NotUsed
 import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest, WSProbe}
 import akka.stream.scaladsl.Source
-import mscoket.impl.HttpCodecs
-import org.scalatest.{FunSuite, Matchers}
 import akka.testkit.TestDuration
 import csw.example.api.protocol.Codecs
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, HelloStream}
+import io.bullet.borer.{Json, Target}
+import mscoket.impl.post.ClientHttpCodecs
 import mscoket.impl.ws.Encoding.JsonText
+import msocket.api.models.FetchEvent
+import org.scalatest.{FunSuite, Matchers}
 
 import scala.concurrent.duration.DurationLong
 
-class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers with Codecs with HttpCodecs {
+class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers with Codecs with ClientHttpCodecs {
+
+  override def encoding: Target = Json
+
   private val wiring = new ServerWiring
 
   test("websocket") {
@@ -36,7 +41,7 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
   test("http-streaming") {
     implicit val timeout: RouteTestTimeout = RouteTestTimeout(10.seconds.dilated)
     Post("/post", HelloStream("mushtaq")) ~> wiring.exampleServer.routesForTesting ~> check {
-      responseAs[Source[String, NotUsed]].take(3).runForeach(println)
+      responseAs[Source[FetchEvent, NotUsed]].take(3).runForeach(println)
     }
   }
 }

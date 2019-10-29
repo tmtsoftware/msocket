@@ -8,13 +8,12 @@ import csw.aas.http.SecurityDirectives
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
-import mscoket.impl.HttpCodecs
-import mscoket.impl.post.PostStreamExtensions
+import mscoket.impl.post.{PostStreamExtensions, ServerHttpCodecs}
 import msocket.api.MessageHandler
 
 class ExamplePostHandler(exampleApi: ExampleApi, securityDirectives: SecurityDirectives)(implicit mat: Materializer)
     extends MessageHandler[ExampleRequest, Route]
-    with HttpCodecs
+    with ServerHttpCodecs
     with PostStreamExtensions {
 
   import securityDirectives._

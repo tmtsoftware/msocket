@@ -8,6 +8,7 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 import io.bullet.borer.{Decoder, Json}
+import mscoket.impl.post.{PostDirectives, ServerHttpCodecs}
 import mscoket.impl.sse.QueryHeader
 import mscoket.impl.ws.WsServerFlow
 import msocket.api.MessageHandler
@@ -17,7 +18,7 @@ class RoutesFactory[Req: Decoder](
     websocketHandler: MessageHandler[Req, Source[Message, NotUsed]],
     sseHandler: MessageHandler[Req, Route]
 )(implicit mat: Materializer)
-    extends HttpCodecs {
+    extends ServerHttpCodecs {
 
   val route: Route = cors() {
     get {
@@ -34,7 +35,9 @@ class RoutesFactory[Req: Decoder](
     } ~
     post {
       path("post") {
-        entity(as[Req])(postHandler.handle)
+        PostDirectives.withAcceptHeader {
+          entity(as[Req])(postHandler.handle)
+        }
       }
     }
   }

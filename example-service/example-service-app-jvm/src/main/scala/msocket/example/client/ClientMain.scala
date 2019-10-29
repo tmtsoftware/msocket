@@ -17,12 +17,13 @@ object ClientMain extends Codecs {
 
     def action[Req: Encoder](req: Req): Unit = println(Json.encode(req).toUtf8String)
 
-    lazy val httpPostTransport  = new HttpPostTransport[ExampleRequest]("http://localhost:5000/post", None).interceptRequest(action)
+    lazy val httpPostTransport =
+      new HttpPostTransport[ExampleRequest]("http://localhost:5000/post", Json, () => None).interceptRequest(action)
     lazy val sseTransport       = new SseTransport[ExampleRequest]("http://localhost:5000/sse")
     lazy val websocketTransport = new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket").interceptRequest(action)
     lazy val rSocketTransport   = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")
 
-    val exampleClient = new ExampleClient(websocketTransport)
+    val exampleClient = new ExampleClient(httpPostTransport)
     new ClientApp(exampleClient).testRun()
   }
 

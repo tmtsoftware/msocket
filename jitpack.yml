@@ -4,4 +4,5 @@ before_install:
   - ./adopt-open-jdk-11-setup.sh
   - wget http://central.maven.org/maven2/org/scala-sbt/sbt-launch/1.3.2/sbt-launch-1.3.2.jar
 install:
+  # Do not publish example-service as it is a test project. Moreover, it depends on csw which itself (in future) may depend on msocket creating a cycle
   - java -Xms2048m -Xmx2048m -XX:ReservedCodeCacheSize=512m -jar sbt-launch-1.3.2.jar -Dsbt.log.noformat=true clean akka-js/publishM2 msocket/publishM2

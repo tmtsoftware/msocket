@@ -7,8 +7,8 @@ import akka.stream.Materializer
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
-import mscoket.impl.sse.SseStreamExtensions
 import msocket.api.MessageHandler
+import msocket.impl.sse.SseStreamExtensions
 
 class ExampleSseHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
     extends MessageHandler[ExampleRequest, Route]

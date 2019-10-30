@@ -7,8 +7,8 @@ import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
 import io.rsocket.Payload
-import mscoket.impl.rsocket.server.RSocketStreamExtensions
 import msocket.api.MessageHandler
+import msocket.impl.rsocket.server.RSocketStreamExtensions
 
 class ExampleRSocketHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
     extends MessageHandler[ExampleRequest, Source[Payload, NotUsed]]

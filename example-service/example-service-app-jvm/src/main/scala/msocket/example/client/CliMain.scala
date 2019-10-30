@@ -7,12 +7,12 @@ import csw.aas.installed.api.InstalledAppAuthAdapter
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{Codecs, ExampleRequest}
 import io.bullet.borer.Json
-import mscoket.impl.post.HttpPostTransport
-import mscoket.impl.rsocket.client.RSocketTransportFactory
-import mscoket.impl.sse.SseTransport
-import mscoket.impl.ws.Encoding.JsonText
-import mscoket.impl.ws.WebsocketTransport
+import msocket.impl.ws.Encoding.JsonText
 import msocket.example.client.CliCommand._
+import msocket.impl.post.HttpPostTransport
+import msocket.impl.rsocket.client.RSocketTransportFactory
+import msocket.impl.sse.SseTransport
+import msocket.impl.ws.WebsocketTransport
 import pprint.{pprintln => println}
 
 object CliMain extends CommandApp[CliCommand] with Codecs {

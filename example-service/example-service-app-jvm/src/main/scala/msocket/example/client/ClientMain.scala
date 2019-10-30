@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{Codecs, ExampleRequest}
 import io.bullet.borer.{Encoder, Json}
-import msocket.impl.ws.Encoding.{CborBinary, JsonText}
+import msocket.impl.Encoding.CborBinary
 import msocket.impl.post.HttpPostTransport
 import msocket.impl.rsocket.client.RSocketTransportFactory
 import msocket.impl.sse.SseTransport

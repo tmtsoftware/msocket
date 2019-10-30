@@ -7,7 +7,7 @@ import akka.testkit.TestDuration
 import csw.example.api.protocol.Codecs
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, HelloStream}
 import io.bullet.borer.{Json, Target}
-import msocket.impl.ws.Encoding.CborBinary
+import msocket.impl.Encoding.CborBinary
 import msocket.api.models.FetchEvent
 import msocket.impl.post.ClientHttpCodecs
 import org.scalatest.{FunSuite, Matchers}

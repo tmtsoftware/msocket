@@ -13,13 +13,11 @@ import csw.example.impl.ExampleImpl
 import csw.location.api.scaladsl.LocationService
 import csw.location.client.scaladsl.HttpLocationServiceFactory
 import io.rsocket.Payload
-import msocket.impl.RoutesFactory
-import msocket.impl.ws.Encoding
 import msocket.api.MessageHandler
 import msocket.example.server.handlers.{ExamplePostHandler, ExampleRSocketHandler, ExampleSseHandler, ExampleWebsocketHandler}
 import msocket.impl.RoutesFactory
 import msocket.impl.rsocket.server.RSocketServer
-import msocket.impl.ws.Encoding
+import msocket.impl.Encoding
 
 import scala.concurrent.ExecutionContext
 

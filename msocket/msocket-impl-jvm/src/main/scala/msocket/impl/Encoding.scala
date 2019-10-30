@@ -1,4 +1,4 @@
-package msocket.impl.ws
+package msocket.impl
 
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.util.ByteString

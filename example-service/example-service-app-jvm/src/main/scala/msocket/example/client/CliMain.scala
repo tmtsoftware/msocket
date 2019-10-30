@@ -7,7 +7,7 @@ import csw.aas.installed.api.InstalledAppAuthAdapter
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{Codecs, ExampleRequest}
 import io.bullet.borer.Json
-import msocket.impl.ws.Encoding.JsonText
+import msocket.impl.Encoding.JsonText
 import msocket.example.client.CliCommand._
 import msocket.impl.post.HttpPostTransport
 import msocket.impl.rsocket.client.RSocketTransportFactory

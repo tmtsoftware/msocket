@@ -11,7 +11,7 @@ import io.bullet.borer.{Decoder, Json}
 import msocket.api.MessageHandler
 import msocket.impl.post.{PostDirectives, ServerHttpCodecs}
 import msocket.impl.sse.QueryHeader
-import msocket.impl.ws.{Encoding, WsServerFlow}
+import msocket.impl.ws.WsServerFlow
 
 class RoutesFactory[Req: Decoder](
     postHandler: MessageHandler[Req, Route],

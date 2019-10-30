@@ -7,8 +7,9 @@ import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Transport
 import msocket.api.models.{Result, StreamError, StreamStatus}
+import msocket.impl.Encoding
+import msocket.impl.Encoding.{CborBinary, JsonText}
 import msocket.impl.StreamSplitter._
-import msocket.impl.ws.Encoding.{CborBinary, JsonText}
 
 import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}

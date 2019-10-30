@@ -10,12 +10,12 @@ import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 import io.bullet.borer.{Decoder, Json}
 import mscoket.impl.post.{PostDirectives, ServerHttpCodecs}
 import mscoket.impl.sse.QueryHeader
-import mscoket.impl.ws.WsServerFlow
+import mscoket.impl.ws.{Encoding, WsServerFlow}
 import msocket.api.MessageHandler
 
 class RoutesFactory[Req: Decoder](
     postHandler: MessageHandler[Req, Route],
-    websocketHandler: MessageHandler[Req, Source[Message, NotUsed]],
+    websocketHandler: Encoding[_] => MessageHandler[Req, Source[Message, NotUsed]],
     sseHandler: MessageHandler[Req, Route]
 )(implicit mat: Materializer)
     extends ServerHttpCodecs {

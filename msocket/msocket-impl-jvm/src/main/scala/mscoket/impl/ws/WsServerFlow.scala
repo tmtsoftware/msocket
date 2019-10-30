@@ -5,35 +5,37 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.Decoder
-import mscoket.impl.ws.Encoding.JsonText
+import mscoket.impl.ws.Encoding.{CborBinary, JsonText}
 import msocket.api.MessageHandler
 import msocket.api.models.{Result, StreamError}
 
 import scala.concurrent.duration.DurationLong
 import scala.util.control.NonFatal
 
-class WsServerFlow[T: Decoder](messageHandler: MessageHandler[T, Source[Message, NotUsed]])(implicit mat: Materializer) {
-
-  import mat.executionContext
+class WsServerFlow[T: Decoder](messageHandler: Encoding[_] => MessageHandler[T, Source[Message, NotUsed]])(implicit mat: Materializer) {
 
   val flow: Flow[Message, Message, NotUsed] = {
     Flow[Message]
       .take(1)
-      .mapAsync(16) {
-        case msg: TextMessage   => msg.toStrict(100.millis).map(_.text)
-        case msg: BinaryMessage => throw new RuntimeException("websocket transport currently does not handle binary messages")
+      .mapAsync(1) {
+        case msg: TextMessage   => msg.toStrict(100.millis)
+        case msg: BinaryMessage => msg.toStrict(100.millis)
       }
-      .flatMapConcat(handle)
+      .flatMapConcat {
+        case msg: TextMessage   => handle(msg.getStrictText, JsonText)
+        case msg: BinaryMessage => handle(msg.getStrictData, CborBinary)
+      }
   }
 
-  private def handle(text: String): Source[Message, NotUsed] = {
+  private def handle[E](text: E, encoding: Encoding[E]): Source[Message, NotUsed] = {
     try {
-      val request = JsonText.decodeText(text)
-      messageHandler.handle(request)
+      val request = encoding.decode(text)
+      messageHandler(encoding).handle(request)
     } catch {
       case NonFatal(ex) =>
         val error: Result[Unit, StreamError] = Result.Error(StreamError(ex.getClass.getSimpleName, ex.getMessage))
-        Source.single(JsonText.strictMessage(error))
+        Source.single(encoding.strictMessage(error))
     }
   }
+
 }

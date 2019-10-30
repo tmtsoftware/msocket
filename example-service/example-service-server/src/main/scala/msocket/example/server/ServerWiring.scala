@@ -15,6 +15,7 @@ import csw.location.client.scaladsl.HttpLocationServiceFactory
 import io.rsocket.Payload
 import mscoket.impl.RoutesFactory
 import mscoket.impl.rsocket.server.RSocketServer
+import mscoket.impl.ws.Encoding
 import msocket.api.MessageHandler
 import msocket.example.server.handlers.{ExamplePostHandler, ExampleRSocketHandler, ExampleSseHandler, ExampleWebsocketHandler}
 
@@ -33,11 +34,12 @@ class ServerWiring extends Codecs {
 
   lazy val sseHandler: MessageHandler[ExampleRequest, Route] = new ExampleSseHandler(exampleImpl)
 
-  lazy val websocketHandler: MessageHandler[ExampleRequest, Source[Message, NotUsed]] = new ExampleWebsocketHandler(exampleImpl)
+  def websocketHandlerFactory(encoding: Encoding[_]): MessageHandler[ExampleRequest, Source[Message, NotUsed]] =
+    new ExampleWebsocketHandler(exampleImpl, encoding)
 
   lazy val rSocketHandler: MessageHandler[ExampleRequest, Source[Payload, NotUsed]] = new ExampleRSocketHandler(exampleImpl)
 
-  lazy val routesFactory = new RoutesFactory(postHandler, websocketHandler, sseHandler)
+  lazy val routesFactory = new RoutesFactory(postHandler, websocketHandlerFactory, sseHandler)
   lazy val exampleServer = new ExampleServer(routesFactory.route)
   lazy val rSocketServer = new RSocketServer(rSocketHandler)
 }

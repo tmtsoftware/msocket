@@ -5,32 +5,22 @@ import akka.util.ByteString
 import io.bullet.borer._
 import io.bullet.borer.compat.akka._
 
-sealed abstract class Encoding(val target: Target, val Name: String, val isBinary: Boolean) {
+sealed abstract class Encoding[E] {
+  def encode[T: Encoder](payload: T): E
+  def decode[T: Decoder](input: E): T
   def strictMessage[T: Encoder](input: T): Message
-
-  def decodeBinary[T: Decoder](input: ByteString): T = target.decode(input).to[T].value
-  def decodeText[T: Decoder](input: String): T       = decodeBinary(ByteString(input))
-
-  def encodeBinary[T: Encoder](payload: T): ByteString = target.encode(payload).to[ByteString].result
-  def encodeText[T: Encoder](payload: T): String       = encodeBinary(payload).utf8String
 }
 
 object Encoding {
-  sealed abstract class BinaryEncoding(target: Target, name: String) extends Encoding(target, name, true) {
-    override def strictMessage[T: Encoder](input: T): Message = BinaryMessage.Strict(encodeBinary(input))
+  case object CborBinary extends Encoding[ByteString] {
+    def encode[T: Encoder](payload: T): ByteString   = Cbor.encode(payload).to[ByteString].result
+    def decode[T: Decoder](input: ByteString): T     = Cbor.decode(input).to[T].value
+    def strictMessage[T: Encoder](input: T): Message = BinaryMessage.Strict(encode(input))
   }
 
-  case object JsonText extends Encoding(Json, "json-text", false) {
-    override def strictMessage[T: Encoder](input: T): Message = TextMessage.Strict(encodeText(input))
-  }
-
-  case object JsonBinary extends BinaryEncoding(Json, "json-binary")
-  case object CborBinary extends BinaryEncoding(Cbor, "cbor-binary")
-
-  def fromString(string: String): Encoding = string.toLowerCase match {
-    case JsonText.Name   => JsonText
-    case JsonBinary.Name => JsonBinary
-    case CborBinary.Name => CborBinary
-    case encoding        => throw new RuntimeException(s"unsupported encoding: $encoding")
+  case object JsonText extends Encoding[String] {
+    def encode[T: Encoder](payload: T): String       = Json.encode(payload).toUtf8String
+    def decode[T: Decoder](input: String): T         = Json.decode(ByteString(input)).to[T].value
+    def strictMessage[T: Encoder](input: T): Message = TextMessage.Strict(encode(input))
   }
 }

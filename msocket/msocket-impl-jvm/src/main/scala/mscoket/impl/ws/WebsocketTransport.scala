@@ -6,14 +6,14 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest
 import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import mscoket.impl.StreamSplitter._
-import mscoket.impl.ws.Encoding.JsonText
+import mscoket.impl.ws.Encoding.{CborBinary, JsonText}
 import msocket.api.Transport
 import msocket.api.models.{Result, StreamError, StreamStatus}
 
 import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
 
-class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends Transport[Req] {
+class WebsocketTransport[Req: Encoder](uri: String, encoding: Encoding[_])(implicit actorSystem: ActorSystem) extends Transport[Req] {
 
   implicit val ec: ExecutionContext = actorSystem.dispatcher
 
@@ -29,10 +29,10 @@ class WebsocketTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorS
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] =
     setup
-      .request(JsonText.strictMessage(request))
+      .request(encoding.strictMessage(request))
       .mapAsync(16) {
-        case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decodeText(m.text))
-        case msg: BinaryMessage => throw new RuntimeException("websocket transport currently does not handle binary messages")
+        case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decode(m.text))
+        case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborBinary.decode(m.data))
       }
 
   override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {

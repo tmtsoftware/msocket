@@ -6,9 +6,8 @@ import caseapp.{CommandApp, RemainingArgs}
 import csw.aas.installed.api.InstalledAppAuthAdapter
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{Codecs, ExampleRequest}
-import io.bullet.borer.Json
-import msocket.impl.Encoding.JsonText
 import msocket.example.client.CliCommand._
+import msocket.impl.Encoding.JsonText
 import msocket.impl.post.HttpPostTransport
 import msocket.impl.rsocket.client.RSocketTransportFactory
 import msocket.impl.sse.SseTransport
@@ -32,7 +31,7 @@ object CliMain extends CommandApp[CliCommand] with Codecs {
       case MakeCall() =>
         println(adapter.getAccessToken())
         lazy val httpPostTransport =
-          new HttpPostTransport[ExampleRequest]("http://localhost:5000/post", Json, () => adapter.getAccessToken().map(_.value))
+          new HttpPostTransport[ExampleRequest]("http://localhost:5000/post", JsonText, () => adapter.getAccessToken().map(_.value))
         lazy val sseTransport       = new SseTransport[ExampleRequest]("http://localhost:5000/sse")
         lazy val websocketTransport = new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket", JsonText)
         lazy val rSocketTransport   = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")

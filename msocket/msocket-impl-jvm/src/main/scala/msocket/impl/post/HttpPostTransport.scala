@@ -1,7 +1,8 @@
 package msocket.impl.post
 
 import akka.NotUsed
-import akka.actor.ActorSystem
+import akka.actor.typed.ActorSystem
+import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
@@ -19,13 +20,13 @@ import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
 
 class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_], tokenFactory: () => Option[String])(
-    implicit actorSystem: ActorSystem
+    implicit actorSystem: ActorSystem[_]
 ) extends Transport[Req]
     with ClientHttpCodecs {
 
   override def encoding: Encoding[_] = messageEncoding
 
-  implicit val ec: ExecutionContext = actorSystem.dispatcher
+  implicit val ec: ExecutionContext = actorSystem.executionContext
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
     getResponse(request).flatMap(Unmarshal(_).to[Res])
@@ -60,7 +61,7 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
           case None        => Nil
         }
       )
-      Http().singleRequest(httpRequest).flatMap { response =>
+      Http()(actorSystem.toClassic).singleRequest(httpRequest).flatMap { response =>
         response.status match {
           case StatusCodes.OK => Future.successful(response)
           case statusCode =>

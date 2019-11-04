@@ -1,6 +1,6 @@
 package msocket.impl.rsocket.client
 
-import akka.actor.ActorSystem
+import akka.actor.typed.ActorSystem
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder, Json}
@@ -12,9 +12,9 @@ import msocket.api.models.{Result, StreamError, StreamStatus, Subscription}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RSocketTransport[Req: Encoder](rSocket: RSocket)(implicit actorSystem: ActorSystem) extends Transport[Req] {
+class RSocketTransport[Req: Encoder](rSocket: RSocket)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
 
-  implicit val ec: ExecutionContext = actorSystem.dispatcher
+  implicit val ec: ExecutionContext = actorSystem.executionContext
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
     requestResponseWithDelay(request)

@@ -1,13 +1,14 @@
 package msocket.impl.sse
 
-import akka.NotUsed
-import akka.actor.ActorSystem
+import akka.{NotUsed, actor}
+import akka.actor.typed.ActorSystem
+import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
-import akka.stream.KillSwitches
+import akka.stream.{KillSwitches, Materializer}
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import msocket.impl.StreamSplitter._
@@ -16,9 +17,11 @@ import msocket.api.models.{HttpException, Result, StreamError, StreamStatus, Sub
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem) extends Transport[Req] {
+class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
 
-  implicit val ec: ExecutionContext = actorSystem.dispatcher
+  implicit val ec: ExecutionContext               = actorSystem.executionContext
+  implicit val system: actor.ActorSystem          = actorSystem.toClassic
+  private implicit val materializer: Materializer = Materializer(actorSystem)
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
     requestResponseWithDelay(request)

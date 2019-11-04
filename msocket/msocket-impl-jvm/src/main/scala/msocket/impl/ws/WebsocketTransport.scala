@@ -1,6 +1,6 @@
 package msocket.impl.ws
 
-import akka.actor.ActorSystem
+import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
@@ -14,9 +14,9 @@ import msocket.impl.StreamSplitter._
 import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
 
-class WebsocketTransport[Req: Encoder](uri: String, encoding: Encoding[_])(implicit actorSystem: ActorSystem) extends Transport[Req] {
+class WebsocketTransport[Req: Encoder](uri: String, encoding: Encoding[_])(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
 
-  implicit val ec: ExecutionContext = actorSystem.dispatcher
+  implicit val ec: ExecutionContext = actorSystem.executionContext
 
   private val setup = new WebsocketTransportSetup(WebSocketRequest(uri))
 

@@ -1,8 +1,8 @@
 package msocket.example.server
 
 import akka.NotUsed
-import akka.actor.ActorSystem
-import akka.actor.typed.scaladsl.adapter._
+import akka.actor.typed.ActorSystem
+import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.model.ws.Message
 import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.Source
@@ -22,12 +22,12 @@ import msocket.impl.Encoding
 import scala.concurrent.ExecutionContext
 
 class ServerWiring extends Codecs {
-  implicit lazy val actorSystem: ActorSystem = ActorSystem("server")
-  implicit lazy val ec: ExecutionContext     = actorSystem.dispatcher
+  implicit lazy val actorSystem: ActorSystem[_] = ActorSystem(Behaviors.empty, "server")
+  implicit lazy val ec: ExecutionContext        = actorSystem.executionContext
 
   lazy val exampleImpl: ExampleApi = new ExampleImpl
 
-  lazy val locationService: LocationService = HttpLocationServiceFactory.makeLocalClient(actorSystem.toTyped, implicitly)
+  lazy val locationService: LocationService = HttpLocationServiceFactory.makeLocalClient(actorSystem, implicitly)
   lazy val securityDirectives               = SecurityDirectives(locationService)
 
   lazy val postHandler: MessageHandler[ExampleRequest, Route] = new ExamplePostHandler(exampleImpl, securityDirectives)

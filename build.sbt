@@ -45,7 +45,8 @@ lazy val `akka-js` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Dummy)
   .jvmSettings(
     libraryDependencies ++= Seq(
-      `akka-stream`
+      `akka-stream`,
+      `akka-actor-typed`
     )
   )
 

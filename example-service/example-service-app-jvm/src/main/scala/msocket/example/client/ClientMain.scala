@@ -1,6 +1,7 @@
 package msocket.example.client
 
-import akka.actor.ActorSystem
+import akka.actor.typed.ActorSystem
+import akka.actor.typed.scaladsl.Behaviors
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{Codecs, ExampleRequest}
 import io.bullet.borer.{Encoder, Json}
@@ -13,8 +14,8 @@ import msocket.impl.ws.WebsocketTransport
 object ClientMain extends Codecs {
 
   def main(args: Array[String]): Unit = {
-    implicit lazy val system: ActorSystem = ActorSystem()
-    import system.dispatcher
+    implicit lazy val system: ActorSystem[Nothing] = ActorSystem(Behaviors.empty, "demo")
+    import system.executionContext
 
     def action[Req: Encoder](req: Req): Unit = println(Json.encode(req).toUtf8String)
 

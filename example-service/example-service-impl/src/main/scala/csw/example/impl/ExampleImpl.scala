@@ -1,7 +1,8 @@
 package csw.example.impl
 
 import akka.NotUsed
-import akka.actor.ActorSystem
+import akka.actor.typed.ActorSystem
+import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Source}
 import csw.example.api.ExampleApi
@@ -10,15 +11,15 @@ import msocket.api.models.{StreamError, StreamStarted, StreamStatus, Subscriptio
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
 
-class ExampleImpl(implicit actorSystem: ActorSystem) extends ExampleApi {
-  import actorSystem.dispatcher
+class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
+  import actorSystem.executionContext
 
   override def hello(name: String): Future[String] = {
     Future.successful(s"Hello $name")
   }
 
   override def square(number: Int): Future[Int] = {
-    akka.pattern.after(3.minutes, actorSystem.scheduler) {
+    akka.pattern.after(3.minutes, actorSystem.toClassic.scheduler) {
       Future.successful(number * number)
     }
   }

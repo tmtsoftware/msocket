@@ -8,6 +8,7 @@ object Libs {
   val `silencer-plugin` = "com.github.ghik" %% "silencer-plugin" % "1.4.2"
 
   val `akka-stream`         = "com.typesafe.akka" %% "akka-stream"         % "2.6.0-RC1"
+  val `akka-actor-typed`    = "com.typesafe.akka" %% "akka-actor-typed"    % "2.6.0-RC1"
   val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % "2.6.0-RC1"
 
   val `akka-http`            = "com.typesafe.akka" %% "akka-http"            % "10.1.10"

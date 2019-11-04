@@ -33,14 +33,21 @@ inThisBuild(
 lazy val `msocket-root` = project
   .in(file("."))
   .aggregate(
-    `akka-js`,
+    `akka-js`.jvm,
+    `akka-js`.js,
     `msocket`,
     `example-service`
   )
 
 //************* akka-api *****************************************************
 
-lazy val `akka-js` = project.enablePlugins(ScalaJSPlugin)
+lazy val `akka-js` = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Dummy)
+  .jvmSettings(
+    libraryDependencies ++= Seq(
+      `akka-stream`
+    )
+  )
 
 //************* msocket *****************************************************
 
@@ -54,12 +61,7 @@ lazy val `msocket` = project.aggregate(
 lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("msocket/msocket-api"))
-  .jsConfigure(_.dependsOn(`akka-js`))
-  .jvmSettings(
-    libraryDependencies ++= Seq(
-      `akka-stream`
-    )
-  )
+  .dependsOn(`akka-js`)
   .settings(
     libraryDependencies ++= Seq(
       `borer-core`.value,

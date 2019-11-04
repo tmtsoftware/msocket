@@ -8,8 +8,11 @@ import scala.concurrent.{Future, Promise}
 
 abstract class ConnectedSource[Res, Mat] extends Source[Res, Mat] {
   def onTextMessage(res: String): Unit
-  var onMessage: Res => Unit     = x => ()
-  var subscription: Subscription = () => ()
+  protected var onMessage: Res => Unit = x => ()
+  var subscription: Subscription       = () => ()
+  def runForeach(f: Res => Unit): Unit = {
+    onMessage = f
+  }
 }
 
 class PlainConnectedSource[Res: Decoder] extends ConnectedSource[Res, Subscription] {
@@ -17,7 +20,7 @@ class PlainConnectedSource[Res: Decoder] extends ConnectedSource[Res, Subscripti
     onMessage(Json.decode(res.getBytes()).to[Res].value)
   }
 
-  override val mat: Subscription = subscription
+  override val materializedValue: Subscription = subscription
 }
 
 class ConnectedSourceWithStatus[Res: Decoder] extends ConnectedSource[Res, Future[StreamStatus]] {
@@ -31,5 +34,5 @@ class ConnectedSourceWithStatus[Res: Decoder] extends ConnectedSource[Res, Futur
     }
   }
 
-  override val mat: Future[StreamStatus] = matPromise.future
+  override val materializedValue: Future[StreamStatus] = matPromise.future
 }

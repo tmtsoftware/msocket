@@ -16,12 +16,16 @@ class ClientAppJs(client: ExampleClient)(implicit ec: ExecutionContext) {
     client.square(4).onComplete(println)
 
     val numberStream: Source[Int, Future[StreamStatus]] = client.getNumbers(3)
-    numberStream.mat.onComplete(println)
-    numberStream.onMessage = x => println(s"**********************  $x")
+    numberStream.materializedValue.onComplete(println)
+    numberStream.runForeach { x =>
+      println(s"**********************  $x")
+    }
 
     client.hello("mushtaq").onComplete(println)
     val postHelloStream: Source[String, Subscription] = client.helloStream("mushtaq")
-    postHelloStream.onMessage = x => println(s"--------> $x")
+    postHelloStream.runForeach { x =>
+      println(s"--------> $x")
+    }
 
     client.hello("msuhtaq1").onComplete(println)
   }

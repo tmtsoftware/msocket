@@ -1,9 +1,8 @@
 package msocket.impl.streaming
 
-import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Json}
-import msocket.api.models.{Result, StreamError, StreamStarted, StreamStatus, Subscription}
+import msocket.api.models._
 
 import scala.concurrent.{Future, Promise}
 
@@ -13,12 +12,12 @@ abstract class ConnectedSource[Res, Mat] extends Source[Res, Mat] {
   var subscription: Subscription = () => ()
 }
 
-class PlainConnectedSource[Res: Decoder] extends ConnectedSource[Res, NotUsed] {
+class PlainConnectedSource[Res: Decoder] extends ConnectedSource[Res, Subscription] {
   override def onTextMessage(res: String): Unit = {
     onMessage(Json.decode(res.getBytes()).to[Res].value)
   }
 
-  override val mat: NotUsed = NotUsed
+  override val mat: Subscription = subscription
 }
 
 class ConnectedSourceWithStatus[Res: Decoder] extends ConnectedSource[Res, Future[StreamStatus]] {
@@ -27,7 +26,7 @@ class ConnectedSourceWithStatus[Res: Decoder] extends ConnectedSource[Res, Futur
   override def onTextMessage(res: String): Unit = {
     val response = Json.decode(res.getBytes()).to[Result[Res, StreamError]].value
     response match {
-      case Result.Success(value) => onMessage(value); matPromise.trySuccess(StreamStarted(() => subscription.cancel()))
+      case Result.Success(value) => onMessage(value); matPromise.trySuccess(StreamStarted(subscription))
       case Result.Error(error)   => matPromise.trySuccess(error); subscription.cancel()
     }
   }

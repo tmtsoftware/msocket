@@ -1,10 +1,9 @@
 package msocket.impl.streaming
 
-import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Transport
-import msocket.api.models.StreamStatus
+import msocket.api.models.{StreamStatus, Subscription}
 
 import scala.concurrent.{Future, Promise}
 
@@ -20,7 +19,7 @@ abstract class StreamingTransportJs[Req: Encoder](connectionFactory: ConnectionF
     promise.future
   }
 
-  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
+  override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
     connectionFactory.connect(request, new PlainConnectedSource)
   }
 

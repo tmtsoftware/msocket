@@ -1,12 +1,12 @@
 package msocket.impl.ws
 
-import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
-import akka.stream.scaladsl.{Sink, Source}
+import akka.stream.KillSwitches
+import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Transport
-import msocket.api.models.{Result, StreamError, StreamStatus}
+import msocket.api.models.{Result, StreamError, StreamStatus, Subscription}
 import msocket.impl.Encoding
 import msocket.impl.Encoding.{CborBinary, JsonText}
 import msocket.impl.StreamSplitter._
@@ -28,13 +28,15 @@ class WebsocketTransport[Req: Encoder](uri: String, encoding: Encoding[_])(impli
     requestStream(request).runWith(Sink.head)
   }
 
-  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] =
+  override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] =
     setup
       .request(encoding.strictMessage(request))
       .mapAsync(16) {
         case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decode(m.text))
         case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborBinary.decode(m.data))
       }
+      .viaMat(KillSwitches.single)(Keep.right)
+      .mapMaterializedValue(switch => () => switch.shutdown())
 
   override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
     requestStream[Result[Res, StreamError]](request).split

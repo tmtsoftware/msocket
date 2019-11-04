@@ -7,11 +7,12 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
-import akka.stream.scaladsl.{Sink, Source}
+import akka.stream.KillSwitches
+import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import msocket.impl.StreamSplitter._
 import msocket.api.Transport
-import msocket.api.models.{HttpException, Result, StreamError, StreamStatus}
+import msocket.api.models.{HttpException, Result, StreamError, StreamStatus, Subscription}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -27,12 +28,13 @@ class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem)
     requestStream(request).runWith(Sink.head)
   }
 
-  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
+  override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
     val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
     Source
       .futureSource(futureSource)
       .map(event => Json.decode(event.data.getBytes()).to[Res].value)
-      .mapMaterializedValue(_ => NotUsed)
+      .viaMat(KillSwitches.single)(Keep.right)
+      .mapMaterializedValue(switch => () => switch.shutdown())
   }
 
   override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {

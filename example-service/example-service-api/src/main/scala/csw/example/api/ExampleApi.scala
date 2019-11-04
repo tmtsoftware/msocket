@@ -1,8 +1,7 @@
 package csw.example.api
 
-import akka.NotUsed
 import akka.stream.scaladsl.Source
-import msocket.api.models.StreamStatus
+import msocket.api.models.{StreamStatus, Subscription}
 
 import scala.concurrent.Future
 
@@ -10,6 +9,6 @@ trait ExampleApi {
   def hello(name: String): Future[String]
   def square(number: Int): Future[Int]
 
-  def helloStream(name: String): Source[String, NotUsed]
+  def helloStream(name: String): Source[String, Subscription]
   def getNumbers(divisibleBy: Int): Source[Int, Future[StreamStatus]]
 }

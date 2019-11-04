@@ -5,7 +5,7 @@ import akka.actor.ActorSystem
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Source}
 import csw.example.api.ExampleApi
-import msocket.api.models.{StreamError, StreamStarted, StreamStatus}
+import msocket.api.models.{StreamError, StreamStarted, StreamStatus, Subscription}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
@@ -25,13 +25,15 @@ class ExampleImpl(implicit actorSystem: ActorSystem) extends ExampleApi {
 
   //////////////
 
-  override def helloStream(name: String): Source[String, NotUsed] = {
+  override def helloStream(name: String): Source[String, Subscription] = {
     Source
       .tick(100.millis, 100.millis, ())
       .scan(0)((acc, _) => acc + 1)
       .map(x => s"hello \n $name again $x")
       .mapMaterializedValue(_ => NotUsed)
       .take(50)
+      .viaMat(KillSwitches.single)(Keep.right)
+      .mapMaterializedValue(switch => () => switch.shutdown())
   }
 
   override def getNumbers(divisibleBy: Int): Source[Int, Future[StreamStatus]] = {

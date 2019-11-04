@@ -1,10 +1,9 @@
 package msocket.api.utils
 
-import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Transport
-import msocket.api.models.StreamStatus
+import msocket.api.models.{StreamStatus, Subscription}
 
 import scala.concurrent.Future
 
@@ -19,7 +18,7 @@ class InterceptedTransport[Req: Encoder](transport: Transport[Req], action: Req 
     transport.requestResponseWithDelay(request)
   }
 
-  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
+  override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
     action(request)
     transport.requestStream(request)
   }

@@ -7,7 +7,8 @@ import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.scaladsl.{Sink, Source}
+import akka.stream.KillSwitches
+import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import msocket.api.Transport
 import msocket.api.models._
@@ -34,13 +35,14 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
     requestStream(request).runWith(Sink.head)
   }
 
-  override def requestStream[Res: Decoder](request: Req): Source[Res, NotUsed] = {
+  override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
     val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[FetchEvent, NotUsed]])
     Source
       .futureSource(futureSource)
       .filter(_ != FetchEvent.Heartbeat)
       .map(event => Json.decode(event.data.getBytes()).to[Res].value)
-      .mapMaterializedValue(_ => NotUsed)
+      .viaMat(KillSwitches.single)(Keep.right)
+      .mapMaterializedValue(switch => () => switch.shutdown())
   }
 
   override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {

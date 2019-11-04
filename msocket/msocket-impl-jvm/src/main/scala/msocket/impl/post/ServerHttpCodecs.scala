@@ -7,8 +7,9 @@ import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
 import io.bullet.borer._
 import io.bullet.borer.compat.AkkaHttpCompat
+import msocket.api.codecs.BasicCodecs
 
-trait ServerHttpCodecs extends AkkaHttpCompat {
+trait ServerHttpCodecs extends AkkaHttpCompat with BasicCodecs {
   val jsonStreamingSupport: JsonEntityStreamingSupport = EntityStreamingSupport
     .json(8 * 1024)
     .withFramingRenderer(Flow[ByteString].intersperse(ByteString("\n")))

@@ -33,7 +33,7 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
   }
 
   override def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res] = {
-    requestStream(request).runWith(Sink.head)
+    requestStream[Res](request).runWith(Sink.head)
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {

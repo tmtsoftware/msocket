@@ -2,7 +2,7 @@
 
 console.log("hello")
 
-const webSocket = new WebSocket("ws://localhost:5000/websocket");
+const webSocket = new WebSocket("ws://localhost:5000/websocket-endpoint");
 webSocket.onmessage = (m) => {
     console.log(m)
 };

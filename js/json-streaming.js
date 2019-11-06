@@ -1,6 +1,6 @@
 console.log("hello")
 
-postData('http://localhost:5000/post', {Hello: {name: "abc"}})
+postData('http://localhost:5000/post-endpoint', {Hello: {name: "abc"}})
     .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
     .catch(error => console.error(error));
 

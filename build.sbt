@@ -76,9 +76,7 @@ lazy val `msocket-impl-jvm` = project
   .settings(
     libraryDependencies ++= Seq(
       `akka-http`,
-      `borer-compat-akka`,
-      `akka-http-spray-json`,
-      `akka-http-cors`
+      `borer-compat-akka`
     )
   )
 
@@ -132,6 +130,7 @@ lazy val `example-service-server` = project
     libraryDependencies ++= Seq(
       `csw-location-client`,
       `csw-aas-http`,
+      `akka-http-cors`,
       `scalatest`.value     % Test,
       `akka-http-testkit`   % Test,
       `akka-stream-testkit` % Test

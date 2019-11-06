@@ -12,7 +12,6 @@ object Libs {
   val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % "2.6.0-RC1"
 
   val `akka-http`            = "com.typesafe.akka" %% "akka-http"            % "10.1.10"
-  val `akka-http-spray-json` = "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.10"
   val `akka-http-testkit`    = "com.typesafe.akka" %% "akka-http-testkit"    % "10.1.10"
 
   val `borer-core`        = dep("io.bullet" %%% "borer-core" % "1.1.0")

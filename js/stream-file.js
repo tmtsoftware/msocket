@@ -33,7 +33,7 @@ async function* makeTextFileLineIterator(fileURL) {
 }
 
 async function f() {
-    for await (let line of makeTextFileLineIterator('http://localhost:5000/post')) {
+    for await (let line of makeTextFileLineIterator('http://localhost:5000/post-endpoint')) {
         console.log(line);
     }
 }

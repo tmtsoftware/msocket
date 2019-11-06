@@ -8,7 +8,7 @@ import csw.example.api.protocol.Codecs
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, HelloStream}
 import msocket.api.models.FetchEvent
 import msocket.impl.Encoding
-import msocket.impl.Encoding.{CborBinary, JsonText}
+import msocket.impl.Encoding.JsonText
 import msocket.impl.post.ClientHttpCodecs
 import org.scalatest.{FunSuite, Matchers}
 
@@ -24,7 +24,7 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
 
     val wsClient = WSProbe()
 
-    WS(s"/websocket", wsClient.flow) ~> wiring.exampleServer.routesForTesting ~> check {
+    WS(s"/websocket-endpoint", wsClient.flow) ~> wiring.exampleServer.routesForTesting ~> check {
       wsClient.sendMessage(JsonText.strictMessage(GetNumbers(3)))
       isWebSocketUpgrade shouldBe true
 //      wsClient.expectMessage().asBinaryMessage.getStreamedData.asScala.runForeach(x => println(x.utf8String))
@@ -40,7 +40,7 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
 
   test("http-streaming") {
     implicit val timeout: RouteTestTimeout = RouteTestTimeout(10.seconds.dilated)
-    Post("/post", HelloStream("mushtaq")) ~> wiring.exampleServer.routesForTesting ~> check {
+    Post("/post-endpoint", HelloStream("mushtaq")) ~> wiring.exampleServer.routesForTesting ~> check {
       responseAs[Source[FetchEvent, NotUsed]].take(3).runForeach(println)
     }
   }

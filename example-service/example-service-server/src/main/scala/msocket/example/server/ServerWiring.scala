@@ -15,9 +15,11 @@ import csw.location.client.scaladsl.HttpLocationServiceFactory
 import io.rsocket.Payload
 import msocket.api.MessageHandler
 import msocket.example.server.handlers.{ExamplePostHandler, ExampleRSocketHandler, ExampleSseHandler, ExampleWebsocketHandler}
-import msocket.impl.RoutesFactory
+import msocket.impl.post.PostRouteFactory
 import msocket.impl.rsocket.server.RSocketServer
-import msocket.impl.Encoding
+import msocket.impl.sse.SseRouteFactory
+import msocket.impl.ws.WebsocketRouteFactory
+import msocket.impl.{Encoding, RouteFactory}
 
 import scala.concurrent.ExecutionContext
 
@@ -39,7 +41,12 @@ class ServerWiring extends Codecs {
 
   lazy val rSocketHandler: MessageHandler[ExampleRequest, Source[Payload, NotUsed]] = new ExampleRSocketHandler(exampleImpl)
 
-  lazy val routesFactory = new RoutesFactory(postHandler, websocketHandlerFactory, sseHandler)
-  lazy val exampleServer = new ExampleServer(routesFactory.route)
+  lazy val applicationRoute: Route = RouteFactory.combine(
+    new PostRouteFactory("post-endpoint", postHandler),
+    new WebsocketRouteFactory("websocket-endpoint", websocketHandlerFactory),
+    new SseRouteFactory("sse-endpoint", sseHandler)
+  )
+
+  lazy val exampleServer = new ExampleServer(applicationRoute)
   lazy val rSocketServer = new RSocketServer(rSocketHandler)
 }

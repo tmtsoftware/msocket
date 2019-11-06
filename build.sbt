@@ -20,7 +20,8 @@ inThisBuild(
       "-unchecked",
       "-deprecation",
       "-Xlint:_,-missing-interpolator",
-      "-Ywarn-dead-code"
+      "-Ywarn-dead-code",
+      "-P:silencer:checkUnused"
       //      "-Xprint:typer"
     ),
     libraryDependencies ++= Seq(

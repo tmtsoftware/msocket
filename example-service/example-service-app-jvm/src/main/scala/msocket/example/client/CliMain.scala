@@ -3,6 +3,7 @@ package msocket.example.client
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import caseapp.{CommandApp, RemainingArgs}
+import com.github.ghik.silencer.silent
 import csw.aas.installed.api.InstalledAppAuthAdapter
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{Codecs, ExampleRequest}
@@ -31,10 +32,14 @@ object CliMain extends CommandApp[CliCommand] with Codecs {
       case MakeCall() =>
         println(adapter.getAccessToken())
         lazy val httpPostTransport =
-          new HttpPostTransport[ExampleRequest]("http://localhost:5000/post-endpoint", JsonText, () => adapter.getAccessToken().map(_.value))
-        lazy val sseTransport       = new SseTransport[ExampleRequest]("http://localhost:5000/sse-endpoint")
-        lazy val websocketTransport = new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket-endpoint", JsonText)
-        lazy val rSocketTransport   = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")
+          new HttpPostTransport[ExampleRequest](
+            "http://localhost:5000/post-endpoint",
+            JsonText,
+            () => adapter.getAccessToken().map(_.value)
+          )
+        @silent lazy val sseTransport       = new SseTransport[ExampleRequest]("http://localhost:5000/sse-endpoint")
+        @silent lazy val websocketTransport = new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket-endpoint", JsonText)
+        @silent lazy val rSocketTransport   = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")
 
         val exampleClient = new ExampleClient(httpPostTransport)
         new ClientApp(exampleClient).testRun()

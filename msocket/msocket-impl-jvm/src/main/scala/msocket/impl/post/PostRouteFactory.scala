@@ -6,9 +6,7 @@ import io.bullet.borer.Decoder
 import msocket.api.MessageHandler
 import msocket.impl.RouteFactory
 
-class PostRouteFactory[Req: Decoder](endpoint: String, postHandler: MessageHandler[Req, Route])
-    extends RouteFactory
-    with ServerHttpCodecs {
+class PostRouteFactory[Req: Decoder](endpoint: String, postHandler: MessageHandler[Req, Route]) extends RouteFactory with ServerHttpCodecs {
 
   def make(): Route = {
     post {

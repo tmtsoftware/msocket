@@ -12,7 +12,7 @@ abstract class StreamingTransportJs[Req: Encoder](connectionFactory: ConnectionF
   override def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res] = {
     val promise: Promise[Res] = Promise()
     val connectedSource       = connectionFactory.connect(request, new PlainConnectedSource)
-    connectedSource.runForeach { response =>
+    connectedSource.foreach { response =>
       connectedSource.subscription.cancel()
       promise.trySuccess(response)
     }

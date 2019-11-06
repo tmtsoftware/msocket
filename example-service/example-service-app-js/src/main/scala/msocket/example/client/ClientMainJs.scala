@@ -8,6 +8,7 @@ import msocket.impl.sse.SseTransportJs
 import msocket.impl.ws.WebsocketTransportJs
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import akka.stream.Materializer.Implicits.Dummy
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 
 object ClientMainJs extends Codecs {

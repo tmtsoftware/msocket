@@ -10,7 +10,7 @@ abstract class ConnectedSource[Res, Mat] extends Source[Res, Mat] {
   def onTextMessage(res: String): Unit
   protected var onMessage: Res => Unit = x => ()
   var subscription: Subscription       = () => ()
-  def runForeach(f: Res => Unit): Unit = {
+  def foreach(f: Res => Unit): Unit = {
     onMessage = f
   }
 }

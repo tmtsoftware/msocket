@@ -13,7 +13,6 @@ import msocket.impl.post.HttpPostTransport
 import msocket.impl.rsocket.client.RSocketTransportFactory
 import msocket.impl.sse.SseTransport
 import msocket.impl.ws.WebsocketTransport
-import pprint.{pprintln => println}
 
 object CliMain extends CommandApp[CliCommand] with Codecs {
 

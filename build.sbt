@@ -146,7 +146,6 @@ lazy val `example-service-app-jvm` = project
       `csw-aas-installed`,
       `case-app`,
       `csw-location-client`,
-      pprint,
       `scalatest`.value % Test
     )
   )

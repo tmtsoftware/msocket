@@ -1,13 +1,15 @@
 package msocket.example.client
 
-import akka.stream.Materializer
+import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.Source
 import csw.example.api.client.ExampleClient
 import msocket.api.models.{StreamStatus, Subscription}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
+import portable.akka.extensions.PortableAkka._
 
-class ClientAppJs(client: ExampleClient)(implicit ec: ExecutionContext, mat: Materializer) {
+class ClientAppJs(client: ExampleClient)(implicit actorSystem: ActorSystem[_]) {
+  import actorSystem.executionContext
 
   def testRun(): Unit = {
     client.hello("xyz").onComplete(println)
@@ -24,7 +26,6 @@ class ClientAppJs(client: ExampleClient)(implicit ec: ExecutionContext, mat: Mat
 
     client.hello("mushtaq").onComplete(println)
     val postHelloStream: Source[String, Subscription] = client.helloStream("mushtaq")
-    import msocket.impl.extensions.SourceExtensions.SourceWithSubscribe
     postHelloStream.subscribe { x =>
       println(s"--------> $x")
     }

@@ -6,6 +6,7 @@ import msocket.api.Transport
 import msocket.api.models.{StreamStatus, Subscription}
 
 import scala.concurrent.Future
+import scala.concurrent.duration.FiniteDuration
 
 class InterceptedTransport[Req: Encoder](transport: Transport[Req], action: Req => Unit) extends Transport {
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
@@ -13,9 +14,9 @@ class InterceptedTransport[Req: Encoder](transport: Transport[Req], action: Req 
     transport.requestResponse(request)
   }
 
-  override def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res] = {
+  override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
     action(request)
-    transport.requestResponseWithDelay(request)
+    transport.requestResponse(request, timeout)
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {

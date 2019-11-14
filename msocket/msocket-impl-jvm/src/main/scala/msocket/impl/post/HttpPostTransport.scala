@@ -16,7 +16,7 @@ import msocket.api.models._
 import msocket.impl.Encoding
 import msocket.impl.StreamSplitter._
 
-import scala.concurrent.duration.DurationLong
+import scala.concurrent.duration.{DurationLong, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future}
 
 class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_], tokenFactory: () => Option[String])(
@@ -32,8 +32,8 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
     getResponse(request).flatMap(Unmarshal(_).to[Res])
   }
 
-  override def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res] = {
-    requestStream[Res](request).runWith(Sink.head)
+  override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
+    requestStream[Res](request).completionTimeout(timeout).runWith(Sink.head)
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {

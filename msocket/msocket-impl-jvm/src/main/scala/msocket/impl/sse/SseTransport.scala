@@ -15,6 +15,8 @@ import msocket.impl.StreamSplitter._
 import msocket.api.Transport
 import msocket.api.models.{HttpException, Result, StreamError, StreamStatus, Subscription}
 
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
 
 class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
@@ -24,11 +26,11 @@ class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem[
   private implicit val materializer: Materializer = Materializer(actorSystem)
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
-    requestResponseWithDelay(request)
+    requestResponse(request, 1.hour)
   }
 
-  override def requestResponseWithDelay[Res: Decoder](request: Req): Future[Res] = {
-    requestStream(request).runWith(Sink.head)
+  override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
+    requestStream(request).completionTimeout(timeout).runWith(Sink.head)
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {

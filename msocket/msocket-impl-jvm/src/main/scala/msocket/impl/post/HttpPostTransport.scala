@@ -8,7 +8,7 @@ import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.KillSwitches
+import akka.stream.{KillSwitches, StreamTcpException}
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder, Json}
 import msocket.api.Transport
@@ -17,7 +17,7 @@ import msocket.impl.Encoding
 import msocket.impl.StreamSplitter._
 
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future, TimeoutException}
 
 class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_], tokenFactory: () => Option[String])(
     implicit actorSystem: ActorSystem[_]
@@ -68,6 +68,8 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
             response.entity.toStrict(1.seconds).map(x => throw HttpException(statusCode.intValue(), statusCode.reason(), x.toString()))
         }
       }
+    } recover {
+      case ex: StreamTcpException => throw new TimeoutException(ex.getMessage)
     }
   }
 

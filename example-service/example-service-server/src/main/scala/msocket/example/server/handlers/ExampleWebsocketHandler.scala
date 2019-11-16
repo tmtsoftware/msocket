@@ -1,8 +1,8 @@
 package msocket.example.server.handlers
 
 import akka.NotUsed
+import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.model.ws.Message
-import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest
@@ -11,7 +11,7 @@ import msocket.api.MessageHandler
 import msocket.impl.Encoding
 import msocket.impl.ws.WebsocketStreamExtensions
 
-class ExampleWebsocketHandler(exampleApi: ExampleApi, val encoding: Encoding[_])(implicit mat: Materializer)
+class ExampleWebsocketHandler(exampleApi: ExampleApi, val encoding: Encoding[_])(implicit actorSystem: ActorSystem[_])
     extends MessageHandler[ExampleRequest, Source[Message, NotUsed]]
     with WebsocketStreamExtensions {
 

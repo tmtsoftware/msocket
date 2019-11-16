@@ -1,18 +1,17 @@
 package msocket.example.server.handlers
 
+import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.stream.Materializer
 import csw.aas.http.AuthorizationPolicy.RealmRolePolicy
 import csw.aas.http.SecurityDirectives
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
-import msocket.impl.post.ServerHttpCodecs
 import msocket.api.MessageHandler
 import msocket.impl.post.{PostStreamExtensions, ServerHttpCodecs}
 
-class ExamplePostHandler(exampleApi: ExampleApi, securityDirectives: SecurityDirectives)(implicit mat: Materializer)
+class ExamplePostHandler(exampleApi: ExampleApi, securityDirectives: SecurityDirectives)(implicit actorSystem: ActorSystem[_])
     extends MessageHandler[ExampleRequest, Route]
     with ServerHttpCodecs
     with PostStreamExtensions {

@@ -1,8 +1,8 @@
 package msocket.impl.ws
 
 import akka.NotUsed
+import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
-import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.Decoder
 import msocket.api.MessageHandler
@@ -13,7 +13,9 @@ import msocket.impl.Encoding.{CborBinary, JsonText}
 import scala.concurrent.duration.DurationLong
 import scala.util.control.NonFatal
 
-class WsServerFlow[T: Decoder](messageHandler: Encoding[_] => MessageHandler[T, Source[Message, NotUsed]])(implicit mat: Materializer) {
+class WsServerFlow[T: Decoder](messageHandler: Encoding[_] => MessageHandler[T, Source[Message, NotUsed]])(
+    implicit actorSystem: ActorSystem[_]
+) {
 
   val flow: Flow[Message, Message, NotUsed] = {
     Flow[Message]

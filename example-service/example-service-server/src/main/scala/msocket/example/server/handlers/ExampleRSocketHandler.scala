@@ -1,7 +1,7 @@
 package msocket.example.server.handlers
 
 import akka.NotUsed
-import akka.stream.Materializer
+import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest
@@ -10,7 +10,7 @@ import io.rsocket.Payload
 import msocket.api.MessageHandler
 import msocket.impl.rsocket.server.RSocketStreamExtensions
 
-class ExampleRSocketHandler(exampleApi: ExampleApi)(implicit mat: Materializer)
+class ExampleRSocketHandler(exampleApi: ExampleApi)(implicit actorSystem: ActorSystem[_])
     extends MessageHandler[ExampleRequest, Source[Payload, NotUsed]]
     with RSocketStreamExtensions {
 

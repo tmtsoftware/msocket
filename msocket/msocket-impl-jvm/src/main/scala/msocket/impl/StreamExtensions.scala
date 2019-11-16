@@ -1,7 +1,7 @@
 package msocket.impl
 
 import akka.NotUsed
-import akka.stream.Materializer
+import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
 import msocket.api.models.{Result, StreamError, StreamStarted, StreamStatus}
@@ -15,7 +15,9 @@ trait StreamExtensions[M] {
     stream(Source.future(input))
   }
 
-  def streamWithStatus[S](input: Source[S, Future[StreamStatus]])(implicit encS: Encoder[S], mat: Materializer): Source[M, NotUsed] = {
+  def streamWithStatus[S](
+      input: Source[S, Future[StreamStatus]]
+  )(implicit encS: Encoder[S], actorSystem: ActorSystem[_]): Source[M, NotUsed] = {
     val (matF, source) = input.preMaterialize()
     val resultStream: Source[Result[S, StreamError], NotUsed] = Source.future(matF).flatMapConcat {
       case error: StreamError     => Source.single(Result.Error(error))

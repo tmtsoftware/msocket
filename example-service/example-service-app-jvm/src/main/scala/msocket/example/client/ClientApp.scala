@@ -1,11 +1,11 @@
 package msocket.example.client
 
-import akka.stream.Materializer
+import akka.actor.typed.ActorSystem
 import csw.example.api.client.ExampleClient
 
 import scala.concurrent.ExecutionContext
 
-class ClientApp(client: ExampleClient)(implicit ec: ExecutionContext, mat: Materializer) {
+class ClientApp(client: ExampleClient)(implicit ec: ExecutionContext, actorSystem: ActorSystem[_]) {
 
   def testRun(): Unit = {
     client.getNumbers(3).take(5).runForeach(println)

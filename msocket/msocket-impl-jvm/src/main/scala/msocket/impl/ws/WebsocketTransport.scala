@@ -25,7 +25,7 @@ class WebsocketTransport[Req: Encoder](uri: String, encoding: Encoding[_])(impli
   }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
-    requestStream(request).runWith(Sink.head)
+    requestStream(request).completionTimeout(timeout).runWith(Sink.head)
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] =

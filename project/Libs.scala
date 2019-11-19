@@ -4,21 +4,21 @@ import sbt._
 
 object Libs {
 
-  val `silencer-lib`    = "com.github.ghik" %% "silencer-lib"    % "1.4.2"
-  val `silencer-plugin` = "com.github.ghik" %% "silencer-plugin" % "1.4.2"
+  val `silencer-plugin` = "com.github.ghik" % "silencer-plugin" % "1.4.4" cross CrossVersion.full
+  val `silencer-lib`    = "com.github.ghik" % "silencer-lib"    % "1.4.4" cross CrossVersion.full
 
   val `akka-stream`         = "com.typesafe.akka" %% "akka-stream"         % "2.6.0"
   val `akka-actor-typed`    = "com.typesafe.akka" %% "akka-actor-typed"    % "2.6.0"
   val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % "2.6.0"
 
-  val `akka-http`            = "com.typesafe.akka" %% "akka-http"            % "10.1.10"
-  val `akka-http-testkit`    = "com.typesafe.akka" %% "akka-http-testkit"    % "10.1.10"
+  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.1.10"
+  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.1.10"
 
   val `borer-core`        = dep("io.bullet" %%% "borer-core" % "1.1.0")
   val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "1.1.0")
   val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "1.1.0"
 
-  val `akka-http-cors` = "ch.megard" %% "akka-http-cors" % "0.4.1"
+  val `akka-http-cors` = "ch.megard" %% "akka-http-cors" % "0.4.2"
   val `scalatest`      = dep("org.scalatest" %%% "scalatest" % "3.0.8")
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "0.9.7")
 
@@ -34,7 +34,7 @@ object Libs {
 }
 
 object csw {
-  val cswVersion            = "685c42f"
+  val cswVersion            = "df01712"
   private val Org           = "com.github.tmtsoftware.csw"
   val `csw-aas-http`        = Org %% "csw-aas-http" % cswVersion
   val `csw-aas-installed`   = Org %% "csw-aas-installed" % cswVersion

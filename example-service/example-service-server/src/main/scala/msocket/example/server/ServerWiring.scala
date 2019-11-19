@@ -29,7 +29,7 @@ class ServerWiring extends Codecs {
 
   lazy val exampleImpl: ExampleApi = new ExampleImpl
 
-  lazy val locationService: LocationService = HttpLocationServiceFactory.makeLocalClient(actorSystem, implicitly)
+  lazy val locationService: LocationService = HttpLocationServiceFactory.makeLocalClient(actorSystem)
   lazy val securityDirectives               = SecurityDirectives(locationService)
 
   lazy val postHandler: MessageHandler[ExampleRequest, Route] = new ExamplePostHandler(exampleImpl, securityDirectives)

@@ -10,6 +10,7 @@ import msocket.api.models.Result
 
 import scala.concurrent.duration.FiniteDuration
 
+object BasicCodecs extends BasicCodecs
 trait BasicCodecs {
   implicit def eitherEnc[E: Encoder, S: Encoder]: Encoder[Either[E, S]] =
     implicitly[Encoder[Result[S, E]]].contramap(Result.fromEither)
@@ -25,5 +26,4 @@ trait BasicCodecs {
   )
 
   implicit lazy val timeoutCodec: Codec[Timeout] = ArrayBasedCodecs.deriveUnaryCodec
-
 }

@@ -1,7 +1,6 @@
 package msocket.example.server.handlers
 
 import akka.NotUsed
-import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.model.ws.Message
 import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
@@ -11,7 +10,7 @@ import msocket.api.MessageHandler
 import msocket.impl.Encoding
 import msocket.impl.ws.WebsocketStreamExtensions
 
-class ExampleWebsocketHandler(exampleApi: ExampleApi, val encoding: Encoding[_])(implicit actorSystem: ActorSystem[_])
+class ExampleWebsocketHandler(exampleApi: ExampleApi, val encoding: Encoding[_])
     extends MessageHandler[ExampleRequest, Source[Message, NotUsed]]
     with WebsocketStreamExtensions {
 
@@ -20,6 +19,6 @@ class ExampleWebsocketHandler(exampleApi: ExampleApi, val encoding: Encoding[_])
     case Square(number) => futureAsStream(exampleApi.square(number))
 
     case HelloStream(name)       => stream(exampleApi.helloStream(name))
-    case GetNumbers(divisibleBy) => streamWithStatus(exampleApi.getNumbers(divisibleBy))
+    case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
   }
 }

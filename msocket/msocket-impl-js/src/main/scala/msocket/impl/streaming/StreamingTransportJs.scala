@@ -3,17 +3,21 @@ package msocket.impl.streaming
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Transport
-import msocket.api.models.{StreamStatus, Subscription}
+import msocket.api.models.Subscription
 
-import scala.scalajs.js.timers
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{Future, Promise, TimeoutException}
+import scala.scalajs.js.timers
 
-abstract class StreamingTransportJs[Req: Encoder](connectionFactory: ConnectionFactory[Req]) extends Transport[Req] {
+class StreamingTransportJs[Req: Encoder](connectionFactory: ConnectionFactory[Req]) extends Transport[Req] {
+
+  override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
+    throw new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport")
+  }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
     val promise: Promise[Res] = Promise()
-    val connectedSource       = connectionFactory.connect(request, new PlainConnectedSource)
+    val connectedSource       = connectionFactory.connect(request, new ConnectedSource)
     connectedSource.foreach { response =>
       connectedSource.subscription.cancel()
       promise.trySuccess(response)
@@ -25,10 +29,7 @@ abstract class StreamingTransportJs[Req: Encoder](connectionFactory: ConnectionF
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
-    connectionFactory.connect(request, new PlainConnectedSource)
+    connectionFactory.connect(request, new ConnectedSource)
   }
 
-  override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
-    connectionFactory.connect(request, new ConnectedSourceWithStatus)
-  }
 }

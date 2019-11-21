@@ -3,15 +3,15 @@ package msocket.impl.rsocket.client
 import akka.actor.typed.ActorSystem
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
+import akka.util.ByteString
 import io.bullet.borer.{Decoder, Encoder, Json}
 import io.rsocket.RSocket
 import io.rsocket.util.DefaultPayload
-import msocket.impl.StreamSplitter._
 import msocket.api.Transport
-import msocket.api.models.{Result, StreamError, StreamStatus, Subscription}
+import msocket.api.models.Subscription
+import msocket.impl.Encoding.CborBinary
 
 import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
 
 class RSocketTransport[Req: Encoder](rSocket: RSocket)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
@@ -19,7 +19,7 @@ class RSocketTransport[Req: Encoder](rSocket: RSocket)(implicit actorSystem: Act
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
-    requestResponse(request, 1.hour)
+    throw new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport")
   }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
@@ -30,13 +30,8 @@ class RSocketTransport[Req: Encoder](rSocket: RSocket)(implicit actorSystem: Act
     val value = rSocket.requestStream(DefaultPayload.create(Json.encode(request).toByteBuffer))
     Source
       .fromPublisher(value)
-      .map(x => Json.decode(x.getData).to[Res].value)
+      .map(x => CborBinary.decodeWithFrameError(ByteString.fromByteBuffer(x.getData)))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }
-
-  override def requestStreamWithStatus[Res: Decoder](request: Req): Source[Res, Future[StreamStatus]] = {
-    requestStream[Result[Res, StreamError]](request).split
-  }
-
 }

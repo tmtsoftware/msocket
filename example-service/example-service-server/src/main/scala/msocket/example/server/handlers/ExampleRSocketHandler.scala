@@ -1,7 +1,6 @@
 package msocket.example.server.handlers
 
 import akka.NotUsed
-import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest
@@ -10,7 +9,7 @@ import io.rsocket.Payload
 import msocket.api.MessageHandler
 import msocket.impl.rsocket.server.RSocketStreamExtensions
 
-class ExampleRSocketHandler(exampleApi: ExampleApi)(implicit actorSystem: ActorSystem[_])
+class ExampleRSocketHandler(exampleApi: ExampleApi)
     extends MessageHandler[ExampleRequest, Source[Payload, NotUsed]]
     with RSocketStreamExtensions {
 
@@ -19,6 +18,6 @@ class ExampleRSocketHandler(exampleApi: ExampleApi)(implicit actorSystem: ActorS
     case Square(number) => futureAsStream(exampleApi.square(number))
 
     case HelloStream(name)       => stream(exampleApi.helloStream(name))
-    case GetNumbers(divisibleBy) => streamWithStatus(exampleApi.getNumbers(divisibleBy))
+    case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
   }
 }

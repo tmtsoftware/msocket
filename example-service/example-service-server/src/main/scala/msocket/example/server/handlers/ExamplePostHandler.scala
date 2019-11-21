@@ -1,6 +1,5 @@
 package msocket.example.server.handlers
 
-import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import csw.aas.http.AuthorizationPolicy.RealmRolePolicy
@@ -11,7 +10,7 @@ import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, 
 import msocket.api.MessageHandler
 import msocket.impl.post.{PostStreamExtensions, ServerHttpCodecs}
 
-class ExamplePostHandler(exampleApi: ExampleApi, securityDirectives: SecurityDirectives)(implicit actorSystem: ActorSystem[_])
+class ExamplePostHandler(exampleApi: ExampleApi, securityDirectives: SecurityDirectives)
     extends MessageHandler[ExampleRequest, Route]
     with ServerHttpCodecs
     with PostStreamExtensions {
@@ -25,6 +24,6 @@ class ExamplePostHandler(exampleApi: ExampleApi, securityDirectives: SecurityDir
       }
     case Square(number)          => complete(futureAsStream(exampleApi.square(number)))
     case HelloStream(name)       => complete(stream(exampleApi.helloStream(name)))
-    case GetNumbers(divisibleBy) => complete(streamWithStatus(exampleApi.getNumbers(divisibleBy)))
+    case GetNumbers(divisibleBy) => complete(stream(exampleApi.getNumbers(divisibleBy)))
   }
 }

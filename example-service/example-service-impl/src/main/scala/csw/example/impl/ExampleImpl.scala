@@ -6,7 +6,7 @@ import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Source}
 import csw.example.api.ExampleApi
-import msocket.api.models.{StreamError, StreamStarted, StreamStatus, Subscription}
+import msocket.api.models.Subscription
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
@@ -37,15 +37,11 @@ class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
       .mapMaterializedValue(switch => () => switch.shutdown())
   }
 
-  override def getNumbers(divisibleBy: Int): Source[Int, Future[StreamStatus]] = {
-    if (divisibleBy == 0) {
-      Source.empty[Int].mapMaterializedValue(_ => Future.successful(StreamError("ArithmeticException", "divide by zero error")))
-    } else {
-      Source
-        .fromIterator(() => Iterator.from(1).filter(_ % divisibleBy == 0))
-        .throttle(1, 1.second)
-        .viaMat(KillSwitches.single)(Keep.right)
-        .mapMaterializedValue(switch => Future.successful(StreamStarted(() => switch.shutdown())))
-    }
+  override def getNumbers(divisibleBy: Int): Source[Int, Subscription] = {
+    Source
+      .fromIterator(() => Iterator.from(1).filter(_ % divisibleBy == 0))
+      .throttle(1, 1.second)
+      .viaMat(KillSwitches.single)(Keep.right)
+      .mapMaterializedValue(switch => () => switch.shutdown())
   }
 }

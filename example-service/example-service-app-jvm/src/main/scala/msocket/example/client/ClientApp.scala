@@ -12,7 +12,7 @@ class ClientApp(client: ExampleClient)(implicit ec: ExecutionContext, actorSyste
 //    Thread.sleep(Int.MaxValue)
     client.helloStream("mushtaq").runForeach(println)
 //    Thread.sleep(Int.MaxValue)
-    client.getNumbers(0).mapMaterializedValue(_.onComplete(println)).runForeach(println)
+    client.getNumbers(0).runForeach(println)
     client.hello("msuhtaq").onComplete(x => println(s"==============================> $x"))
     client.hello("msuhtaq1").onComplete(x => println(s"==============================> $x"))
     client.square(3).onComplete(x => println(s"==============================> $x"))

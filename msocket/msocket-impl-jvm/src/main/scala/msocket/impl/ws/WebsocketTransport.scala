@@ -12,7 +12,6 @@ import msocket.impl.Encoding.{CborBinary, JsonText}
 
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 class WebsocketTransport[Req: Encoder](uri: String, encoding: Encoding[_])(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
 
@@ -37,7 +36,4 @@ class WebsocketTransport[Req: Encoder](uri: String, encoding: Encoding[_])(impli
       }
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue[Subscription](switch => () => switch.shutdown())
-      .recover {
-        case NonFatal(ex) => ex.printStackTrace(); throw ex
-      }
 }

@@ -18,13 +18,15 @@ object ClientMain extends Codecs {
     implicit lazy val system: ActorSystem[Nothing] = ActorSystem(Behaviors.empty, "demo")
     import system.executionContext
 
-    def action[Req: Encoder](req: Req): Unit = println(Json.encode(req).toUtf8String)
+    def action[Req: Encoder](req: Req): Unit = {
+      println(Json.encode(req).toUtf8String)
+    }
 
     @silent lazy val httpPostTransport =
-      new HttpPostTransport[ExampleRequest]("http://localhost:5000/post-endpoint", JsonText, () => None).interceptRequest(action)
+      new HttpPostTransport[ExampleRequest]("http://localhost:5000/post-endpoint", JsonText, () => None).withEffect(action)
     @silent lazy val sseTransport = new SseTransport[ExampleRequest]("http://localhost:5000/sse-endpoint")
     lazy val websocketTransport =
-      new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket-endpoint", JsonText).interceptRequest(action)
+      new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket-endpoint", JsonText).withEffect(action)
     @silent lazy val rSocketTransport = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")
 
     val exampleClient = new ExampleClient(websocketTransport)

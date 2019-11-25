@@ -1,7 +1,7 @@
 addSbtPlugin("com.timushev.sbt"   % "sbt-updates"              % "0.5.0")
 addSbtPlugin("org.scalameta"      % "sbt-scalafmt"             % "2.2.1")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "0.6.1")
-addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "0.6.29")
+addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "0.6.31")
 addSbtPlugin("ch.epfl.scala"      % "sbt-scalajs-bundler"      % "0.15.0-0.6")
 addSbtPlugin("io.spray"           % "sbt-revolver"             % "0.9.1")
 

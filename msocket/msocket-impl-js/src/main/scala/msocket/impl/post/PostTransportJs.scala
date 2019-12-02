@@ -1,7 +1,7 @@
 package msocket.impl.post
 
 import io.bullet.borer.{Decoder, Encoder, Json}
-import msocket.api.models.MSocketErrorFrame
+import msocket.api.models.MSocketException
 import msocket.impl.streaming.StreamingTransportJs
 
 import scala.concurrent.duration.FiniteDuration
@@ -18,7 +18,7 @@ class PostTransportJs[Req: Encoder](uri: String)(implicit ec: ExecutionContext, 
           .to[Res]
           .valueTry
           .getOrElse {
-            throw Json.decode(data.getBytes()).to[MSocketErrorFrame].value
+            throw Json.decode(data.getBytes()).to[MSocketException].value
           }
       }
     }

@@ -3,16 +3,28 @@ package msocket.impl.rsocket.server
 import akka.NotUsed
 import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.{Sink, Source}
-import io.bullet.borer.{Decoder, Json}
+import akka.util.ByteString
+import io.bullet.borer.Decoder
+import io.rsocket.util.DefaultPayload
 import io.rsocket.{AbstractRSocket, Payload}
 import msocket.api.MessageHandler
+import msocket.api.models.MSocketException
+import msocket.impl.Encoding.CborBinary
 import reactor.core.publisher.Flux
+
+import scala.util.control.NonFatal
 
 class RSocketImpl[Req: Decoder](requestHandler: MessageHandler[Req, Source[Payload, NotUsed]])(implicit actorSystem: ActorSystem[_])
     extends AbstractRSocket {
 
   override def requestStream(payload: Payload): Flux[Payload] = {
-    val value = requestHandler.handle(Json.decode(payload.getData).to[Req].value)
+    val value = Source
+      .lazySingle[Req](() => CborBinary.decodeWithCustomException(ByteString.fromByteBuffer(payload.getData)))
+      .flatMapConcat(requestHandler.handle)
+      .recover {
+        case NonFatal(ex) => DefaultPayload.create(CborBinary.encode(MSocketException.fromThrowable(ex)).asByteBuffer)
+      }
+
     Flux.from(value.runWith(Sink.asPublisher(false)))
   }
 }

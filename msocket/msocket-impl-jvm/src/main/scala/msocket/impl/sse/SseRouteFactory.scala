@@ -4,15 +4,17 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive1, Route}
 import io.bullet.borer.{Decoder, Json}
 import msocket.api.MessageHandler
-import msocket.impl.RouteFactory
+import msocket.impl.{MSocketDirectives, RouteFactory}
 
 class SseRouteFactory[Req: Decoder](endpoint: String, sseHandler: MessageHandler[Req, Route]) extends RouteFactory {
 
   def make(): Route = {
     get {
       path(endpoint) {
-        extractPayloadFromHeader { streamReq =>
-          sseHandler.handle(streamReq)
+        MSocketDirectives.withExceptionHandler {
+          extractPayloadFromHeader { streamReq =>
+            sseHandler.handle(streamReq)
+          }
         }
       }
     }

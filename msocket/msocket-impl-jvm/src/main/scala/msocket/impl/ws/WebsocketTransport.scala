@@ -31,8 +31,8 @@ class WebsocketTransport[Req: Encoder](uri: String, encoding: Encoding[_])(impli
     setup
       .request(encoding.strictMessage(request))
       .mapAsync(16) {
-        case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decodeWithFrameError(m.text))
-        case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborBinary.decodeWithFrameError(m.data))
+        case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decodeWithCustomException(m.text))
+        case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborBinary.decodeWithCustomException(m.data))
       }
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue[Subscription](switch => () => switch.shutdown())

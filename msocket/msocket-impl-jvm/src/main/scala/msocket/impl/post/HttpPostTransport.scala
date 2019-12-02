@@ -18,6 +18,7 @@ import msocket.impl.Encoding.JsonText
 
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future, TimeoutException}
+import scala.util.control.NonFatal
 
 class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_], tokenFactory: () => Option[String])(
     implicit actorSystem: ActorSystem[_]
@@ -29,7 +30,10 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
-    getResponse(request).flatMap(Unmarshal(_).to[Res])
+    val eventualResponse = getResponse(request)
+    eventualResponse.flatMap(Unmarshal(_).to[Res]).recoverWith {
+      case NonFatal(ex) => eventualResponse.flatMap(Unmarshal(_).to[MSocketException]).map(mSocketException => throw mSocketException)
+    }
   }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
@@ -41,7 +45,7 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
     Source
       .futureSource(futureSource)
       .filter(_ != FetchEvent.Heartbeat)
-      .map(event => JsonText.decodeWithFrameError[Res](event.data))
+      .map(event => JsonText.decodeWithCustomException[Res](event.data))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }

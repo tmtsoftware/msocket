@@ -10,7 +10,7 @@ import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.{KillSwitches, Materializer}
 import akka.{NotUsed, actor}
-import io.bullet.borer.{Decoder, Encoder, Json}
+import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Transport
 import msocket.api.models.{HttpException, Subscription}
 import msocket.impl.Encoding.JsonText
@@ -36,13 +36,13 @@ class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem[
     val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
     Source
       .futureSource(futureSource)
-      .map(event => JsonText.decodeWithFrameError(event.data))
+      .map(event => JsonText.decodeWithCustomException(event.data))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }
 
   private def getResponse(request: Req): Future[HttpResponse] = {
-    val payloadHeader = QueryHeader(Json.encode(request).toUtf8String)
+    val payloadHeader = QueryHeader(JsonText.encode(request))
     val httpRequest   = HttpRequest(HttpMethods.GET, uri = uri, headers = List(payloadHeader))
     Http().singleRequest(httpRequest).flatMap { response =>
       response.status match {

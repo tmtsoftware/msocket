@@ -4,7 +4,7 @@ import akka.actor.typed.ActorSystem
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.util.ByteString
-import io.bullet.borer.{Decoder, Encoder, Json}
+import io.bullet.borer.{Decoder, Encoder}
 import io.rsocket.RSocket
 import io.rsocket.util.DefaultPayload
 import msocket.api.Transport
@@ -27,10 +27,10 @@ class RSocketTransport[Req: Encoder](rSocket: RSocket)(implicit actorSystem: Act
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
-    val value = rSocket.requestStream(DefaultPayload.create(Json.encode(request).toByteBuffer))
+    val value = rSocket.requestStream(DefaultPayload.create(CborBinary.encode(request).toByteBuffer))
     Source
       .fromPublisher(value)
-      .map(x => CborBinary.decodeWithFrameError(ByteString.fromByteBuffer(x.getData)))
+      .map(x => CborBinary.decodeWithCustomException(ByteString.fromByteBuffer(x.getData)))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }

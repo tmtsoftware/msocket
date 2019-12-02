@@ -10,6 +10,8 @@ import msocket.impl.StreamExtensions
 
 trait RSocketStreamExtensions extends StreamExtensions[Payload] {
   override def stream[T, Mat](input: Source[T, Mat])(implicit encoder: Encoder[T]): Source[Payload, NotUsed] = {
-    input.map(x => DefaultPayload.create(CborBinary.encode(x).asByteBuffer)).mapMaterializedValue(_ => NotUsed)
+    input
+      .map(x => DefaultPayload.create(CborBinary.encode(x).asByteBuffer))
+      .mapMaterializedValue(_ => NotUsed)
   }
 }

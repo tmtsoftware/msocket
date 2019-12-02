@@ -10,6 +10,8 @@ trait WebsocketStreamExtensions extends StreamExtensions[Message] {
   def encoding: Encoding[_]
 
   override def stream[T, Mat](input: Source[T, Mat])(implicit encoder: Encoder[T]): Source[Message, NotUsed] = {
-    input.map(encoding.strictMessage[T]).mapMaterializedValue(_ => NotUsed)
+    input
+      .map(encoding.strictMessage[T])
+      .mapMaterializedValue(_ => NotUsed)
   }
 }

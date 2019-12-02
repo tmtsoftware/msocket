@@ -44,4 +44,5 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
       responseAs[Source[FetchEvent, NotUsed]].take(3).runForeach(println)
     }
   }
+  
 }

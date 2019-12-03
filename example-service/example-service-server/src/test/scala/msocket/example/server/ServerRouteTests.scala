@@ -5,7 +5,7 @@ import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest, WSProbe
 import akka.stream.scaladsl.Source
 import akka.testkit.TestDuration
 import csw.example.api.protocol.Codecs
-import csw.example.api.protocol.ExampleRequest.{GetNumbers, HelloStream}
+import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream}
 import msocket.api.models.FetchEvent
 import msocket.impl.Encoding
 import msocket.impl.Encoding.JsonText
@@ -44,5 +44,13 @@ class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers wi
       responseAs[Source[FetchEvent, NotUsed]].take(3).runForeach(println)
     }
   }
-  
+
+  test("simple-post") {
+    implicit val timeout: RouteTestTimeout = RouteTestTimeout(10.seconds.dilated)
+    Post("/post-endpoint", Hello("mushtaq")) ~> wiring.exampleServer.routesForTesting ~> check {
+      println(status)
+      println(response)
+    }
+  }
+
 }

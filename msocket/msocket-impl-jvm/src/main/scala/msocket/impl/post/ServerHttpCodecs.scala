@@ -9,6 +9,7 @@ import io.bullet.borer._
 import io.bullet.borer.compat.AkkaHttpCompat
 import msocket.api.codecs.BasicCodecs
 
+object ServerHttpCodecs extends ServerHttpCodecs
 trait ServerHttpCodecs extends AkkaHttpCompat with BasicCodecs {
   val jsonStreamingSupport: JsonEntityStreamingSupport = EntityStreamingSupport
     .json(8 * 1024)

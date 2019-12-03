@@ -1,7 +1,7 @@
 package msocket.api
 
 import akka.stream.scaladsl.Source
-import io.bullet.borer.{Decoder, Encoder}
+import io.bullet.borer.{Decoder, Encoder, Json}
 import msocket.api.models.Subscription
 import msocket.api.utils.ContraMappedTransport
 
@@ -18,4 +18,6 @@ abstract class Transport[Req: Encoder] {
     action(x)
     x
   }
+
+  def logRequest(action: String => Unit = println): Transport[Req] = withEffect(x => action(Json.encode(x).toUtf8String))
 }

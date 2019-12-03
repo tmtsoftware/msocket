@@ -5,7 +5,6 @@ import akka.actor.typed.scaladsl.Behaviors
 import com.github.ghik.silencer.silent
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{Codecs, ExampleRequest}
-import io.bullet.borer.{Encoder, Json}
 import msocket.impl.Encoding.JsonText
 import msocket.impl.post.HttpPostTransport
 import msocket.impl.rsocket.client.RSocketTransportFactory
@@ -18,15 +17,11 @@ object ClientMain extends Codecs {
     implicit lazy val system: ActorSystem[Nothing] = ActorSystem(Behaviors.empty, "demo")
     import system.executionContext
 
-    def action[Req: Encoder](req: Req): Unit = {
-      println(Json.encode(req).toUtf8String)
-    }
-
     @silent lazy val httpPostTransport =
-      new HttpPostTransport[ExampleRequest]("http://localhost:5000/post-endpoint", JsonText, () => None).withEffect(action)
+      new HttpPostTransport[ExampleRequest]("http://localhost:5000/post-endpoint", JsonText, () => None).logRequest()
     @silent lazy val sseTransport = new SseTransport[ExampleRequest]("http://localhost:5000/sse-endpoint")
     lazy val websocketTransport =
-      new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket-endpoint", JsonText).withEffect(action)
+      new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket-endpoint", JsonText).logRequest()
     @silent lazy val rSocketTransport = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")
 
     val exampleClient = new ExampleClient(websocketTransport)

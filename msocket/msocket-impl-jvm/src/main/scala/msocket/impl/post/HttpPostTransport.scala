@@ -18,11 +18,15 @@ import msocket.impl.Encoding.JsonText
 
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 import scala.util.control.NonFatal
 
-class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_], tokenFactory: () => Option[String])(
-    implicit actorSystem: ActorSystem[_]
-) extends Transport[Req]
+class HttpPostTransport[Req: Encoder, Err <: Throwable: Decoder: ClassTag](
+    uri: String,
+    messageEncoding: Encoding[_],
+    tokenFactory: () => Option[String]
+)(implicit actorSystem: ActorSystem[_])
+    extends Transport[Req]
     with ClientHttpCodecs {
 
   override def encoding: Encoding[_] = messageEncoding
@@ -42,7 +46,7 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
     Source
       .futureSource(futureSource)
       .filter(_ != FetchEvent.Heartbeat)
-      .map(event => JsonText.decodeWithCustomException[Res](event.data))
+      .map(event => JsonText.decodeWithError[Res, Err](event.data))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }
@@ -61,18 +65,23 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
       Http()(actorSystem.toClassic).singleRequest(httpRequest).flatMap { response =>
         response.status match {
           case StatusCodes.OK => Future.successful(response)
-          case statusCode =>
-            response.entity
-              .toStrict(1.seconds)
-              .flatMap { x =>
-                Unmarshal(x).to[ServiceException].recover {
-                  case NonFatal(_) => HttpException(statusCode.intValue(), statusCode.reason(), x.data.utf8String)
-                }
-              }
-              .map(throw _)
+          case _              => handleError(response).map(throw _)
         }
       }
     }
+  }
+
+  private def handleError(response: HttpResponse): Future[Throwable] = {
+    response.entity
+      .toStrict(1.seconds)
+      .flatMap { x =>
+        Unmarshal(x).to[Err].recoverWith {
+          case NonFatal(_) =>
+            Unmarshal(x).to[ServiceException].recover {
+              case NonFatal(_) => HttpException(response.status.intValue(), response.status.reason(), x.data.utf8String)
+            }
+        }
+      }
   }
 
 }

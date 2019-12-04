@@ -12,8 +12,11 @@ import msocket.impl.Encoding.{CborBinary, JsonText}
 
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
-class WebsocketTransport[Req: Encoder](uri: String, encoding: Encoding[_])(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
+class WebsocketTransport[Req: Encoder, Err <: Throwable: Decoder: ClassTag](uri: String, encoding: Encoding[_])(
+    implicit actorSystem: ActorSystem[_]
+) extends Transport[Req] {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
@@ -24,15 +27,15 @@ class WebsocketTransport[Req: Encoder](uri: String, encoding: Encoding[_])(impli
   }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
-    requestStream(request).completionTimeout(timeout).runWith(Sink.head)
+    requestStream[Res](request).completionTimeout(timeout).runWith(Sink.head)
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] =
     setup
       .request(encoding.strictMessage(request))
       .mapAsync(16) {
-        case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decodeWithCustomException(m.text))
-        case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborBinary.decodeWithCustomException(m.data))
+        case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decodeWithError[Res, Err](m.text))
+        case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborBinary.decodeWithError[Res, Err](m.data))
       }
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue[Subscription](switch => () => switch.shutdown())

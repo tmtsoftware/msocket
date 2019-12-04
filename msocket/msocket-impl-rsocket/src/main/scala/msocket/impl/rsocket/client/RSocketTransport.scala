@@ -30,7 +30,7 @@ class RSocketTransport[Req: Encoder](rSocket: RSocket)(implicit actorSystem: Act
     val value = rSocket.requestStream(DefaultPayload.create(CborBinary.encode(request).toByteBuffer))
     Source
       .fromPublisher(value)
-      .map(x => CborBinary.decodeWithCustomException(ByteString.fromByteBuffer(x.getData)))
+      .map(x => CborBinary.decodeWithServiceException(ByteString.fromByteBuffer(x.getData)))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }

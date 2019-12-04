@@ -8,7 +8,7 @@ import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.Source
 import csw.aas.http.SecurityDirectives
 import csw.example.api.ExampleApi
-import csw.example.api.protocol.{Codecs, ExampleRequest}
+import csw.example.api.protocol.{Codecs, ExampleError, ExampleRequest}
 import csw.example.impl.ExampleImpl
 import csw.location.api.scaladsl.LocationService
 import csw.location.client.scaladsl.HttpLocationServiceFactory
@@ -29,8 +29,8 @@ class ServerWiring extends Codecs {
 
   lazy val exampleImpl: ExampleApi = new ExampleImpl
 
-  lazy val locationService: LocationService = HttpLocationServiceFactory.makeLocalClient(actorSystem)
-  lazy val securityDirectives               = SecurityDirectives(locationService)
+  lazy val locationService: LocationService       = HttpLocationServiceFactory.makeLocalClient(actorSystem)
+  lazy val securityDirectives: SecurityDirectives = SecurityDirectives(locationService)
 
   lazy val postHandler: MessageHandler[ExampleRequest, Route] = new ExamplePostHandler(exampleImpl, securityDirectives)
 
@@ -42,9 +42,9 @@ class ServerWiring extends Codecs {
   lazy val rSocketHandler: MessageHandler[ExampleRequest, Source[Payload, NotUsed]] = new ExampleRSocketHandler(exampleImpl)
 
   lazy val applicationRoute: Route = RouteFactory.combine(
-    new PostRouteFactory("post-endpoint", postHandler),
-    new WebsocketRouteFactory("websocket-endpoint", websocketHandlerFactory),
-    new SseRouteFactory("sse-endpoint", sseHandler)
+    new PostRouteFactory[ExampleRequest, ExampleError]("post-endpoint", postHandler),
+    new WebsocketRouteFactory[ExampleRequest, ExampleError]("websocket-endpoint", websocketHandlerFactory),
+    new SseRouteFactory[ExampleRequest, ExampleError]("sse-endpoint", sseHandler)
   )
 
   lazy val exampleServer = new ExampleServer(applicationRoute)

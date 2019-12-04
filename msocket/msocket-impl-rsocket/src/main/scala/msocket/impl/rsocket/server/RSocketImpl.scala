@@ -19,7 +19,7 @@ class RSocketImpl[Req: Decoder](requestHandler: MessageHandler[Req, Source[Paylo
 
   override def requestStream(payload: Payload): Flux[Payload] = {
     val value = Source
-      .lazySingle[Req](() => CborBinary.decodeWithCustomException(ByteString.fromByteBuffer(payload.getData)))
+      .lazySingle[Req](() => CborBinary.decodeWithServiceException(ByteString.fromByteBuffer(payload.getData)))
       .flatMapConcat(requestHandler.handle)
       .recover {
         case NonFatal(ex) => DefaultPayload.create(CborBinary.encode(ServiceException.fromThrowable(ex)).asByteBuffer)

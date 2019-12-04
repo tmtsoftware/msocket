@@ -6,7 +6,7 @@ import caseapp.{CommandApp, RemainingArgs}
 import com.github.ghik.silencer.silent
 import csw.aas.installed.api.InstalledAppAuthAdapter
 import csw.example.api.client.ExampleClient
-import csw.example.api.protocol.{Codecs, ExampleRequest}
+import csw.example.api.protocol.{Codecs, ExampleError, ExampleRequest}
 import msocket.example.client.CliCommand._
 import msocket.impl.Encoding.JsonText
 import msocket.impl.post.HttpPostTransport
@@ -31,14 +31,15 @@ object CliMain extends CommandApp[CliCommand] with Codecs {
       case MakeCall() =>
         println(adapter.getAccessToken())
         lazy val httpPostTransport =
-          new HttpPostTransport[ExampleRequest](
+          new HttpPostTransport[ExampleRequest, ExampleError](
             "http://localhost:5000/post-endpoint",
             JsonText,
             () => adapter.getAccessToken().map(_.value)
           )
-        @silent lazy val sseTransport       = new SseTransport[ExampleRequest]("http://localhost:5000/sse-endpoint")
-        @silent lazy val websocketTransport = new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket-endpoint", JsonText)
-        @silent lazy val rSocketTransport   = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")
+        @silent lazy val sseTransport = new SseTransport[ExampleRequest]("http://localhost:5000/sse-endpoint")
+        @silent lazy val websocketTransport =
+          new WebsocketTransport[ExampleRequest, ExampleError]("ws://localhost:5000/websocket-endpoint", JsonText)
+        @silent lazy val rSocketTransport = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")
 
         val exampleClient = new ExampleClient(httpPostTransport)
         new ClientApp(exampleClient).testRun()

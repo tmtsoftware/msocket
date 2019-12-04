@@ -4,7 +4,7 @@ import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import com.github.ghik.silencer.silent
 import csw.example.api.client.ExampleClient
-import csw.example.api.protocol.{Codecs, ExampleRequest}
+import csw.example.api.protocol.{Codecs, ExampleError, ExampleRequest}
 import msocket.impl.Encoding.JsonText
 import msocket.impl.post.HttpPostTransport
 import msocket.impl.rsocket.client.RSocketTransportFactory
@@ -18,10 +18,10 @@ object ClientMain extends Codecs {
     import system.executionContext
 
     @silent lazy val httpPostTransport =
-      new HttpPostTransport[ExampleRequest]("http://localhost:5000/post-endpoint", JsonText, () => None).logRequest()
+      new HttpPostTransport[ExampleRequest, ExampleError]("http://localhost:5000/post-endpoint", JsonText, () => None).logRequest()
     @silent lazy val sseTransport = new SseTransport[ExampleRequest]("http://localhost:5000/sse-endpoint")
     lazy val websocketTransport =
-      new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket-endpoint", JsonText).logRequest()
+      new WebsocketTransport[ExampleRequest, ExampleError]("ws://localhost:5000/websocket-endpoint", JsonText).logRequest()
     @silent lazy val rSocketTransport = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")
 
     val exampleClient = new ExampleClient(websocketTransport)

@@ -36,7 +36,7 @@ class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem[
     val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
     Source
       .futureSource(futureSource)
-      .map(event => JsonText.decodeWithCustomException(event.data))
+      .map(event => JsonText.decodeWithServiceException(event.data))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }

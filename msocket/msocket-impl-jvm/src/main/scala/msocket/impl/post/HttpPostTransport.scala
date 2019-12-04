@@ -8,8 +8,8 @@ import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
-import akka.stream.{KillSwitches, StreamTcpException}
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Transport
 import msocket.api.models._
@@ -17,7 +17,7 @@ import msocket.impl.Encoding
 import msocket.impl.Encoding.JsonText
 
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
-import scala.concurrent.{ExecutionContext, Future, TimeoutException}
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_], tokenFactory: () => Option[String])(
@@ -30,10 +30,7 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
-    val eventualResponse = getResponse(request)
-    eventualResponse.flatMap(Unmarshal(_).to[Res]).recoverWith {
-      case NonFatal(ex) => eventualResponse.flatMap(Unmarshal(_).to[MSocketException]).map(mSocketException => throw mSocketException)
-    }
+    getResponse(request).flatMap(Unmarshal(_).to[Res])
   }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
@@ -65,11 +62,16 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
         response.status match {
           case StatusCodes.OK => Future.successful(response)
           case statusCode =>
-            response.entity.toStrict(1.seconds).map(x => throw HttpException(statusCode.intValue(), statusCode.reason(), x.toString()))
+            response.entity
+              .toStrict(1.seconds)
+              .flatMap { x =>
+                Unmarshal(x).to[ServiceException].recover {
+                  case NonFatal(_) => HttpException(statusCode.intValue(), statusCode.reason(), x.data.utf8String)
+                }
+              }
+              .map(throw _)
         }
       }
-    } recover {
-      case ex: StreamTcpException => throw new TimeoutException(ex.getMessage)
     }
   }
 

@@ -3,7 +3,7 @@ package msocket.impl.post
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
-import msocket.api.models.{FetchEvent, MSocketException}
+import msocket.api.models.{FetchEvent, ServiceException}
 import msocket.impl.Encoding.JsonText
 import msocket.impl.StreamExtensions
 
@@ -17,7 +17,7 @@ trait PostStreamExtensions extends StreamExtensions[FetchEvent] {
       .keepAlive(30.seconds, () => FetchEvent.Heartbeat)
       .mapMaterializedValue(_ => NotUsed)
       .recover {
-        case NonFatal(ex) => FetchEvent(JsonText.encode(MSocketException.fromThrowable(ex)))
+        case NonFatal(ex) => FetchEvent(JsonText.encode(ServiceException.fromThrowable(ex)))
       }
   }
 }

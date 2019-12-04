@@ -6,7 +6,7 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.Decoder
 import msocket.api.MessageHandler
-import msocket.api.models.MSocketException
+import msocket.api.models.ServiceException
 import msocket.impl.Encoding
 import msocket.impl.Encoding.{CborBinary, JsonText}
 
@@ -35,7 +35,7 @@ class WsServerFlow[T: Decoder](messageHandler: Encoding[_] => MessageHandler[T, 
       .lazySingle(() => encoding.decode(element))
       .flatMapConcat(messageHandler(encoding).handle)
       .recover {
-        case NonFatal(ex) => encoding.strictMessage(MSocketException.fromThrowable(ex))
+        case NonFatal(ex) => encoding.strictMessage(ServiceException.fromThrowable(ex))
       }
   }
 }

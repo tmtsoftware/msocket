@@ -8,7 +8,7 @@ import io.bullet.borer.Decoder
 import io.rsocket.util.DefaultPayload
 import io.rsocket.{AbstractRSocket, Payload}
 import msocket.api.MessageHandler
-import msocket.api.models.MSocketException
+import msocket.api.models.ServiceException
 import msocket.impl.Encoding.CborBinary
 import reactor.core.publisher.Flux
 
@@ -22,7 +22,7 @@ class RSocketImpl[Req: Decoder](requestHandler: MessageHandler[Req, Source[Paylo
       .lazySingle[Req](() => CborBinary.decodeWithCustomException(ByteString.fromByteBuffer(payload.getData)))
       .flatMapConcat(requestHandler.handle)
       .recover {
-        case NonFatal(ex) => DefaultPayload.create(CborBinary.encode(MSocketException.fromThrowable(ex)).asByteBuffer)
+        case NonFatal(ex) => DefaultPayload.create(CborBinary.encode(ServiceException.fromThrowable(ex)).asByteBuffer)
       }
 
     Flux.from(value.runWith(Sink.asPublisher(false)))

@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
-import msocket.api.models.MSocketException
+import msocket.api.models.ServiceException
 import msocket.impl.Encoding.JsonText
 import msocket.impl.StreamExtensions
 
@@ -18,7 +18,7 @@ trait SseStreamExtensions extends StreamExtensions[ServerSentEvent] {
       .keepAlive(30.seconds, () => ServerSentEvent.heartbeat)
       .mapMaterializedValue(_ => NotUsed)
       .recover {
-        case NonFatal(ex) => ServerSentEvent(JsonText.encode(MSocketException.fromThrowable(ex)))
+        case NonFatal(ex) => ServerSentEvent(JsonText.encode(ServiceException.fromThrowable(ex)))
       }
   }
 }

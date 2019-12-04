@@ -1,0 +1,11 @@
+### embedded (sequencer)
+POST http://localhost:5000/post-endpoint
+Content-Type: application/json
+
+{
+  "Hello": {
+    "name1": "Mushtaq"
+  }
+}
+
+###

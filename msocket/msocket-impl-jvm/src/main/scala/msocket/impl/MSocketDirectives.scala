@@ -1,10 +1,10 @@
 package msocket.impl
 
-import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.headers.Accept
+import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive0, ExceptionHandler}
-import msocket.api.models.MSocketException
+import msocket.api.models.ServiceException
 import msocket.impl.post.ServerHttpCodecs
 
 import scala.util.control.NonFatal
@@ -23,7 +23,7 @@ object MSocketDirectives {
 
   val withExceptionHandler: Directive0 = handleExceptions {
     ExceptionHandler {
-      case NonFatal(ex) => complete(MSocketException.fromThrowable(ex))
+      case NonFatal(ex) => complete(StatusCodes.InternalServerError -> ServiceException.fromThrowable(ex))
     }
   }
 

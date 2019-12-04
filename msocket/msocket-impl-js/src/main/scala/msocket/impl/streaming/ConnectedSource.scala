@@ -12,7 +12,7 @@ class ConnectedSource[Res: Decoder, Mat] extends Source[Res, Subscription] {
       .valueTry
       .getOrElse {
         subscription.cancel()
-        throw Json.decode(res.getBytes()).to[MSocketException].value
+        throw Json.decode(res.getBytes()).to[ServiceException].value
       }
     onMessage(message)
   }

@@ -2,17 +2,17 @@ package msocket.impl.streaming
 
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.Transport
+import msocket.api.{ErrorType, Transport}
 import msocket.api.models.Subscription
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{Future, Promise, TimeoutException}
 import scala.scalajs.js.timers
 
-class StreamingTransportJs[Req: Encoder](connectionFactory: ConnectionFactory[Req]) extends Transport[Req] {
+class StreamingTransportJs[Req: Encoder: ErrorType](connectionFactory: ConnectionFactory[Req]) extends Transport[Req] {
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
-    throw new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport")
+    Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
   }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {

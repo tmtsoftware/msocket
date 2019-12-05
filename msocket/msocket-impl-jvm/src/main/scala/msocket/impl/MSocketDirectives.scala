@@ -4,11 +4,10 @@ import akka.http.scaladsl.model.headers.Accept
 import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive0, ExceptionHandler}
-import io.bullet.borer.Encoder
+import msocket.api.ErrorType
 import msocket.api.models.ServiceException
 import msocket.impl.post.ServerHttpCodecs
 
-import scala.reflect.ClassTag
 import scala.util.control.NonFatal
 
 object MSocketDirectives {
@@ -23,10 +22,10 @@ object MSocketDirectives {
 
   val withAcceptHeader: Directive0 = mapRequest(addMissingAcceptHeader)
 
-  def withExceptionHandler[Err <: Throwable: Encoder: ClassTag]: Directive0 = handleExceptions {
+  def withExceptionHandler[Req](implicit et: ErrorType[Req]): Directive0 = handleExceptions {
     ExceptionHandler {
-      case NonFatal(ex: Err) => complete(StatusCodes.InternalServerError -> ex)
-      case NonFatal(ex)      => complete(StatusCodes.InternalServerError -> ServiceException.fromThrowable(ex))
+      case NonFatal(ex: et.E) => complete(StatusCodes.InternalServerError -> ex)
+      case NonFatal(ex)       => complete(StatusCodes.InternalServerError -> ServiceException.fromThrowable(ex))
     }
   }
 

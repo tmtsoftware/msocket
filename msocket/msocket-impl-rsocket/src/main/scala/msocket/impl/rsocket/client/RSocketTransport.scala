@@ -7,19 +7,19 @@ import akka.util.ByteString
 import io.bullet.borer.{Decoder, Encoder}
 import io.rsocket.RSocket
 import io.rsocket.util.DefaultPayload
-import msocket.api.Transport
+import msocket.api.{ErrorType, Transport}
 import msocket.api.models.Subscription
 import msocket.impl.Encoding.CborBinary
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-class RSocketTransport[Req: Encoder](rSocket: RSocket)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
+class RSocketTransport[Req: Encoder: ErrorType](rSocket: RSocket)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
-    throw new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport")
+    Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
   }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {

@@ -2,13 +2,11 @@ package msocket.impl.post
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.MessageHandler
+import io.bullet.borer.Decoder
+import msocket.api.{ErrorType, MessageHandler}
 import msocket.impl.{MSocketDirectives, RouteFactory}
 
-import scala.reflect.ClassTag
-
-class PostRouteFactory[Req: Decoder, Err <: Throwable: Encoder: ClassTag](endpoint: String, postHandler: MessageHandler[Req, Route])
+class PostRouteFactory[Req: Decoder: ErrorType](endpoint: String, postHandler: MessageHandler[Req, Route])
     extends RouteFactory
     with ServerHttpCodecs {
 
@@ -16,7 +14,7 @@ class PostRouteFactory[Req: Decoder, Err <: Throwable: Encoder: ClassTag](endpoi
     post {
       path(endpoint) {
         MSocketDirectives.withAcceptHeader {
-          MSocketDirectives.withExceptionHandler[Err].apply {
+          MSocketDirectives.withExceptionHandler[Req].apply {
             entity(as[Req])(postHandler.handle)
           }
         }

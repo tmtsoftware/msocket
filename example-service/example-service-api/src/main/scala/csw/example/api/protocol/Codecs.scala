@@ -6,6 +6,7 @@ import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, 
 import io.bullet.borer.Codec
 import io.bullet.borer.derivation.ArrayBasedCodecs
 import io.bullet.borer.derivation.MapBasedCodecs.deriveCodec
+import msocket.api.ErrorType
 
 trait Codecs {
   implicit def websocketRequestCodec[T <: ExampleRequest]: Codec[T] = exampleCodecValuealue.asInstanceOf[Codec[T]]
@@ -25,4 +26,6 @@ trait Codecs {
     @silent implicit lazy val squareCodec: Codec[GetNumbersError] = ArrayBasedCodecs.deriveUnaryCodec
     deriveCodec
   }
+
+  implicit lazy val ExampeRequestErrorType: ErrorType[ExampleRequest] = ErrorType.bind[ExampleRequest, ExampleError]
 }

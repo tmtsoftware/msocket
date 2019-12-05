@@ -4,17 +4,21 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.util.ByteString
 import io.bullet.borer._
 import io.bullet.borer.compat.akka._
+import msocket.api.ErrorType
 import msocket.api.models.ServiceException
 
-import scala.reflect.ClassTag
 import scala.util.Try
 
 sealed abstract class Encoding[E] {
   def encode[T: Encoder](payload: T): E
   def decode[T: Decoder](input: E): T
-  def decodeWithServiceException[T: Decoder](input: E): T = decodeWithError[T, ServiceException](input)
-  def decodeWithError[T: Decoder, Err <: Throwable: Decoder: ClassTag](input: E): T = Try(decode[T](input)).getOrElse {
-    throw Try(decode[Err](input)).getOrElse(decode[ServiceException](input))
+  def decodeWithServiceException[T: Decoder](input: E): T = Try(decode[T](input)).getOrElse {
+    throw decode[ServiceException](input)
+  }
+  def decodeWithError[T: Decoder, S](input: E)(implicit et: ErrorType[S]): T = Try(decode[T](input)).getOrElse {
+    throw Try(decode[et.E](input)).getOrElse {
+      decode[ServiceException](input)
+    }
   }
 
   def strictMessage[T: Encoder](input: T): Message

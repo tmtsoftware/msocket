@@ -11,21 +11,21 @@ import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.{KillSwitches, Materializer}
 import akka.{NotUsed, actor}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.Transport
+import msocket.api.{ErrorType, Transport}
 import msocket.api.models.{HttpException, Subscription}
 import msocket.impl.Encoding.JsonText
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-class SseTransport[Req: Encoder](uri: String)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
+class SseTransport[Req: Encoder: ErrorType](uri: String)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
 
   implicit val ec: ExecutionContext               = actorSystem.executionContext
   implicit val system: actor.ActorSystem          = actorSystem.toClassic
   private implicit val materializer: Materializer = Materializer(actorSystem)
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
-    throw new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport")
+    Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
   }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {

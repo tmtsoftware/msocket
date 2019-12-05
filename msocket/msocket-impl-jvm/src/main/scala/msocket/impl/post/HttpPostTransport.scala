@@ -11,22 +11,19 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.Transport
 import msocket.api.models._
+import msocket.api.{ErrorType, Transport}
 import msocket.impl.Encoding
 import msocket.impl.Encoding.JsonText
 
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.reflect.ClassTag
 import scala.util.control.NonFatal
 
-class HttpPostTransport[Req: Encoder, Err <: Throwable: Decoder: ClassTag](
-    uri: String,
-    messageEncoding: Encoding[_],
-    tokenFactory: () => Option[String]
-)(implicit actorSystem: ActorSystem[_])
-    extends Transport[Req]
+class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_], tokenFactory: () => Option[String])(
+    implicit actorSystem: ActorSystem[_],
+    et: ErrorType[Req]
+) extends Transport[Req]
     with ClientHttpCodecs {
 
   override def encoding: Encoding[_] = messageEncoding
@@ -46,7 +43,7 @@ class HttpPostTransport[Req: Encoder, Err <: Throwable: Decoder: ClassTag](
     Source
       .futureSource(futureSource)
       .filter(_ != FetchEvent.Heartbeat)
-      .map(event => JsonText.decodeWithError[Res, Err](event.data))
+      .map(event => JsonText.decodeWithError[Res, Req](event.data))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }
@@ -75,7 +72,7 @@ class HttpPostTransport[Req: Encoder, Err <: Throwable: Decoder: ClassTag](
     response.entity
       .toStrict(1.seconds)
       .flatMap { x =>
-        Unmarshal(x).to[Err].recoverWith {
+        Unmarshal(x).to[et.E].recoverWith {
           case NonFatal(_) =>
             Unmarshal(x).to[ServiceException].recover {
               case NonFatal(_) => HttpException(response.status.intValue(), response.status.reason(), x.data.utf8String)

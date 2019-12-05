@@ -5,16 +5,15 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.Transport
 import msocket.api.models.Subscription
+import msocket.api.{ErrorType, Transport}
 import msocket.impl.Encoding
 import msocket.impl.Encoding.{CborBinary, JsonText}
 
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.reflect.ClassTag
 
-class WebsocketTransport[Req: Encoder, Err <: Throwable: Decoder: ClassTag](uri: String, encoding: Encoding[_])(
+class WebsocketTransport[Req: Encoder: ErrorType](uri: String, encoding: Encoding[_])(
     implicit actorSystem: ActorSystem[_]
 ) extends Transport[Req] {
 
@@ -23,7 +22,7 @@ class WebsocketTransport[Req: Encoder, Err <: Throwable: Decoder: ClassTag](uri:
   private val setup = new WebsocketTransportSetup(WebSocketRequest(uri))
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
-    throw new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport")
+    Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
   }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
@@ -34,8 +33,8 @@ class WebsocketTransport[Req: Encoder, Err <: Throwable: Decoder: ClassTag](uri:
     setup
       .request(encoding.strictMessage(request))
       .mapAsync(16) {
-        case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decodeWithError[Res, Err](m.text))
-        case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborBinary.decodeWithError[Res, Err](m.data))
+        case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decodeWithError[Res, Req](m.text))
+        case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborBinary.decodeWithError[Res, Req](m.data))
       }
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue[Subscription](switch => () => switch.shutdown())

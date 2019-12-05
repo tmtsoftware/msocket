@@ -7,7 +7,7 @@ import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Source}
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}
-import msocket.api.models.Subscription
+import msocket.api.Subscription
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong

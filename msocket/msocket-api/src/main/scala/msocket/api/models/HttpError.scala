@@ -1,6 +1,6 @@
 package msocket.api.models
 
-case class HttpException(statusCode: Int, reason: String, message: String)
+case class HttpError(statusCode: Int, reason: String, message: String)
     extends RuntimeException(
       s"""
          |StatusCode :  $statusCode

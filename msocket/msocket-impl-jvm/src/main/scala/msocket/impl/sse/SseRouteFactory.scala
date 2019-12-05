@@ -3,10 +3,10 @@ package msocket.impl.sse
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive1, Route}
 import io.bullet.borer.{Decoder, Json}
-import msocket.api.{ErrorType, MessageHandler}
+import msocket.api.{ErrorProtocol, MessageHandler}
 import msocket.impl.{MSocketDirectives, RouteFactory}
 
-class SseRouteFactory[Req: Decoder: ErrorType](endpoint: String, sseHandler: MessageHandler[Req, Route]) extends RouteFactory {
+class SseRouteFactory[Req: Decoder: ErrorProtocol](endpoint: String, sseHandler: MessageHandler[Req, Route]) extends RouteFactory {
 
   def make(): Route = {
     get {

@@ -2,13 +2,12 @@ package msocket.api.utils
 
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.{ErrorType, Transport}
-import msocket.api.models.Subscription
+import msocket.api.{ErrorProtocol, Subscription, Transport}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
-class ContraMappedTransport[A, B: Encoder: ErrorType](transport: Transport[A], action: B => A) extends Transport[B] {
+class ContraMappedTransport[A, B: Encoder: ErrorProtocol](transport: Transport[A], action: B => A) extends Transport[B] {
   override def requestResponse[Res: Decoder](request: B): Future[Res] = {
     transport.requestResponse(action(request))
   }

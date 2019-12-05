@@ -5,15 +5,14 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.models.Subscription
-import msocket.api.{ErrorType, Transport}
+import msocket.api.{ErrorProtocol, Subscription, Transport}
 import msocket.impl.Encoding
 import msocket.impl.Encoding.{CborBinary, JsonText}
 
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future}
 
-class WebsocketTransport[Req: Encoder: ErrorType](uri: String, encoding: Encoding[_])(
+class WebsocketTransport[Req: Encoder: ErrorProtocol](uri: String, encoding: Encoding[_])(
     implicit actorSystem: ActorSystem[_]
 ) extends Transport[Req] {
 

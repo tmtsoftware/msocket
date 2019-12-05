@@ -7,14 +7,13 @@ import akka.util.ByteString
 import io.bullet.borer.{Decoder, Encoder}
 import io.rsocket.RSocket
 import io.rsocket.util.DefaultPayload
-import msocket.api.{ErrorType, Transport}
-import msocket.api.models.Subscription
+import msocket.api.{ErrorProtocol, Subscription, Transport}
 import msocket.impl.Encoding.CborBinary
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-class RSocketTransport[Req: Encoder: ErrorType](rSocket: RSocket)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
+class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
@@ -30,7 +29,7 @@ class RSocketTransport[Req: Encoder: ErrorType](rSocket: RSocket)(implicit actor
     val value = rSocket.requestStream(DefaultPayload.create(CborBinary.encode(request).toByteBuffer))
     Source
       .fromPublisher(value)
-      .map(x => CborBinary.decodeWithServiceException(ByteString.fromByteBuffer(x.getData)))
+      .map(x => CborBinary.decodeWithServiceError(ByteString.fromByteBuffer(x.getData)))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }

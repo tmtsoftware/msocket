@@ -1,14 +1,14 @@
 package msocket.impl.post
 
 import io.bullet.borer.{Decoder, Encoder, Json}
-import msocket.api.ErrorType
-import msocket.api.models.ServiceException
+import msocket.api.ErrorProtocol
+import msocket.api.models.ServiceError
 import msocket.impl.streaming.StreamingTransportJs
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-class PostTransportJs[Req: Encoder: ErrorType](uri: String)(implicit ec: ExecutionContext, streamingDelay: FiniteDuration)
+class PostTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext, streamingDelay: FiniteDuration)
     extends StreamingTransportJs[Req](new PostConnectionFactory[Req](uri)) {
 
   override def requestResponse[Res: Decoder](req: Req): Future[Res] = {
@@ -19,7 +19,7 @@ class PostTransportJs[Req: Encoder: ErrorType](uri: String)(implicit ec: Executi
           .to[Res]
           .valueTry
           .getOrElse {
-            throw Json.decode(data.getBytes()).to[ServiceException].value
+            throw Json.decode(data.getBytes()).to[ServiceError].value
           }
       }
     }

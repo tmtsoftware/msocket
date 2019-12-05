@@ -2,6 +2,7 @@ package msocket.impl.streaming
 
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Json}
+import msocket.api.Subscription
 import msocket.api.models._
 
 class ConnectedSource[Res: Decoder, Mat] extends Source[Res, Subscription] {
@@ -12,7 +13,7 @@ class ConnectedSource[Res: Decoder, Mat] extends Source[Res, Subscription] {
       .valueTry
       .getOrElse {
         subscription.cancel()
-        throw Json.decode(res.getBytes()).to[ServiceException].value
+        throw Json.decode(res.getBytes()).to[ServiceError].value
       }
     onMessage(message)
   }

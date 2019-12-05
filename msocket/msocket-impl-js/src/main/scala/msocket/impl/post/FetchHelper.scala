@@ -1,7 +1,7 @@
 package msocket.impl.post
 
 import io.bullet.borer.{Encoder, Json}
-import msocket.api.models.HttpException
+import msocket.api.models.HttpError
 import org.scalajs.dom.experimental.{Fetch, HttpMethod, Response}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -17,7 +17,7 @@ object FetchHelper {
     Fetch.fetch(uri, fetchRequest).toFuture.flatMap { response =>
       response.status match {
         case 200        => Future.successful(response)
-        case statusCode => response.text().toFuture.map(msg => throw HttpException(statusCode, response.statusText, msg))
+        case statusCode => response.text().toFuture.map(msg => throw HttpError(statusCode, response.statusText, msg))
       }
     }
   }

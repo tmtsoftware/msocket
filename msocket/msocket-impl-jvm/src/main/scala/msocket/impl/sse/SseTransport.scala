@@ -11,14 +11,14 @@ import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.{KillSwitches, Materializer}
 import akka.{NotUsed, actor}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.{ErrorType, Transport}
-import msocket.api.models.{HttpException, Subscription}
+import msocket.api.{ErrorProtocol, Subscription, Transport}
+import msocket.api.models.HttpError
 import msocket.impl.Encoding.JsonText
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-class SseTransport[Req: Encoder: ErrorType](uri: String)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
+class SseTransport[Req: Encoder: ErrorProtocol](uri: String)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
 
   implicit val ec: ExecutionContext               = actorSystem.executionContext
   implicit val system: actor.ActorSystem          = actorSystem.toClassic
@@ -36,7 +36,7 @@ class SseTransport[Req: Encoder: ErrorType](uri: String)(implicit actorSystem: A
     val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
     Source
       .futureSource(futureSource)
-      .map(event => JsonText.decodeWithServiceException(event.data))
+      .map(event => JsonText.decodeWithServiceError(event.data))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }
@@ -47,7 +47,7 @@ class SseTransport[Req: Encoder: ErrorType](uri: String)(implicit actorSystem: A
     Http().singleRequest(httpRequest).flatMap { response =>
       response.status match {
         case StatusCodes.OK => Future.successful(response)
-        case statusCode     => Unmarshal(response).to[String].map(msg => throw HttpException(statusCode.intValue(), statusCode.reason(), msg))
+        case statusCode     => Unmarshal(response).to[String].map(msg => throw HttpError(statusCode.intValue(), statusCode.reason(), msg))
       }
     }
   }

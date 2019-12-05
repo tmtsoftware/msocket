@@ -3,7 +3,7 @@ package msocket.example.client
 import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.Source
 import csw.example.api.client.ExampleClient
-import msocket.api.models.Subscription
+import msocket.api.Subscription
 import portable.akka.extensions.PortableAkka._
 
 class ClientAppJs(client: ExampleClient)(implicit actorSystem: ActorSystem[_]) {

@@ -12,7 +12,7 @@ import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.models._
-import msocket.api.{ErrorType, Transport}
+import msocket.api.{ErrorProtocol, Subscription, Transport}
 import msocket.impl.Encoding
 import msocket.impl.Encoding.JsonText
 
@@ -22,7 +22,7 @@ import scala.util.control.NonFatal
 
 class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_], tokenFactory: () => Option[String])(
     implicit actorSystem: ActorSystem[_],
-    et: ErrorType[Req]
+    ep: ErrorProtocol[Req]
 ) extends Transport[Req]
     with ClientHttpCodecs {
 
@@ -72,10 +72,10 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
     response.entity
       .toStrict(1.seconds)
       .flatMap { x =>
-        Unmarshal(x).to[et.E].recoverWith {
+        Unmarshal(x).to[ep.E].recoverWith {
           case NonFatal(_) =>
-            Unmarshal(x).to[ServiceException].recover {
-              case NonFatal(_) => HttpException(response.status.intValue(), response.status.reason(), x.data.utf8String)
+            Unmarshal(x).to[ServiceError].recover {
+              case NonFatal(_) => HttpError(response.status.intValue(), response.status.reason(), x.data.utf8String)
             }
         }
       }

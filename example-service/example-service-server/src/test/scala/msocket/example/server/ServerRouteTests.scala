@@ -10,11 +10,12 @@ import msocket.api.models.FetchEvent
 import msocket.impl.Encoding
 import msocket.impl.Encoding.JsonText
 import msocket.impl.post.ClientHttpCodecs
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.duration.DurationLong
 
-class ServerRouteTests extends FunSuite with ScalatestRouteTest with Matchers with Codecs with ClientHttpCodecs {
+class ServerRouteTests extends AnyFunSuite with ScalatestRouteTest with Matchers with Codecs with ClientHttpCodecs {
 
   override def encoding: Encoding[_] = JsonText
 

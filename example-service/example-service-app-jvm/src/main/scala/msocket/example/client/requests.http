@@ -1,0 +1,13 @@
+### list
+
+POST http://localhost:5000/post-endpoint
+Content-Type: application/json
+#Accept: application/cbor
+
+{
+  "Hello": {
+    "name": "mushtaq"
+  }
+}
+
+###

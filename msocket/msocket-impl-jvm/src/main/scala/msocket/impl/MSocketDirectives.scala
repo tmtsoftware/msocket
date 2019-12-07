@@ -1,7 +1,7 @@
 package msocket.impl
 
 import akka.http.scaladsl.model.headers.Accept
-import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
+import akka.http.scaladsl.model.{HttpRequest, MediaRanges, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive0, ExceptionHandler}
 import msocket.api.ErrorProtocol
@@ -14,9 +14,10 @@ object MSocketDirectives {
   import ServerHttpCodecs._
 
   def addMissingAcceptHeader(request: HttpRequest): HttpRequest = {
+    val mediaType = request.entity.contentType.mediaType
     request.header[Accept] match {
-      case Some(_) => request
-      case None    => request.addHeader(Accept(request.entity.contentType.mediaType))
+      case None | Some(Accept(Seq(MediaRanges.`*/*`))) => request.removeHeader(Accept.name).addHeader(Accept(mediaType))
+      case Some(_)                                     => request
     }
   }
 

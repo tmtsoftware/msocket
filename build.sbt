@@ -157,8 +157,8 @@ lazy val `example-service-app-js` = project
   .settings(
     npmDependencies in Compile ++= Seq(
       "eventsource"              -> "1.0.7",
-      "can-ndjson-stream"        -> "1.0.1",
-      "rsocket-websocket-client" -> "0.0.10"
+      "can-ndjson-stream"        -> "1.0.2",
+      "rsocket-websocket-client" -> "0.0.18"
     ),
     libraryDependencies ++= Seq(
       `scalatest`.value % Test

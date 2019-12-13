@@ -1,4 +1,4 @@
-package msocket.impl.streaming
+package msocket.impl
 
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Decoder
@@ -10,13 +10,11 @@ class ConnectedSource[Res: Decoder] extends Source[Res, Subscription] {
   override val materializedValue: Subscription = subscription
 
   def start[Req](req: Req, connector: Connector[Req]): ConnectedSource[Res] = {
-    subscription = connector.connect(req, onMessage)
+    subscription = connector.requestStream(req, onMessage)
     this
   }
 
   def foreach(f: Res => Unit): Unit = {
     onMessage = f
   }
-
-  def cancel(): Unit = subscription.cancel()
 }

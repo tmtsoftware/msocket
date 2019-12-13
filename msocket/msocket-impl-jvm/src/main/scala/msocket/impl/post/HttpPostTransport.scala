@@ -2,27 +2,24 @@ package msocket.impl.post
 
 import akka.NotUsed
 import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
-import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.KillSwitches
-import akka.stream.scaladsl.{Keep, Sink, Source}
+import akka.stream.scaladsl.{Keep, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Encoding.JsonText
 import msocket.api.models._
-import msocket.api.{Encoding, ErrorProtocol, Subscription, Transport}
+import msocket.api.{Encoding, ErrorProtocol, Subscription}
+import msocket.impl.{HttpUtils, JvmTransport}
 
-import scala.concurrent.duration.{DurationLong, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_], tokenFactory: () => Option[String])(
     implicit actorSystem: ActorSystem[_],
     ep: ErrorProtocol[Req]
-) extends Transport[Req]
+) extends JvmTransport[Req]
     with ClientHttpCodecs {
 
   override def encoding: Encoding[_] = messageEncoding
@@ -31,10 +28,6 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
     getResponse(request).flatMap(Unmarshal(_).to[Res])
-  }
-
-  override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
-    requestStream[Res](request).completionTimeout(timeout).runWith(Sink.head)
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
@@ -58,26 +51,7 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
           case None        => Nil
         }
       )
-      Http()(actorSystem.toClassic).singleRequest(httpRequest).flatMap { response =>
-        response.status match {
-          case StatusCodes.OK => Future.successful(response)
-          case _              => handleError(response).map(throw _)
-        }
-      }
+      new HttpUtils[Req](encoding).handleRequest(httpRequest)
     }
   }
-
-  private def handleError(response: HttpResponse): Future[Throwable] = {
-    response.entity
-      .toStrict(1.seconds)
-      .flatMap { x =>
-        Unmarshal(x).to[ep.E].recoverWith {
-          case NonFatal(_) =>
-            Unmarshal(x).to[ServiceError].recover {
-              case NonFatal(_) => HttpError(response.status.intValue(), response.status.reason(), x.data.utf8String)
-            }
-        }
-      }
-  }
-
 }

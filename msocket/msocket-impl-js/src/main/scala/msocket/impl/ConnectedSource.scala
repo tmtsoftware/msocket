@@ -9,7 +9,7 @@ class ConnectedSource[Res: Decoder] extends Source[Res, Subscription] {
   private var subscription: Subscription       = () => ()
   override val materializedValue: Subscription = subscription
 
-  def start[Req](req: Req, connector: Connector[Req]): ConnectedSource[Res] = {
+  def start[Req](req: Req, connector: JsTransport[Req]): ConnectedSource[Res] = {
     subscription = connector.requestStream(req, onMessage)
     this
   }

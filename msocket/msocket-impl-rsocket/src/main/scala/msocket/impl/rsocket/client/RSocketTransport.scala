@@ -8,13 +8,14 @@ import io.rsocket.RSocket
 import io.rsocket.util.DefaultPayload
 import msocket.api.Encoding.{CborByteArray, CborByteBuffer}
 import msocket.api.utils.ByteBufferExtensions.RichByteBuffer
-import msocket.api.{ErrorProtocol, Subscription, Transport}
+import msocket.api.{ErrorProtocol, Subscription}
+import msocket.impl.JvmTransport
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.FutureConverters.CompletionStageOps
 
-class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
+class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket)(implicit actorSystem: ActorSystem[_]) extends JvmTransport[Req] {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 

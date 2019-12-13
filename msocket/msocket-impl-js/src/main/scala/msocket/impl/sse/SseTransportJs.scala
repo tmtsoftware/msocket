@@ -1,7 +1,39 @@
 package msocket.impl.sse
 
-import io.bullet.borer.Encoder
-import msocket.api.ErrorProtocol
-import msocket.impl.TransportJs
+import io.bullet.borer.{Decoder, Encoder, Json}
+import msocket.api.Encoding.JsonText
+import msocket.api.{ErrorProtocol, Subscription}
+import msocket.impl.JsTransport
+import typings.eventsource.MessageEvent
+import typings.eventsource.eventsourceMod.{EventSourceInitDict, ^ => Sse}
 
-class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String) extends TransportJs[Req](new SseConnector[Req](uri))
+import scala.concurrent.Future
+import scala.scalajs.js
+
+class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String) extends JsTransport[Req] {
+
+  override def requestResponse[Res: Decoder](req: Req): Future[Res] = {
+    Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
+  }
+
+  override def requestStream[Res: Decoder](req: Req, onMessage: Res => Unit): Subscription = {
+    val sse = new Sse(uri, EventSourceInitDict(queryHeader(req))) {
+      override def onopen(evt: MessageEvent): js.Any = {
+        println("connection open")
+      }
+
+      override def onmessage(evt: MessageEvent): js.Any = {
+        val jsonString = evt.data.asInstanceOf[String]
+        if (jsonString != "") {
+          onMessage(JsonText.decodeWithError(jsonString))
+        }
+      }
+    }
+
+    () => sse.close()
+  }
+
+  private def queryHeader(req: Req): js.Object = {
+    js.Dynamic.literal("query" -> Json.encode(req).toUtf8String)
+  }
+}

@@ -8,9 +8,10 @@ import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{Future, Promise, TimeoutException}
 import scala.scalajs.js.timers
 
-class TransportJs[Req: Encoder: ErrorProtocol](connector: Connector[Req]) extends Transport[Req] {
-
-  override def requestResponse[Res: Decoder](request: Req): Future[Res] = connector.requestResponse(request)
+abstract class JsTransport[Req: Encoder: ErrorProtocol] extends Transport[Req] {
+  override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
+    new ConnectedSource().start(request, this)
+  }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
     val promise: Promise[Res] = Promise()
@@ -28,9 +29,4 @@ class TransportJs[Req: Encoder: ErrorProtocol](connector: Connector[Req]) extend
 
     promise.future
   }
-
-  override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
-    new ConnectedSource().start(request, connector)
-  }
-
 }

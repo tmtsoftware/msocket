@@ -3,19 +3,19 @@ package msocket.impl.ws
 import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
 import akka.stream.KillSwitches
-import akka.stream.scaladsl.{Keep, Sink, Source}
+import akka.stream.scaladsl.{Keep, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Encoding.JsonText
-import msocket.api.{Encoding, ErrorProtocol, Subscription, Transport}
-import msocket.impl.CborByteString
+import msocket.api.{Encoding, ErrorProtocol, Subscription}
 import msocket.impl.ws.EncodingExtensions.EncodingForMessage
+import msocket.impl.{CborByteString, JvmTransport}
 
-import scala.concurrent.duration.{DurationLong, FiniteDuration}
+import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
 
 class WebsocketTransport[Req: Encoder: ErrorProtocol](uri: String, encoding: Encoding[_])(
     implicit actorSystem: ActorSystem[_]
-) extends Transport[Req] {
+) extends JvmTransport[Req] {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
@@ -23,10 +23,6 @@ class WebsocketTransport[Req: Encoder: ErrorProtocol](uri: String, encoding: Enc
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
     Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
-  }
-
-  override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
-    requestStream[Res](request).completionTimeout(timeout).runWith(Sink.head)
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] =

@@ -19,4 +19,8 @@ class ContraMappedTransport[A, B: Encoder: ErrorProtocol](transport: Transport[A
   override def requestStream[Res: Decoder](request: B): Source[Res, Subscription] = {
     transport.requestStream(contraF(request))
   }
+
+  override def requestStream[Res: Decoder](req: B, onMessage: Res => Unit): Subscription = {
+    transport.requestStream(contraF(req), onMessage)
+  }
 }

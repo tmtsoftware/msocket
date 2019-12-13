@@ -6,20 +6,17 @@ import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.model.ws.Message
 import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.Source
-import csw.aas.http.SecurityDirectives
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.{Codecs, ExampleRequest}
 import csw.example.impl.ExampleImpl
-import csw.location.api.scaladsl.LocationService
-import csw.location.client.scaladsl.HttpLocationServiceFactory
 import io.rsocket.Payload
-import msocket.api.MessageHandler
+import msocket.api.{Encoding, MessageHandler}
 import msocket.example.server.handlers.{ExamplePostHandler, ExampleRSocketHandler, ExampleSseHandler, ExampleWebsocketHandler}
+import msocket.impl.RouteFactory
 import msocket.impl.post.PostRouteFactory
 import msocket.impl.rsocket.server.RSocketServer
 import msocket.impl.sse.SseRouteFactory
 import msocket.impl.ws.WebsocketRouteFactory
-import msocket.impl.{Encoding, RouteFactory}
 
 import scala.concurrent.ExecutionContext
 
@@ -29,10 +26,10 @@ class ServerWiring extends Codecs {
 
   lazy val exampleImpl: ExampleApi = new ExampleImpl
 
-  lazy val locationService: LocationService       = HttpLocationServiceFactory.makeLocalClient(actorSystem)
-  lazy val securityDirectives: SecurityDirectives = SecurityDirectives(locationService)
+//  lazy val locationService: LocationService       = HttpLocationServiceFactory.makeLocalClient(actorSystem)
+//  lazy val securityDirectives: SecurityDirectives = SecurityDirectives(locationService)
 
-  lazy val postHandler: MessageHandler[ExampleRequest, Route] = new ExamplePostHandler(exampleImpl, securityDirectives)
+  lazy val postHandler: MessageHandler[ExampleRequest, Route] = new ExamplePostHandler(exampleImpl)
 
   lazy val sseHandler: MessageHandler[ExampleRequest, Route] = new ExampleSseHandler(exampleImpl)
 

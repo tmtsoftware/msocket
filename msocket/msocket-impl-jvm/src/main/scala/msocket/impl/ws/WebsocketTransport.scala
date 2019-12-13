@@ -5,9 +5,10 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.{ErrorProtocol, Subscription, Transport}
-import msocket.impl.Encoding
-import msocket.impl.Encoding.{CborBinary, JsonText}
+import msocket.api.Encoding.JsonText
+import msocket.api.{Encoding, ErrorProtocol, Subscription, Transport}
+import msocket.impl.CborByteString
+import msocket.impl.ws.EncodingExtensions.EncodingForMessage
 
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,7 +34,7 @@ class WebsocketTransport[Req: Encoder: ErrorProtocol](uri: String, encoding: Enc
       .request(encoding.strictMessage(request))
       .mapAsync(16) {
         case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decodeWithError[Res, Req](m.text))
-        case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborBinary.decodeWithError[Res, Req](m.data))
+        case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborByteString.decodeWithError[Res, Req](m.data))
       }
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue[Subscription](switch => () => switch.shutdown())

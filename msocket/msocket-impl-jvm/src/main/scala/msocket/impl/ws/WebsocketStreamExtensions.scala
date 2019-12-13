@@ -4,7 +4,9 @@ import akka.NotUsed
 import akka.http.scaladsl.model.ws.Message
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
-import msocket.impl.{Encoding, StreamExtensions}
+import msocket.api.Encoding
+import msocket.impl.ws.EncodingExtensions.EncodingForMessage
+import msocket.impl.StreamExtensions
 
 trait WebsocketStreamExtensions extends StreamExtensions[Message] {
   def encoding: Encoding[_]

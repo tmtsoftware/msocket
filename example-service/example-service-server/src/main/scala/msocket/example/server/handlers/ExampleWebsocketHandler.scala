@@ -6,8 +6,7 @@ import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
-import msocket.api.MessageHandler
-import msocket.impl.Encoding
+import msocket.api.{Encoding, MessageHandler}
 import msocket.impl.ws.WebsocketStreamExtensions
 
 class ExampleWebsocketHandler(exampleApi: ExampleApi, val encoding: Encoding[_])

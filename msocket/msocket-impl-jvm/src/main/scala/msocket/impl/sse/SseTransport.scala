@@ -11,9 +11,9 @@ import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.{KillSwitches, Materializer}
 import akka.{NotUsed, actor}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.{ErrorProtocol, Subscription, Transport}
+import msocket.api.Encoding.JsonText
 import msocket.api.models.HttpError
-import msocket.impl.Encoding.JsonText
+import msocket.api.{ErrorProtocol, Subscription, Transport}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}

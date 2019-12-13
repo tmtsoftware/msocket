@@ -7,9 +7,9 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Decoder
-import msocket.api.{ErrorProtocol, MessageHandler}
+import msocket.api.{Encoding, ErrorProtocol, MessageHandler}
 import msocket.impl.post.ServerHttpCodecs
-import msocket.impl.{Encoding, RouteFactory}
+import msocket.impl.RouteFactory
 
 class WebsocketRouteFactory[Req: Decoder: ErrorProtocol](
     endpoint: String,

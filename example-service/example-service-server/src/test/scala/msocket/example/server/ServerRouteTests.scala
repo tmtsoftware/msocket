@@ -6,10 +6,11 @@ import akka.stream.scaladsl.Source
 import akka.testkit.TestDuration
 import csw.example.api.protocol.Codecs
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream}
+import msocket.api.Encoding
+import msocket.api.Encoding.JsonText
 import msocket.api.models.FetchEvent
-import msocket.impl.Encoding
-import msocket.impl.Encoding.JsonText
 import msocket.impl.post.ClientHttpCodecs
+import msocket.impl.ws.EncodingExtensions.EncodingForMessage
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 

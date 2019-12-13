@@ -11,10 +11,9 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
+import msocket.api.Encoding.JsonText
 import msocket.api.models._
-import msocket.api.{ErrorProtocol, Subscription, Transport}
-import msocket.impl.Encoding
-import msocket.impl.Encoding.JsonText
+import msocket.api.{Encoding, ErrorProtocol, Subscription, Transport}
 
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future}

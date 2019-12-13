@@ -4,8 +4,8 @@ import akka.NotUsed
 import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
+import msocket.api.Encoding.JsonText
 import msocket.api.models.ServiceError
-import msocket.impl.Encoding.JsonText
 import msocket.impl.StreamExtensions
 
 import scala.concurrent.duration.DurationLong

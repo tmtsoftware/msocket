@@ -3,8 +3,8 @@ package msocket.impl.post
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
+import msocket.api.Encoding.JsonText
 import msocket.api.models.{FetchEvent, ServiceError}
-import msocket.impl.Encoding.JsonText
 import msocket.impl.StreamExtensions
 
 import scala.concurrent.duration.DurationLong

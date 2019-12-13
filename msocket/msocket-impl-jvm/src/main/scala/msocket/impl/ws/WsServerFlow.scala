@@ -5,10 +5,11 @@ import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.Decoder
+import msocket.api.Encoding.JsonText
 import msocket.api.models.ServiceError
-import msocket.api.{ErrorProtocol, MessageHandler}
-import msocket.impl.Encoding
-import msocket.impl.Encoding.{CborBinary, JsonText}
+import msocket.api.{Encoding, ErrorProtocol, MessageHandler}
+import msocket.impl.CborByteString
+import msocket.impl.ws.EncodingExtensions.EncodingForMessage
 
 import scala.concurrent.duration.DurationLong
 import scala.util.control.NonFatal
@@ -27,7 +28,7 @@ class WsServerFlow[T: Decoder](messageHandler: Encoding[_] => MessageHandler[T, 
       }
       .flatMapConcat {
         case msg: TextMessage   => handle(msg.getStrictText, JsonText)
-        case msg: BinaryMessage => handle(msg.getStrictData, CborBinary)
+        case msg: BinaryMessage => handle(msg.getStrictData, CborByteString)
       }
   }
 

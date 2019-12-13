@@ -5,7 +5,7 @@ import akka.actor.typed.scaladsl.Behaviors
 import com.github.ghik.silencer.silent
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{Codecs, ExampleRequest}
-import msocket.impl.Encoding.JsonText
+import msocket.api.Encoding.JsonText
 import msocket.impl.post.HttpPostTransport
 import msocket.impl.rsocket.client.RSocketTransportFactory
 import msocket.impl.sse.SseTransport

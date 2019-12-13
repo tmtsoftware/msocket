@@ -3,12 +3,11 @@ package msocket.impl.rsocket.client
 import akka.actor.typed.ActorSystem
 import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
-import akka.util.ByteString
 import io.bullet.borer.{Decoder, Encoder}
 import io.rsocket.RSocket
 import io.rsocket.util.DefaultPayload
+import msocket.api.Encoding.CborByteBuffer
 import msocket.api.{ErrorProtocol, Subscription, Transport}
-import msocket.impl.Encoding.CborBinary
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
@@ -26,10 +25,10 @@ class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket)(implicit a
   }
 
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
-    val value = rSocket.requestStream(DefaultPayload.create(CborBinary.encode(request).toByteBuffer))
+    val value = rSocket.requestStream(DefaultPayload.create(CborByteBuffer.encode(request)))
     Source
       .fromPublisher(value)
-      .map(x => CborBinary.decodeWithServiceError(ByteString.fromByteBuffer(x.getData)))
+      .map(x => CborByteBuffer.decodeWithServiceError(x.getData))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }

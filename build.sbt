@@ -99,7 +99,7 @@ lazy val `msocket-impl-rsocket` = project
   .dependsOn(`msocket-impl-jvm`)
   .settings(
     libraryDependencies ++= Seq(
-      `rsocket-transport-akka`,
+      `rsocket-transport-netty`,
       `rsocket-core`
     )
   )

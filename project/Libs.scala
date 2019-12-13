@@ -26,10 +26,9 @@ object Libs {
   val `eventsource`              = dep("com.github.tmtsoftware.tmt-typed" %%% "eventsource"              % "df98106")
   val `rsocket-websocket-client` = dep("com.github.tmtsoftware.tmt-typed" %%% "rsocket-websocket-client" % "df98106")
 
-  val `rsocket-transport-akka` = "com.github.mushtaq"         % "rsocket-transport-akka" % "740a0a7"
-  val `rsocket-core`           = "io.rsocket"                 % "rsocket-core"           % "0.11.18"
-  val `rsocket-test`           = "io.rsocket"                 % "rsocket-test"           % "0.11.18"
-  val `case-app`               = "com.github.alexarchambault" %% "case-app"              % "2.0.0-M9"
+  val `rsocket-core`            = "io.rsocket"                 % "rsocket-core"            % "1.0.0-RC5"
+  val `rsocket-transport-netty` = "io.rsocket"                 % "rsocket-transport-netty" % "1.0.0-RC5"
+  val `case-app`                = "com.github.alexarchambault" %% "case-app"               % "2.0.0-M9"
 
 }
 

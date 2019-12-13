@@ -11,14 +11,14 @@ import csw.example.api.protocol.{Codecs, ExampleRequest}
 import csw.example.impl.ExampleImpl
 import io.rsocket.Payload
 import msocket.api.{Encoding, MessageHandler}
-import msocket.example.server.handlers.{ExamplePostHandler, ExampleRSocketHandler, ExampleSseHandler, ExampleWebsocketHandler}
+import msocket.example.server.handlers._
 import msocket.impl.RouteFactory
 import msocket.impl.post.PostRouteFactory
 import msocket.impl.rsocket.server.RSocketServer
 import msocket.impl.sse.SseRouteFactory
 import msocket.impl.ws.WebsocketRouteFactory
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class ServerWiring extends Codecs {
   implicit lazy val actorSystem: ActorSystem[_] = ActorSystem(Behaviors.empty, "server")
@@ -36,7 +36,8 @@ class ServerWiring extends Codecs {
   def websocketHandlerFactory(encoding: Encoding[_]): MessageHandler[ExampleRequest, Source[Message, NotUsed]] =
     new ExampleWebsocketHandler(exampleImpl, encoding)
 
-  lazy val rSocketHandler: MessageHandler[ExampleRequest, Source[Payload, NotUsed]] = new ExampleRSocketHandler(exampleImpl)
+  lazy val requestStreamHandler: MessageHandler[ExampleRequest, Source[Payload, NotUsed]] = new ExampleRequestStreamHandler(exampleImpl)
+  lazy val requestResponseHandler: MessageHandler[ExampleRequest, Future[Payload]]        = new ExampleRequestResponseHandler(exampleImpl)
 
   lazy val applicationRoute: Route = RouteFactory.combine(
     new PostRouteFactory[ExampleRequest]("post-endpoint", postHandler),
@@ -45,5 +46,5 @@ class ServerWiring extends Codecs {
   )
 
   lazy val exampleServer = new ExampleServer(applicationRoute)
-  lazy val rSocketServer = new RSocketServer(rSocketHandler)
+  lazy val rSocketServer = new RSocketServer(requestResponseHandler, requestStreamHandler)
 }

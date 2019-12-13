@@ -8,10 +8,16 @@ import io.rsocket.util.DefaultPayload
 import msocket.api.Encoding.CborByteBuffer
 import msocket.impl.StreamExtensions
 
+import scala.concurrent.{ExecutionContext, Future}
+
 trait RSocketStreamExtensions extends StreamExtensions[Payload] {
-  override def stream[T, Mat](input: Source[T, Mat])(implicit encoder: Encoder[T]): Source[Payload, NotUsed] = {
+  override def stream[T: Encoder, Mat](input: Source[T, Mat]): Source[Payload, NotUsed] = {
     input
       .map(x => DefaultPayload.create(CborByteBuffer.encode(x)))
       .mapMaterializedValue(_ => NotUsed)
+  }
+
+  def future[T: Encoder](input: Future[T])(implicit ec: ExecutionContext): Future[Payload] = {
+    input.map(x => DefaultPayload.create(CborByteBuffer.encode(x)))
   }
 }

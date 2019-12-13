@@ -9,7 +9,6 @@ import scala.compat.java8.FutureConverters.CompletionStageOps
 object RSocketFactoryS {
   def client(clientTransport: ClientTransport): Future[RSocket] = {
     RSocketFactory.connect
-      .frameDecoder(_.retain)
       .transport(clientTransport)
       .start
       .toFuture

@@ -6,18 +6,22 @@ import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import io.rsocket.RSocket
 import io.rsocket.util.DefaultPayload
-import msocket.api.Encoding.CborByteBuffer
+import msocket.api.Encoding.{CborByteArray, CborByteBuffer}
+import msocket.api.utils.ByteBufferExtensions.RichByteBuffer
 import msocket.api.{ErrorProtocol, Subscription, Transport}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
+import scala.jdk.FutureConverters.CompletionStageOps
 
 class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket)(implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
   override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
-    Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
+    rSocket.requestResponse(DefaultPayload.create(CborByteBuffer.encode(request))).toFuture.asScala.map { x =>
+      CborByteArray.decodeWithError[Res, Req](x.getData.toByteArray)
+    }
   }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
@@ -28,7 +32,7 @@ class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket)(implicit a
     val value = rSocket.requestStream(DefaultPayload.create(CborByteBuffer.encode(request)))
     Source
       .fromPublisher(value)
-      .map(x => CborByteBuffer.decodeWithServiceError(x.getData))
+      .map(x => CborByteArray.decodeWithError[Res, Req](x.getData.toByteArray))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }

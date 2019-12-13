@@ -7,4 +7,4 @@ import msocket.impl.streaming.StreamingTransportJs
 import scala.concurrent.ExecutionContext
 
 class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext)
-    extends StreamingTransportJs[Req](new RSocketConnectionFactory[Req](uri))
+    extends StreamingTransportJs[Req](new RSocketConnector[Req](uri))

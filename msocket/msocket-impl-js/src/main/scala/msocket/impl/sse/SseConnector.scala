@@ -1,14 +1,17 @@
 package msocket.impl.sse
 
-import io.bullet.borer.{Encoder, Json}
-import msocket.impl.streaming.{ConnectedSource, ConnectionFactory}
+import io.bullet.borer.{Decoder, Encoder, Json}
+import msocket.api.Encoding.JsonText
+import msocket.api.{ErrorProtocol, Subscription}
+import msocket.impl.streaming.Connector
 import typings.eventsource.MessageEvent
 import typings.eventsource.eventsourceMod.{EventSourceInitDict, ^ => Sse}
 
 import scala.scalajs.js
 
-class SseConnectionFactory[Req: Encoder](uri: String) extends ConnectionFactory {
-  override def connect[S <: ConnectedSource[_, _]](req: Req, source: S): S = {
+class SseConnector[Req: Encoder: ErrorProtocol](uri: String) extends Connector[Req] {
+
+  override def connect[Res: Decoder](req: Req, onMessage: Res => Unit): Subscription = {
     val sse = new Sse(uri, EventSourceInitDict(queryHeader(req))) {
       override def onopen(evt: MessageEvent): js.Any = {
         println("connection open")
@@ -17,12 +20,12 @@ class SseConnectionFactory[Req: Encoder](uri: String) extends ConnectionFactory 
       override def onmessage(evt: MessageEvent): js.Any = {
         val jsonString = evt.data.asInstanceOf[String]
         if (jsonString != "") {
-          source.onTextMessage(jsonString)
+          onMessage(JsonText.decodeWithError(jsonString))
         }
       }
     }
-    source.subscription = () => sse.close()
-    source
+
+    () => sse.close()
   }
 
   private def queryHeader(req: Req): js.Object = {

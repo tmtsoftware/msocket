@@ -1,10 +1,9 @@
 package msocket.impl.post
 
-import org.scalajs.dom.experimental.ReadableStream
+import typings.std.{ReadableStream, Uint8Array}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import scala.scalajs.js.typedarray.Uint8Array
 
 @JSImport("can-ndjson-stream", JSImport.Namespace)
 @js.native

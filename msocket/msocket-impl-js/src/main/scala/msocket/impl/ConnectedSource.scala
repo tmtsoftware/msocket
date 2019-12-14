@@ -2,17 +2,12 @@ package msocket.impl
 
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Decoder
-import msocket.api.Subscription
+import msocket.api.{Subscription, Transport}
 
-class ConnectedSource[Res: Decoder] extends Source[Res, Subscription] {
-  private var onMessage: Res => Unit           = x => ()
-  private var subscription: Subscription       = () => ()
-  override val materializedValue: Subscription = subscription
+class ConnectedSource[Req, Res: Decoder](req: Req, transport: Transport[Req]) extends Source[Res, Subscription] {
+  private var onMessage: Res => Unit = x => ()
 
-  def start[Req](req: Req, connector: JsTransport[Req]): ConnectedSource[Res] = {
-    subscription = connector.requestStream(req, onMessage)
-    this
-  }
+  override val materializedValue: Subscription = transport.requestStream(req, onMessage)
 
   def foreach(f: Res => Unit): Unit = {
     onMessage = f

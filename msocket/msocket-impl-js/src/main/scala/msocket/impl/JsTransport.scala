@@ -5,28 +5,26 @@ import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.{ErrorProtocol, Subscription, Transport}
 
 import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.{Future, Promise, TimeoutException}
+import scala.concurrent.{ExecutionContext, Future, Promise, TimeoutException}
 import scala.scalajs.js.timers
 
-abstract class JsTransport[Req: Encoder: ErrorProtocol] extends Transport[Req] {
+abstract class JsTransport[Req: Encoder: ErrorProtocol](implicit ec: ExecutionContext) extends Transport[Req] {
   override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
-    new ConnectedSource().start(request, this)
+    new ConnectedSource(request, this)
   }
 
   override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
     val promise: Promise[Res] = Promise()
 
-    val connectedSource = requestStream(request)
-    connectedSource.foreach { response =>
-      connectedSource.materializedValue.cancel()
-      promise.trySuccess(response)
-    }
+    val subscription = requestStream[Res](request, { response: Res =>
+      promise.trySuccess(response): Unit
+    })
 
     timers.setTimeout(timeout) {
-      connectedSource.materializedValue.cancel()
       promise.tryFailure(new TimeoutException(s"no response obtained within timeout of $timeout"))
     }
 
+    promise.future.onComplete(_ => subscription.cancel())
     promise.future
   }
 }

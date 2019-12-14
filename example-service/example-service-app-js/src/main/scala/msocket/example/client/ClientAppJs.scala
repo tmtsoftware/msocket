@@ -4,7 +4,6 @@ import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.Source
 import csw.example.api.client.ExampleClient
 import msocket.api.Subscription
-import portable.akka.extensions.PortableAkka._
 
 class ClientAppJs(client: ExampleClient)(implicit actorSystem: ActorSystem[_]) {
   import actorSystem.executionContext
@@ -23,7 +22,7 @@ class ClientAppJs(client: ExampleClient)(implicit actorSystem: ActorSystem[_]) {
 
     client.hello("mushtaq").onComplete(println)
     val postHelloStream: Source[String, Subscription] = client.helloStream("mushtaq")
-    postHelloStream.subscribe { x =>
+    postHelloStream.foreach { x =>
       println(s"--------> $x")
     }
 

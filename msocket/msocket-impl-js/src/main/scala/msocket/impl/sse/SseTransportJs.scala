@@ -7,10 +7,10 @@ import msocket.impl.JsTransport
 import typings.eventsource.MessageEvent
 import typings.eventsource.eventsourceMod.{EventSourceInitDict, ^ => Sse}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
 
-class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String) extends JsTransport[Req] {
+class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext) extends JsTransport[Req] {
 
   override def requestResponse[Res: Decoder](req: Req): Future[Res] = {
     Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
@@ -27,6 +27,10 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String) extends JsTranspo
         if (jsonString != "") {
           onMessage(JsonText.decodeWithError(jsonString))
         }
+      }
+
+      override def onerror(evt: MessageEvent): js.Any = {
+        println(evt)
       }
     }
 

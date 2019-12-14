@@ -6,9 +6,9 @@ import msocket.api.{ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import org.scalajs.dom.raw.WebSocket
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String) extends JsTransport[Req] {
+class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext) extends JsTransport[Req] {
 
   override def requestResponse[Res: Decoder](req: Req): Future[Res] = {
     Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
@@ -27,6 +27,10 @@ class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String) extends JsT
 
       onclose = { _ =>
         println("connection closed")
+      }
+
+      onerror = { e =>
+        println(e)
       }
     }
 

@@ -27,11 +27,11 @@ object Encoding {
     def decode[T: Decoder](input: String): T   = Json.decode(input.getBytes()).to[T].value
   }
 
-  class CborGeneric[E: Output.ToTypeProvider: Input.Provider] extends Encoding[E] {
+  class CborBinary[E: Output.ToTypeProvider: Input.Provider] extends Encoding[E] {
     override def encode[T: Encoder](payload: T): E = Cbor.encode(payload).to[E].result
     override def decode[T: Decoder](input: E): T   = Cbor.decode(input).to[T].value
   }
 
-  case object CborByteBuffer extends CborGeneric[ByteBuffer]
-  case object CborByteArray  extends CborGeneric[Array[Byte]]
+  case object CborByteBuffer extends CborBinary[ByteBuffer]
+  case object CborByteArray  extends CborBinary[Array[Byte]]
 }

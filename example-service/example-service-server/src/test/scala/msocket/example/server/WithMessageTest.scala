@@ -1,7 +1,7 @@
 package msocket.example.server
 
 import io.bullet.borer.Dom.{Element, StringElem}
-import io.bullet.borer.derivation.MapBasedCodecs
+import io.bullet.borer.derivation.CompactMapBasedCodecs
 import io.bullet.borer.{Cbor, Codec, Encoder, Json}
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -25,7 +25,7 @@ case class Book(name: String) extends WithMessage {
 }
 
 class WithMessageTest extends AnyFunSuite {
-  implicit lazy val bookCodec: Codec[Book] = WithMessage.codec(MapBasedCodecs.deriveCodec)
+  implicit lazy val bookCodec: Codec[Book] = WithMessage.codec(CompactMapBasedCodecs.deriveCodec)
 
   test("json") {
     val utf8String = Json.encode(Book("abc")).toUtf8String

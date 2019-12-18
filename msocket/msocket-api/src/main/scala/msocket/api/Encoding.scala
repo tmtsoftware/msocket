@@ -11,9 +11,6 @@ abstract class Encoding[E] {
   def encode[T: Encoder](payload: T): E
   def decode[T: Decoder](input: E): T
 
-  def decodeWithServiceError[T: Decoder](input: E): T = Try(decode[T](input)).getOrElse {
-    throw decode[ServiceError](input)
-  }
   def decodeWithError[T: Decoder, S](input: E)(implicit ep: ErrorProtocol[S]): T = Try(decode[T](input)).getOrElse {
     throw Try(decode[ep.E](input)).getOrElse {
       decode[ServiceError](input)

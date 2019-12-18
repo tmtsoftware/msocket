@@ -5,6 +5,7 @@ import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest, WSProbe
 import akka.stream.scaladsl.Source
 import akka.testkit.TestDuration
 import csw.example.api.protocol.ExampleCodecs
+import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream}
 import msocket.api.Encoding
 import msocket.api.Encoding.JsonText
@@ -27,7 +28,7 @@ class ServerRouteTests extends AnyFunSuite with ScalatestRouteTest with Matchers
     val wsClient = WSProbe()
 
     WS(s"/websocket-endpoint", wsClient.flow) ~> wiring.exampleServer.routesForTesting ~> check {
-      wsClient.sendMessage(JsonText.strictMessage(GetNumbers(3)))
+      wsClient.sendMessage(JsonText.strictMessage(GetNumbers(3): ExampleRequest))
       isWebSocketUpgrade shouldBe true
 //      wsClient.expectMessage().asBinaryMessage.getStreamedData.asScala.runForeach(x => println(x.utf8String))
       println(wsClient.expectMessage())
@@ -42,14 +43,14 @@ class ServerRouteTests extends AnyFunSuite with ScalatestRouteTest with Matchers
 
   test("http-streaming") {
     implicit val timeout: RouteTestTimeout = RouteTestTimeout(10.seconds.dilated)
-    Post("/post-endpoint", HelloStream("mushtaq")) ~> wiring.exampleServer.routesForTesting ~> check {
+    Post("/post-endpoint", HelloStream("mushtaq"): ExampleRequest) ~> wiring.exampleServer.routesForTesting ~> check {
       responseAs[Source[FetchEvent, NotUsed]].take(3).runForeach(println)
     }
   }
 
   test("simple-post") {
     implicit val timeout: RouteTestTimeout = RouteTestTimeout(10.seconds.dilated)
-    Post("/post-endpoint", Hello("mushtaq")) ~> wiring.exampleServer.routesForTesting ~> check {
+    Post("/post-endpoint", Hello("mushtaq"): ExampleRequest) ~> wiring.exampleServer.routesForTesting ~> check {
       println(status)
       println(response)
     }

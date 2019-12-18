@@ -1,7 +1,7 @@
 package msocket.api.models
 
 import io.bullet.borer.Codec
-import io.bullet.borer.derivation.MapBasedCodecs.deriveCodec
+import io.bullet.borer.derivation.CompactMapBasedCodecs
 
 case class GenericError(errorName: String, message: String) {
   override def toString: String =
@@ -12,5 +12,5 @@ case class GenericError(errorName: String, message: String) {
 }
 
 object GenericError {
-  implicit lazy val genericErrorCodec: Codec[GenericError] = deriveCodec
+  implicit lazy val genericErrorCodec: Codec[GenericError] = CompactMapBasedCodecs.deriveCodec
 }

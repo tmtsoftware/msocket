@@ -1,9 +1,7 @@
 package msocket.api.models
 
-import com.github.ghik.silencer.silent
-import io.bullet.borer.derivation.ArrayBasedCodecs.{deriveUnaryDecoder, deriveUnaryEncoder}
-import io.bullet.borer.derivation.MapBasedCodecs._
-import io.bullet.borer.{Decoder, Encoder}
+import io.bullet.borer.derivation.CompactMapBasedCodecs
+import io.bullet.borer.{Codec, Decoder, Encoder}
 
 sealed trait Result[S, E] {
   def toEither: Either[E, S] = this match {
@@ -21,15 +19,5 @@ object Result {
     case Right(value) => Success(value)
   }
 
-  implicit def resultDec[E: Decoder, S: Decoder]: Decoder[Result[S, E]] = {
-    @silent implicit lazy val errorEnc: Decoder[Error[S, E]]     = deriveUnaryDecoder
-    @silent implicit lazy val successEnc: Decoder[Success[S, E]] = deriveUnaryDecoder
-    deriveDecoder
-  }
-
-  implicit def resultEnc[E: Encoder, S: Encoder]: Encoder[Result[S, E]] = {
-    @silent implicit lazy val errorEnc: Encoder[Error[S, E]]     = deriveUnaryEncoder
-    @silent implicit lazy val successEnc: Encoder[Success[S, E]] = deriveUnaryEncoder
-    deriveEncoder
-  }
+  implicit def resultCodec[E: Encoder: Decoder, S: Encoder: Decoder]: Codec[Result[S, E]] = CompactMapBasedCodecs.deriveAllCodecs
 }

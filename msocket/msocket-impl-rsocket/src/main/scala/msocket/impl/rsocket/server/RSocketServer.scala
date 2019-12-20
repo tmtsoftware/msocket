@@ -1,20 +1,18 @@
 package msocket.impl.rsocket.server
 
-import akka.NotUsed
 import akka.actor.typed.ActorSystem
-import akka.stream.scaladsl.Source
 import io.bullet.borer.Decoder
 import io.rsocket.transport.netty.server.WebsocketServerTransport
-import io.rsocket.{Payload, RSocket, RSocketFactory}
-import msocket.api.{ErrorProtocol, MessageHandler}
+import io.rsocket.{RSocket, RSocketFactory}
+import msocket.api.ErrorProtocol
 import reactor.core.publisher.Mono
 
 import scala.compat.java8.FutureConverters.CompletionStageOps
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class RSocketServer[Req: Decoder: ErrorProtocol](
-    requestResponseHandler: MessageHandler[Req, Future[Payload]],
-    requestStreamHandler: MessageHandler[Req, Source[Payload, NotUsed]]
+    requestResponseHandler: RSocketResponseHandler[Req],
+    requestStreamHandler: RSocketStreamHandler[Req]
 )(implicit actorSystem: ActorSystem[_]) {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext

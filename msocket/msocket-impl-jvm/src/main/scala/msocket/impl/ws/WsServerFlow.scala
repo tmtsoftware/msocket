@@ -6,13 +6,10 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.Decoder
 import msocket.api.Encoding.JsonText
-import msocket.api.models.ServiceError
 import msocket.api.{Encoding, ErrorProtocol, MessageHandler}
 import msocket.impl.CborByteString
-import msocket.impl.ws.EncodingExtensions.EncodingForMessage
 
 import scala.concurrent.duration.DurationLong
-import scala.util.control.NonFatal
 
 class WsServerFlow[T: Decoder](messageHandler: Encoding[_] => MessageHandler[T, Source[Message, NotUsed]])(
     implicit actorSystem: ActorSystem[_],
@@ -33,12 +30,10 @@ class WsServerFlow[T: Decoder](messageHandler: Encoding[_] => MessageHandler[T, 
   }
 
   private def handle[E](element: E, encoding: Encoding[E]): Source[Message, NotUsed] = {
+    val messageEncoder = new WebsocketMessageEncoder[T](encoding)
     Source
       .lazySingle(() => encoding.decode[T](element))
       .flatMapConcat(messageHandler(encoding).handle)
-      .recover {
-        case NonFatal(ex: ep.E) => encoding.strictMessage(ex)
-        case NonFatal(ex)       => encoding.strictMessage(ServiceError.fromThrowable(ex))
-      }
+      .recover(messageEncoder.errorEncoder)
   }
 }

@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest, WSProbe}
 import akka.stream.scaladsl.Source
 import akka.testkit.TestDuration
-import csw.example.api.protocol.Codecs
+import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream}
 import msocket.api.Encoding
 import msocket.api.Encoding.JsonText
@@ -16,7 +16,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.duration.DurationLong
 
-class ServerRouteTests extends AnyFunSuite with ScalatestRouteTest with Matchers with Codecs with ClientHttpCodecs {
+class ServerRouteTests extends AnyFunSuite with ScalatestRouteTest with Matchers with ExampleCodecs with ClientHttpCodecs {
 
   override def encoding: Encoding[_] = JsonText
 

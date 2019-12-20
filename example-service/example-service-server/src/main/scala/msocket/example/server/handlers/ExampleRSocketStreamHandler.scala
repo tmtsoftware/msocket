@@ -3,17 +3,15 @@ package msocket.example.server.handlers
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
+import csw.example.api.protocol.ExampleCodecs._
 import csw.example.api.protocol.ExampleRequest
-import csw.example.api.protocol.ExampleRequest.{GetNumbers, HelloStream}
+import csw.example.api.protocol.ExampleRequest.{GetNumbers, HelloStream, Square}
 import io.rsocket.Payload
-import msocket.api.MessageHandler
-import msocket.impl.rsocket.server.RSocketStreamExtensions
+import msocket.impl.rsocket.server.RSocketStreamHandler
 
-class ExampleRequestStreamHandler(exampleApi: ExampleApi)
-    extends MessageHandler[ExampleRequest, Source[Payload, NotUsed]]
-    with RSocketStreamExtensions {
-
+class ExampleRSocketStreamHandler(exampleApi: ExampleApi) extends RSocketStreamHandler[ExampleRequest] {
   override def handle(message: ExampleRequest): Source[Payload, NotUsed] = message match {
+    case Square(number)          => futureAsStream(exampleApi.square(number))
     case HelloStream(name)       => stream(exampleApi.helloStream(name))
     case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
     case _                       => Source.failed(new RuntimeException("request-response is not supported bu request-stream handler"))

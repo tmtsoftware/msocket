@@ -3,7 +3,7 @@ package msocket.example.client
 import akka.actor.typed.ActorSystem
 import com.github.ghik.silencer.silent
 import csw.example.api.client.ExampleClient
-import csw.example.api.protocol.{Codecs, ExampleRequest}
+import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
 import msocket.impl.post.HttpPostTransportJs
 import msocket.impl.rsocket.RSocketTransportJs
 import msocket.impl.sse.SseTransportJs
@@ -12,7 +12,7 @@ import msocket.impl.ws.WebsocketTransportJs
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 
-object ClientMainJs extends Codecs {
+object ClientMainJs extends ExampleCodecs {
 
   def main(args: Array[String]): Unit = {
     implicit val streamingDelay: FiniteDuration = 1.second

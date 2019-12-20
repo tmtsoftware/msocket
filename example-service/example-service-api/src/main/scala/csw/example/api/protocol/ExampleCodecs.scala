@@ -8,7 +8,8 @@ import io.bullet.borer.derivation.ArrayBasedCodecs
 import io.bullet.borer.derivation.MapBasedCodecs.deriveCodec
 import msocket.api.ErrorProtocol
 
-trait Codecs {
+object ExampleCodecs extends ExampleCodecs
+trait ExampleCodecs {
   implicit def websocketRequestCodec[T <: ExampleRequest]: Codec[T] = exampleCodecValue.asInstanceOf[Codec[T]]
 
   lazy val exampleCodecValue: Codec[ExampleRequest] = {

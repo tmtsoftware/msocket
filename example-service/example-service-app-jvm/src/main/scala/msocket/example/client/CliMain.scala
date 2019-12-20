@@ -6,7 +6,7 @@ import caseapp.{CommandApp, RemainingArgs}
 import com.github.ghik.silencer.silent
 import csw.aas.installed.api.InstalledAppAuthAdapter
 import csw.example.api.client.ExampleClient
-import csw.example.api.protocol.{Codecs, ExampleRequest}
+import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
 import msocket.api.Encoding.JsonText
 import msocket.example.client.CliCommand._
 import msocket.impl.post.HttpPostTransport
@@ -14,7 +14,7 @@ import msocket.impl.rsocket.client.RSocketTransportFactory
 import msocket.impl.sse.SseTransport
 import msocket.impl.ws.WebsocketTransport
 
-object CliMain extends CommandApp[CliCommand] with Codecs {
+object CliMain extends CommandApp[CliCommand] with ExampleCodecs {
 
   implicit lazy val system: ActorSystem[Nothing] = ActorSystem(Behaviors.empty, "cli")
   import system.executionContext

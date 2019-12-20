@@ -4,15 +4,13 @@ import akka.NotUsed
 import akka.http.scaladsl.model.ws.Message
 import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
+import csw.example.api.protocol.ExampleCodecs._
 import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
-import msocket.api.{Encoding, MessageHandler}
-import msocket.impl.ws.WebsocketStreamExtensions
+import msocket.api.Encoding
+import msocket.impl.ws.WebsocketHandler
 
-class ExampleWebsocketHandler(exampleApi: ExampleApi, val encoding: Encoding[_])
-    extends MessageHandler[ExampleRequest, Source[Message, NotUsed]]
-    with WebsocketStreamExtensions {
-
+class ExampleWebsocketHandler(exampleApi: ExampleApi, encoding: Encoding[_]) extends WebsocketHandler[ExampleRequest](encoding) {
   override def handle(message: ExampleRequest): Source[Message, NotUsed] = message match {
     case Hello(name)    => futureAsStream(exampleApi.hello(name))
     case Square(number) => futureAsStream(exampleApi.square(number))

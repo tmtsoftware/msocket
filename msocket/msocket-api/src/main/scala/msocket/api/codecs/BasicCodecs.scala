@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit
 import akka.Done
 import akka.util.Timeout
 import com.github.ghik.silencer.silent
-import io.bullet.borer.derivation.ArrayBasedCodecs
 import io.bullet.borer.derivation.CompactMapBasedCodecs
 import io.bullet.borer.{Codec, Decoder, Encoder}
 import msocket.api.models.Result

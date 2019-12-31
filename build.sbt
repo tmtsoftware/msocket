@@ -129,8 +129,8 @@ lazy val `example-service-server` = project
   .dependsOn(`example-service-impl`, `msocket-impl-jvm`, `msocket-impl-rsocket`)
   .settings(
     libraryDependencies ++= Seq(
-      `csw-location-client`,
-      `csw-aas-http`,
+//      `csw-location-client`,
+//      `csw-aas-http`,
       `akka-http-cors`,
       `scalatest`.value     % Test,
       `akka-http-testkit`   % Test,

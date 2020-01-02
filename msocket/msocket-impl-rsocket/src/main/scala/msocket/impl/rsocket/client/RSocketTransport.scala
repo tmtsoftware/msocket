@@ -19,17 +19,17 @@ class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket)(implicit a
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
-  override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
+  override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
     rSocket.requestResponse(DefaultPayload.create(CborByteBuffer.encode(request))).toFuture.asScala.map { x =>
       CborByteArray.decodeWithError[Res, Req](x.getData.toByteArray)
     }
   }
 
-  override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
+  override def requestResponse[Res: Decoder: Encoder](request: Req, timeout: FiniteDuration): Future[Res] = {
     requestStream(request).completionTimeout(timeout).runWith(Sink.head)
   }
 
-  override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
+  override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] = {
     val value = rSocket.requestStream(DefaultPayload.create(CborByteBuffer.encode(request)))
     Source
       .fromPublisher(value)

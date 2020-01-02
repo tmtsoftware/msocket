@@ -41,7 +41,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: 
   private val socketPromise: Promise[ReactiveSocket[ByteBuffer, ByteBuffer]] = Promise()
   client.connect().subscribe(PartialOf(subscriber(socketPromise)))
 
-  override def requestResponse[Res: Decoder](req: Req): Future[Res] = {
+  override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {
     val responsePromise: Promise[Res] = Promise()
     socketPromise.future.foreach { socket =>
       socket
@@ -53,7 +53,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: 
     responsePromise.future
   }
 
-  override def requestStream[Res: Decoder](req: Req, onMessage: Res => Unit): Subscription = {
+  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit): Subscription = {
     val subscriptionPromise: Promise[ISubscription] = Promise()
 
     val subscriber = new ISubscriber[Res] {
@@ -65,7 +65,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: 
 
     socketPromise.future.foreach { socket =>
       socket
-        .requestStream(Payload(CborByteBuffer.encode(req)))
+        .requestStream(Payload(CborByteBuffer.encode(request)))
         .map(payload => CborByteBuffer.decodeWithError(payload.data.get))
         .subscribe(PartialOf(subscriber))
     }

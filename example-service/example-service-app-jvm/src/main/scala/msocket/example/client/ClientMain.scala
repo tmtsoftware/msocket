@@ -17,10 +17,10 @@ object ClientMain extends ExampleCodecs {
     import system.executionContext
 
     lazy val httpPostTransport =
-      new HttpPostTransport[ExampleRequest]("http://localhost:5000/post-endpoint", JsonText, () => None).logRequest()
+      new HttpPostTransport[ExampleRequest]("http://localhost:5000/post-endpoint", JsonText, () => None).logRequest().logResponse()
     lazy val sseTransport = new SseTransport[ExampleRequest]("http://localhost:5000/sse-endpoint")
     lazy val websocketTransport =
-      new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket-endpoint", JsonText).logRequest()
+      new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket-endpoint", JsonText).logRequest().logResponse()
     lazy val rSocketTransport = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000")
 
     val exampleClient = new ExampleClient(httpPostTransport)

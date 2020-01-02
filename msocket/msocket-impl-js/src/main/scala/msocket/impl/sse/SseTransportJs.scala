@@ -12,12 +12,12 @@ import scala.scalajs.js
 
 class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext) extends JsTransport[Req] {
 
-  override def requestResponse[Res: Decoder](req: Req): Future[Res] = {
+  override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {
     Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
   }
 
-  override def requestStream[Res: Decoder](req: Req, onMessage: Res => Unit): Subscription = {
-    val sse = new Sse(uri, EventSourceInitDict(queryHeader(req))) {
+  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit): Subscription = {
+    val sse = new Sse(uri, EventSourceInitDict(queryHeader(request))) {
       override def onopen(evt: MessageEvent): js.Any = {
         println("connection open")
       }

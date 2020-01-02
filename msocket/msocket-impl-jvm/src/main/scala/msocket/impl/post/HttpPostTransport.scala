@@ -26,11 +26,11 @@ class HttpPostTransport[Req: Encoder](uri: String, messageEncoding: Encoding[_],
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
-  override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
+  override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
     getResponse(request).flatMap(Unmarshal(_).to[Res])
   }
 
-  override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] = {
+  override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] = {
     val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[FetchEvent, NotUsed]])
     Source
       .futureSource(futureSource)

@@ -21,11 +21,11 @@ class WebsocketTransport[Req: Encoder: ErrorProtocol](uri: String, encoding: Enc
 
   private val setup = new WebsocketTransportSetup(WebSocketRequest(uri))
 
-  override def requestResponse[Res: Decoder](request: Req): Future[Res] = {
+  override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
     Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
   }
 
-  override def requestStream[Res: Decoder](request: Req): Source[Res, Subscription] =
+  override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] =
     setup
       .request(encoding.strictMessage(request))
       .mapAsync(16) {

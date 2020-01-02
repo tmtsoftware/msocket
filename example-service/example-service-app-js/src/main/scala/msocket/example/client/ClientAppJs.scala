@@ -16,13 +16,13 @@ class ClientAppJs(client: ExampleClient)(implicit actorSystem: ActorSystem[_]) {
     client.square(4).onComplete(println)
 
     val numberStream: Source[Int, Subscription] = client.getNumbers(3)
-    numberStream.foreach { x =>
+    numberStream.subscribe { x =>
       println(s"**********************  $x")
     }
 
     client.hello("mushtaq").onComplete(println)
     val postHelloStream: Source[String, Subscription] = client.helloStream("mushtaq")
-    postHelloStream.foreach { x =>
+    postHelloStream.subscribe { x =>
       println(s"--------> $x")
     }
 

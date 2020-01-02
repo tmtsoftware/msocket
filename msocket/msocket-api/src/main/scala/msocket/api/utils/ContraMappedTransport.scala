@@ -8,19 +8,19 @@ import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
 class ContraMappedTransport[A, B: Encoder: ErrorProtocol](transport: Transport[A], contraF: B => A) extends Transport[B] {
-  override def requestResponse[Res: Decoder](request: B): Future[Res] = {
+  override def requestResponse[Res: Decoder: Encoder](request: B): Future[Res] = {
     transport.requestResponse(contraF(request))
   }
 
-  override def requestResponse[Res: Decoder](request: B, timeout: FiniteDuration): Future[Res] = {
+  override def requestResponse[Res: Decoder: Encoder](request: B, timeout: FiniteDuration): Future[Res] = {
     transport.requestResponse(contraF(request), timeout)
   }
 
-  override def requestStream[Res: Decoder](request: B): Source[Res, Subscription] = {
+  override def requestStream[Res: Decoder: Encoder](request: B): Source[Res, Subscription] = {
     transport.requestStream(contraF(request))
   }
 
-  override def requestStream[Res: Decoder](req: B, onMessage: Res => Unit): Subscription = {
-    transport.requestStream(contraF(req), onMessage)
+  override def requestStream[Res: Decoder: Encoder](request: B, onMessage: Res => Unit): Subscription = {
+    transport.requestStream(contraF(request), onMessage)
   }
 }

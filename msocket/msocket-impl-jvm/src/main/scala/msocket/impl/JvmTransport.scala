@@ -9,11 +9,11 @@ import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
 abstract class JvmTransport[Req: Encoder: ErrorProtocol](implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
-  override def requestStream[Res: Decoder](req: Req, onMessage: Res => Unit): Subscription = {
-    requestStream(req).to(Sink.foreach(onMessage)).run()
+  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit): Subscription = {
+    requestStream(request).to(Sink.foreach(onMessage)).run()
   }
 
-  override def requestResponse[Res: Decoder](request: Req, timeout: FiniteDuration): Future[Res] = {
+  override def requestResponse[Res: Decoder: Encoder](request: Req, timeout: FiniteDuration): Future[Res] = {
     requestStream(request).completionTimeout(timeout).runWith(Sink.head)
   }
 }

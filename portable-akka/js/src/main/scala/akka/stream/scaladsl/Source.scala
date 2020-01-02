@@ -2,5 +2,5 @@ package akka.stream.scaladsl
 
 trait Source[Out, Mat] {
   val materializedValue: Mat
-  def foreach(f: Out => Unit): Unit
+  def subscribe(f: Out => Unit): Unit
 }

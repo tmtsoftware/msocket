@@ -7,6 +7,7 @@ import msocket.impl.JsTransport
 import org.scalajs.dom.raw.WebSocket
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext) extends JsTransport[Req] {
 
@@ -14,7 +15,7 @@ class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec
     Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
   }
 
-  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit): Subscription = {
+  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
     val webSocket = new WebSocket(uri) {
       onopen = { _ =>
         send(JsonText.encode(request))
@@ -22,7 +23,10 @@ class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec
       }
 
       onmessage = { event =>
-        onMessage(JsonText.decodeWithError(event.data.asInstanceOf[String]))
+        try onMessage(JsonText.decodeWithError(event.data.asInstanceOf[String]))
+        catch {
+          case NonFatal(ex) => onError(ex); close()
+        }
       }
 
       onclose = { _ =>

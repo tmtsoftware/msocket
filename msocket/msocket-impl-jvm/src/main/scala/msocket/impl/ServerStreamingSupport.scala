@@ -3,6 +3,7 @@ package msocket.impl
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
+import msocket.api.MessageEncoder
 
 import scala.concurrent.Future
 

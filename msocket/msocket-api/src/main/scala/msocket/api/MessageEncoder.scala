@@ -1,7 +1,6 @@
-package msocket.impl
+package msocket.api
 
 import io.bullet.borer.Encoder
-import msocket.api.ErrorProtocol
 import msocket.api.models.ServiceError
 
 import scala.util.control.NonFatal

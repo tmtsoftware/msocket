@@ -12,7 +12,7 @@ abstract class Transport[Req: Encoder: ErrorProtocol] {
   def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res]
   def requestResponse[Res: Decoder: Encoder](request: Req, timeout: FiniteDuration): Future[Res]
   def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription]
-  def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit): Subscription
+  def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription
 
   def contraMap[T: Encoder: ErrorProtocol](action: T => Req): Transport[T] = new ContraMappedTransport(this, action)
   def withEffect(action: Req => Unit): Transport[Req] = contraMap { x =>

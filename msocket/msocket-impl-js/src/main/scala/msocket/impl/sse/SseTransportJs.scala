@@ -9,6 +9,7 @@ import typings.eventsource.eventsourceMod.{EventSourceInitDict, ^ => Sse}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
+import scala.util.control.NonFatal
 
 class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext) extends JsTransport[Req] {
 
@@ -16,7 +17,7 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
     Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
   }
 
-  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit): Subscription = {
+  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
     val sse = new Sse(uri, EventSourceInitDict(queryHeader(request))) {
       override def onopen(evt: MessageEvent): js.Any = {
         println("connection open")
@@ -25,7 +26,10 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
       override def onmessage(evt: MessageEvent): js.Any = {
         val jsonString = evt.data.asInstanceOf[String]
         if (jsonString != "") {
-          onMessage(JsonText.decodeWithError(jsonString))
+          try onMessage(JsonText.decodeWithError(jsonString))
+          catch {
+            case NonFatal(ex) => onError(ex); close()
+          }
         }
       }
 

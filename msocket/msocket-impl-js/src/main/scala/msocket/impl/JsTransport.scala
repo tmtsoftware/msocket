@@ -16,9 +16,15 @@ abstract class JsTransport[Req: Encoder: ErrorProtocol](implicit ec: ExecutionCo
   override def requestResponse[Res: Decoder: Encoder](request: Req, timeout: FiniteDuration): Future[Res] = {
     val promise: Promise[Res] = Promise()
 
-    val subscription = requestStream[Res](request, { response: Res =>
-      promise.trySuccess(response): Unit
-    })
+    val subscription = requestStream[Res](
+      request,
+      onMessage = { response: Res =>
+        promise.trySuccess(response): Unit
+      },
+      onError = { ex: Throwable =>
+        promise.tryFailure(ex): Unit
+      }
+    )
 
     timers.setTimeout(timeout) {
       promise.tryFailure(new TimeoutException(s"no response obtained within timeout of $timeout"))

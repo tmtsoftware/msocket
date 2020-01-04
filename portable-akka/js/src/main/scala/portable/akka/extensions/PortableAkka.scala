@@ -13,8 +13,16 @@ object PortableAkka {
     timers.setTimeout(duration)(body)
   }
 
-  def withEffect[Out, Mat](stream: Source[Out, Mat])(f: Out => Unit): Source[Out, Mat] = {
-    stream.subscribe(f)
+  def onMessage[Out, Mat](stream: Source[Out, Mat])(f: Out => Unit): Source[Out, Mat] = {
+    stream.onMessage(f)
     stream
   }
+
+  def onError[Out, Mat](stream: Source[Out, Mat])(errorHandler: Throwable => Unit): Source[Out, Mat] = {
+    stream.onError(errorHandler)
+    stream
+  }
+
+  def withEffects[Out, Mat](stream: Source[Out, Mat])(messageHandler: Out => Unit, errorHandler: Throwable => Unit): Source[Out, Mat] =
+    onError(onMessage(stream)(messageHandler))(errorHandler)
 }

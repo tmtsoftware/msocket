@@ -17,6 +17,7 @@ import typings.rsocketDashWebsocketDashClient.rsocketDashWebsocketDashClientMod.
 import typings.std
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.util.control.NonFatal
 
 class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext) extends JsTransport[Req] {
 
@@ -53,7 +54,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: 
     responsePromise.future
   }
 
-  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit): Subscription = {
+  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
     val subscriptionPromise: Promise[ISubscription] = Promise()
 
     val subscriber = new ISubscriber[Res] {
@@ -66,7 +67,13 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: 
     socketPromise.future.foreach { socket =>
       socket
         .requestStream(Payload(CborByteBuffer.encode(request)))
-        .map(payload => CborByteBuffer.decodeWithError(payload.data.get))
+        .map { payload =>
+          try CborByteBuffer.decodeWithError(payload.data.get)
+          catch {
+            case NonFatal(ex) => onError(ex); subscriptionPromise.future.map(_.cancel())
+          }
+
+        }
         .subscribe(PartialOf(subscriber))
     }
 

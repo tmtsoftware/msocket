@@ -6,6 +6,7 @@ import akka.stream.scaladsl.Source
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
+import scala.util.control.NonFatal
 
 object PortableAkka {
 
@@ -16,8 +17,18 @@ object PortableAkka {
     }
   }
 
-  def withEffect[Out, Mat](stream: Source[Out, Mat])(f: Out => Unit): Source[Out, Mat] = stream.map { x =>
-    f(x)
+  def onMessage[Out, Mat](stream: Source[Out, Mat])(messageHandler: Out => Unit): Source[Out, Mat] = stream.map { x =>
+    messageHandler(x)
     x
   }
+
+  def onError[Out, Mat](stream: Source[Out, Mat])(errorHandler: Throwable => Unit): Source[Out, Mat] =
+    stream.mapError {
+      case NonFatal(ex) =>
+        errorHandler(ex);
+        ex
+    }
+
+  def withEffects[Out, Mat](stream: Source[Out, Mat])(messageHandler: Out => Unit, errorHandler: Throwable => Unit): Source[Out, Mat] =
+    onError(onMessage(stream)(messageHandler))(errorHandler)
 }

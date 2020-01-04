@@ -10,6 +10,7 @@ import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
 import scala.scalajs.js.timers
+import scala.util.control.NonFatal
 
 class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext, streamingDelay: FiniteDuration)
     extends JsTransport[Req] {
@@ -20,7 +21,7 @@ class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec:
     }
   }
 
-  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit): Subscription = {
+  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
     val readerF: Future[ReadableStreamReader[js.Object]] = FetchHelper.postRequest(uri, request).map { response =>
       val reader = new CanNdJsonStream(response.body).getReader()
       def read(): Unit = {
@@ -28,7 +29,10 @@ class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec:
           if (!chunk.done) {
             val jsonString = FetchEventJs(chunk.value).data
             if (jsonString != "") {
-              onMessage(JsonText.decodeWithError(jsonString))
+              try onMessage(JsonText.decodeWithError(jsonString))
+              catch {
+                case NonFatal(ex) => onError(ex); reader.cancel(ex.getMessage)
+              }
             }
             timers.setTimeout(streamingDelay) {
               read()

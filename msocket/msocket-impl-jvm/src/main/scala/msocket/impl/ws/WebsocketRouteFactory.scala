@@ -17,7 +17,7 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol](endpoint: String, webso
     get {
       path(endpoint) {
         handleWebSocketMessages {
-          new WsServerFlow(websocketHandler).flow
+          new WebsocketServerFlow(websocketHandler).flow
         }
       }
     }

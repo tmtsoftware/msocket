@@ -11,7 +11,7 @@ import msocket.impl.CborByteString
 
 import scala.concurrent.duration.DurationLong
 
-class WsServerFlow[T: Decoder](messageHandler: Encoding[_] => MessageHandler[T, Source[Message, NotUsed]])(
+class WebsocketServerFlow[T: Decoder](messageHandler: Encoding[_] => MessageHandler[T, Source[Message, NotUsed]])(
     implicit actorSystem: ActorSystem[_],
     ep: ErrorProtocol[T]
 ) {

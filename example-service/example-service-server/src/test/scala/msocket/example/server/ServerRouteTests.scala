@@ -11,7 +11,7 @@ import msocket.api.Encoding
 import msocket.api.Encoding.JsonText
 import msocket.api.models.FetchEvent
 import msocket.impl.post.ClientHttpCodecs
-import msocket.impl.ws.EncodingExtensions.EncodingForMessage
+import msocket.impl.ws.WebsocketExtensions.WebsocketEncoding
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 

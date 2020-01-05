@@ -28,8 +28,9 @@ class ServerWiring extends ExampleCodecs {
   lazy val postHandler: ExamplePostStreamingHandler                           = new ExamplePostStreamingHandler(exampleImpl)
   lazy val sseHandler: ExampleSseHandler                                      = new ExampleSseHandler(exampleImpl)
   def websocketHandlerFactory(encoding: Encoding[_]): ExampleWebsocketHandler = new ExampleWebsocketHandler(exampleImpl, encoding)
-  lazy val requestResponseHandler: ExampleRSocketResponseHandler              = new ExampleRSocketResponseHandler(exampleImpl)
-  lazy val requestStreamHandler: ExampleRSocketStreamHandler                  = new ExampleRSocketStreamHandler(exampleImpl)
+  def requestResponseHandler(encoding: Encoding[_]): ExampleRSocketResponseHandler =
+    new ExampleRSocketResponseHandler(exampleImpl, encoding)
+  def requestStreamHandler(encoding: Encoding[_]): ExampleRSocketStreamHandler = new ExampleRSocketStreamHandler(exampleImpl, encoding)
 
   lazy val applicationRoute: Route = RouteFactory.combine(
     new PostRouteFactory[ExampleRequest]("post-endpoint", postHandler),

@@ -7,7 +7,7 @@ import akka.stream.scaladsl.{Keep, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.Encoding.JsonText
 import msocket.api.{Encoding, ErrorProtocol, Subscription}
-import msocket.impl.ws.EncodingExtensions.EncodingForMessage
+import msocket.impl.ws.WebsocketExtensions.WebsocketEncoding
 import msocket.impl.{CborByteString, JvmTransport}
 
 import scala.concurrent.duration.DurationLong
@@ -22,7 +22,7 @@ class WebsocketTransport[Req: Encoder: ErrorProtocol](uri: String, encoding: Enc
   private val setup = new WebsocketTransportSetup(WebSocketRequest(uri))
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
-    Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
+    Future.failed(new RuntimeException("requestResponse protocol without timeout is not supported for this transport"))
   }
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] =

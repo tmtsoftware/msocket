@@ -5,23 +5,22 @@ import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import io.rsocket.RSocket
-import io.rsocket.util.DefaultPayload
-import msocket.api.Encoding.{CborByteArray, CborByteBuffer}
-import msocket.api.utils.ByteBufferExtensions.RichByteBuffer
-import msocket.api.{ErrorProtocol, Subscription}
+import msocket.api.{Encoding, ErrorProtocol, Subscription}
 import msocket.impl.JvmTransport
+import msocket.impl.rsocket.RSocketExtensions._
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.FutureConverters.CompletionStageOps
 
-class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket)(implicit actorSystem: ActorSystem[_]) extends JvmTransport[Req] {
+class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket, encoding: Encoding[_])(implicit actorSystem: ActorSystem[_])
+    extends JvmTransport[Req] {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
-    rSocket.requestResponse(DefaultPayload.create(CborByteBuffer.encode(request))).toFuture.asScala.map { x =>
-      CborByteArray.decodeWithError[Res, Req](x.getData.toByteArray)
+    rSocket.requestResponse(encoding.payload(request)).toFuture.asScala.map { payload =>
+      encoding.response[Res, Req](payload)
     }
   }
 
@@ -30,10 +29,10 @@ class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket)(implicit a
   }
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] = {
-    val value = rSocket.requestStream(DefaultPayload.create(CborByteBuffer.encode(request)))
+    val value = rSocket.requestStream(encoding.payload(request))
     Source
       .fromPublisher(value)
-      .map(x => CborByteArray.decodeWithError[Res, Req](x.getData.toByteArray))
+      .map(payload => encoding.response[Res, Req](payload))
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }

@@ -1,9 +1,7 @@
 package msocket.impl.rsocket
 
-import java.nio.ByteBuffer
-
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.Encoding.CborByteBuffer
+import msocket.api.Encoding.JsonText
 import msocket.api.{ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import typings.rsocketDashCore.Anon_DataMimeType
@@ -21,13 +19,13 @@ import scala.util.control.NonFatal
 
 class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext) extends JsTransport[Req] {
 
-  private val client: RSocketClient[ByteBuffer, ByteBuffer] = new RSocketClient(
+  private val client: RSocketClient[String, String] = new RSocketClient(
     ClientConfig(
       setup = Anon_DataMimeType(
-        dataMimeType = "application/cbor",
+        dataMimeType = "application/json",
         keepAlive = 60000,
         lifetime = 1800000,
-        metadataMimeType = "application/cbor"
+        metadataMimeType = "application/json"
       ),
       transport = new RSocketWebSocketClient(ClientOptions(url = uri))
     )
@@ -39,15 +37,15 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: 
     def onSubscribe(cancel: CancelCallback): Unit = println("inside onSubscribe")
   }
 
-  private val socketPromise: Promise[ReactiveSocket[ByteBuffer, ByteBuffer]] = Promise()
+  private val socketPromise: Promise[ReactiveSocket[String, String]] = Promise()
   client.connect().subscribe(PartialOf(subscriber(socketPromise)))
 
   override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {
     val responsePromise: Promise[Res] = Promise()
     socketPromise.future.foreach { socket =>
       socket
-        .requestResponse(Payload(CborByteBuffer.encode(req)))
-        .map(payload => CborByteBuffer.decodeWithError(payload.data.get))
+        .requestResponse(Payload(JsonText.encode(req)))
+        .map(payload => JsonText.decodeWithError(payload.data.get))
         .subscribe(PartialOf(subscriber(responsePromise)))
     }
 
@@ -66,9 +64,9 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: 
 
     socketPromise.future.foreach { socket =>
       socket
-        .requestStream(Payload(CborByteBuffer.encode(request)))
+        .requestStream(Payload(JsonText.encode(request)))
         .map { payload =>
-          try CborByteBuffer.decodeWithError(payload.data.get)
+          try JsonText.decodeWithError(payload.data.get)
           catch {
             case NonFatal(ex) => onError(ex); subscriptionPromise.future.map(_.cancel())
           }

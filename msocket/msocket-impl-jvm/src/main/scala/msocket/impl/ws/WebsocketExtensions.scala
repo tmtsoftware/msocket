@@ -6,9 +6,9 @@ import msocket.api.Encoding
 import msocket.api.Encoding.JsonText
 import msocket.impl.CborByteString
 
-object EncodingExtensions {
+object WebsocketExtensions {
 
-  implicit class EncodingForMessage(encoding: Encoding[_]) {
+  implicit class WebsocketEncoding(encoding: Encoding[_]) {
     def strictMessage[T: Encoder](input: T): Message = encoding match {
       case CborByteString => BinaryMessage.Strict(CborByteString.encode(input))
       case JsonText       => TextMessage.Strict(JsonText.encode(input))

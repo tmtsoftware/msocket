@@ -14,7 +14,7 @@ import scala.util.control.NonFatal
 class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext) extends JsTransport[Req] {
 
   override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {
-    Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
+    Future.failed(new RuntimeException("requestResponse protocol without timeout is not supported for this transport"))
   }
 
   override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {

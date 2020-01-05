@@ -28,7 +28,7 @@ class SseTransport[Req: Encoder: ErrorProtocol](uri: String)(implicit actorSyste
   private implicit val materializer: Materializer = Materializer(actorSystem)
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
-    Future.failed(new RuntimeException("requestResponse protocol without timeout is not yet supported for this transport"))
+    Future.failed(new RuntimeException("requestResponse protocol without timeout is not supported for this transport"))
   }
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] = {

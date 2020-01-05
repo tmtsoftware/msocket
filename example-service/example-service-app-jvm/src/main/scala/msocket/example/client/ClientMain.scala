@@ -23,7 +23,7 @@ object ClientMain extends ExampleCodecs {
       new WebsocketTransport[ExampleRequest]("ws://localhost:5000/websocket-endpoint", JsonText).logRequest().logRequestResponse()
     lazy val rSocketTransport = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000", JsonText).logRequestResponse()
 
-    val exampleClient = new ExampleClient(rSocketTransport)
+    val exampleClient = new ExampleClient(httpPostTransport)
     new ClientApp(exampleClient).testRun()
   }
 

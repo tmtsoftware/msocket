@@ -18,12 +18,12 @@ object ClientMainJs extends ExampleCodecs {
     implicit val streamingDelay: FiniteDuration = 1.second
     implicit val actorSystem: ActorSystem[Any]  = new ActorSystem
 
-    @silent lazy val postTransport      = new HttpPostTransportJs[ExampleRequest]("http://localhost:5000/post-endpoint")
-    @silent lazy val sseTransport       = new SseTransportJs[ExampleRequest]("http://localhost:5000/sse-endpoint")
-    @silent lazy val websocketTransport = new WebsocketTransportJs[ExampleRequest]("ws://localhost:5000/websocket-endpoint")
-    lazy val rSocketTransport           = new RSocketTransportJs[ExampleRequest]("ws://localhost:7000")
+    lazy val postTransport      = new HttpPostTransportJs[ExampleRequest]("http://localhost:5000/post-endpoint")
+    lazy val sseTransport       = new SseTransportJs[ExampleRequest]("http://localhost:5000/sse-endpoint")
+    lazy val websocketTransport = new WebsocketTransportJs[ExampleRequest]("ws://localhost:5000/websocket-endpoint")
+    lazy val rSocketTransport   = new RSocketTransportJs[ExampleRequest]("ws://localhost:7000")
 
-    val exampleClient = new ExampleClient(rSocketTransport)
+    val exampleClient = new ExampleClient(postTransport)
     new ClientAppJs(exampleClient).testRun()
   }
 }

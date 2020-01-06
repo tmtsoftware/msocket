@@ -9,24 +9,22 @@ class ClientAppJs(client: ExampleClient)(implicit actorSystem: ActorSystem[_]) {
   import actorSystem.executionContext
 
   def testRun(): Unit = {
-    client.hello("xyz").onComplete(println)
-    client.hello("abc").onComplete(println)
+    client.hello("mushtaq").onComplete(x => println(s"==============================> $x"))
+    client.hello("fool").onComplete(x => println(s"==============================> $x"))
+    client.hello("idiot").onComplete(x => println(s"==============================> $x"))
 
-    client.square(3).onComplete(println)
-    client.square(4).onComplete(println)
-
-    val numberStream: Source[Int, Subscription] = client.getNumbers(3)
-    numberStream.onMessage { x =>
-      println(s"**********************  $x")
+    def stream(x: Int): Unit = {
+      val numberStream: Source[Int, Subscription] = client.getNumbers(x)
+      numberStream.onMessage(println)
+      numberStream.onError(println)
     }
 
-    client.hello("mushtaq").onComplete(println)
-    val postHelloStream: Source[String, Subscription] = client.helloStream("mushtaq")
-    postHelloStream.onMessage { x =>
-      println(s"--------> $x")
-    }
+    stream(3)
+    stream(0)
+    stream(-1)
 
-    client.hello("msuhtaq1").onComplete(println)
+    client.square(3).onComplete(x => println(s"==============================> $x"))
+    client.square(4).onComplete(x => println(s"==============================> $x"))
   }
 
 }

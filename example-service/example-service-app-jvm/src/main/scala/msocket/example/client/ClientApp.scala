@@ -20,9 +20,8 @@ class ClientApp(client: ExampleClient)(implicit ec: ExecutionContext, actorSyste
     client.getNumbers(0).runForeach(println).onComplete(println)
     client.getNumbers(-1).runForeach(println).onComplete(println)
 
-    //    client.hello("msuhtaq1").onComplete(x => println(s"==============================> $x"))
-//    client.square(3).onComplete(x => println(s"==============================> $x"))
-//    client.square(4).onComplete(x => println(s"==============================> $x"))
+    client.square(3).onComplete(x => println(s"==============================> $x"))
+    client.square(4).onComplete(x => println(s"==============================> $x"))
   }
 
 }

@@ -14,9 +14,9 @@ object Libs {
   val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.1.11"
   val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.1.11"
 
-  val `borer-core`        = dep("com.github.sirthias.borer" %%% "borer-core" % "bdc7423")
-  val `borer-derivation`  = dep("com.github.sirthias.borer" %%% "borer-derivation" % "bdc7423")
-  val `borer-compat-akka` = "com.github.sirthias.borer" %% "borer-compat-akka" % "bdc7423"
+  val `borer-core`        = dep("com.github.sirthias.borer" %%% "borer-core" % "3c18603")
+  val `borer-derivation`  = dep("com.github.sirthias.borer" %%% "borer-derivation" % "3c18603")
+  val `borer-compat-akka` = "com.github.sirthias.borer" %% "borer-compat-akka" % "3c18603"
 
   val `akka-http-cors` = "ch.megard" %% "akka-http-cors" % "0.4.2"
   val `scalatest`      = dep("org.scalatest" %%% "scalatest" % "3.1.0")

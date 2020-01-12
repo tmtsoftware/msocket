@@ -12,11 +12,8 @@ abstract class Encoding[E](val mimeType: String) {
   def encode[T: Encoder](payload: T): E
   def decode[T: Decoder](input: E): T
 
-  def decodeWithError[T: Decoder, S](input: E)(implicit ep: ErrorProtocol[S]): T = Try(decode[T](input)).getOrElse {
-    throw Try(decode[ep.E](input)).getOrElse {
-      decode[ServiceError](input)
-    }
-  }
+  def decodeWithError[T: Decoder, S](input: E)(implicit ep: ErrorProtocol[S]): T = Try(decode[T](input)).getOrElse(throw decodeError(input))
+  def decodeError[S](input: E)(implicit ep: ErrorProtocol[S]): Throwable         = Try(decode[ep.E](input)).getOrElse(decode[ServiceError](input))
 }
 
 object Encoding {

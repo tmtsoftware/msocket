@@ -19,19 +19,17 @@ object HttpJsExtensions {
       case _              => throw new RuntimeException(s"http-js transport does not support $encoding encoding")
     }
 
-    def responseError[Req: ErrorProtocol](response: Response)(implicit ec: ExecutionContext): Future[Throwable] =
-      encoding match {
-        case CborByteBuffer => response.arrayBuffer().toFuture.map(x => CborByteBuffer.decodeError(TypedArrayBuffer.wrap(x)))
-        case JsonText       => response.text().toFuture.map(x => JsonText.decodeError(x))
-        case _              => Future.successful(new RuntimeException(s"http-js transport does not support $encoding encoding"))
-      }
+    def responseError[Req: ErrorProtocol](response: Response)(implicit ec: ExecutionContext): Future[Throwable] = encoding match {
+      case CborByteBuffer => response.arrayBuffer().toFuture.map(x => CborByteBuffer.decodeError(TypedArrayBuffer.wrap(x)))
+      case JsonText       => response.text().toFuture.map(x => JsonText.decodeError(x))
+      case _              => Future.successful(new RuntimeException(s"http-js transport does not support $encoding encoding"))
+    }
 
-    def response[Res: Decoder, Req: ErrorProtocol](response: Response)(implicit ec: ExecutionContext): Future[Res] =
-      encoding match {
-        case CborByteBuffer => response.arrayBuffer().toFuture.map(x => CborByteBuffer.decodeWithError(TypedArrayBuffer.wrap(x)))
-        case JsonText       => response.text().toFuture.map(x => JsonText.decodeWithError(x))
-        case _              => Future.failed(new RuntimeException(s"http-js transport does not support $encoding encoding"))
-      }
+    def response[Res: Decoder, Req: ErrorProtocol](response: Response)(implicit ec: ExecutionContext): Future[Res] = encoding match {
+      case CborByteBuffer => response.arrayBuffer().toFuture.map(x => CborByteBuffer.decodeWithError(TypedArrayBuffer.wrap(x)))
+      case JsonText       => response.text().toFuture.map(x => JsonText.decodeWithError(x))
+      case _              => Future.failed(new RuntimeException(s"http-js transport does not support $encoding encoding"))
+    }
   }
 
 }

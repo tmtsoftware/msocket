@@ -20,8 +20,8 @@ object FetchHelper {
       headers = js.Dictionary("content-type" -> encoding.mimeType)
     }
 
-    def handleError(response: Response): Future[Throwable] = encoding.responseError(response).recoverWith {
-      case NonFatal(_) => response.text().toFuture.map(HttpError(response.status, response.statusText, _))
+    def handleError(response: Response): Future[Throwable] = encoding.responseError(response).recover {
+      case NonFatal(ex) => HttpError(response.status, response.statusText, ex.getMessage)
     }
 
     Fetch.fetch(uri, fetchRequest).toFuture.flatMap { response =>

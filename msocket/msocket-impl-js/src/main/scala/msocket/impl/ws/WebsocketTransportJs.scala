@@ -1,7 +1,6 @@
 package msocket.impl.ws
 
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.Encoding.CborBinary
 import msocket.api.{Encoding, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import msocket.impl.ws.WebsocketJsExtensions._
@@ -20,9 +19,7 @@ class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String, encoding: E
   override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
     val webSocket = new WebSocket(uri) {
 
-      if (encoding.isInstanceOf[CborBinary[_]]) {
-        binaryType = "arraybuffer"
-      }
+      binaryType = "arraybuffer"
 
       onopen = { _ =>
         encoding.send(this, request)

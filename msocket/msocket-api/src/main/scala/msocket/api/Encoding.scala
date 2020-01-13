@@ -17,26 +17,31 @@ abstract class Encoding[E](val mimeType: String) {
 }
 
 object Encoding {
-  case object JsonText extends Encoding[String]("application/json") {
+  val ApplicationJson = "application/json"
+  val ApplicationCbor = "application/cbor"
+
+  case object JsonText extends Encoding[String](ApplicationJson) {
     def encode[T: Encoder](payload: T): String = Json.encode(payload).toUtf8String
     def decode[T: Decoder](input: String): T   = Json.decode(input.getBytes()).to[T].value
   }
 
-  class CborBinary[E: Output.ToTypeProvider: Input.Provider] extends Encoding[E]("application/cbor") {
+  class CborBinary[E: Output.ToTypeProvider: Input.Provider] extends Encoding[E](ApplicationCbor) {
     override def encode[T: Encoder](payload: T): E = Cbor.encode(payload).to[E].result
     override def decode[T: Decoder](input: E): T   = Cbor.decode(input).to[T].value
   }
 
   case object CborByteBuffer extends CborBinary[ByteBuffer] {
     private case object CborByteArray extends CborBinary[Array[Byte]]
-    override def decodeWithError[T: Decoder, S](input: ByteBuffer)(implicit ep: ErrorProtocol[S]): T = {
+
+    override def decodeWithError[T: Decoder, S](input: ByteBuffer)(implicit ep: ErrorProtocol[S]): T =
       CborByteArray.decodeWithError(input.toByteArray)
-    }
+
+    override def decodeError[S](input: ByteBuffer)(implicit ep: ErrorProtocol[S]): Throwable = CborByteArray.decodeError(input.toByteArray)
   }
 
   def fromMimeType(mimeType: String): Encoding[_] = mimeType match {
-    case JsonText.mimeType       => JsonText
-    case CborByteBuffer.mimeType => CborByteBuffer
-    case _                       => throw new RuntimeException(s"unsupported mimeType: $mimeType ")
+    case ApplicationJson => JsonText
+    case ApplicationCbor => CborByteBuffer
+    case _               => throw new RuntimeException(s"unsupported mimeType: $mimeType ")
   }
 }

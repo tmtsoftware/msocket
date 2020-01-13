@@ -1,8 +1,7 @@
 package msocket.impl.rsocket
 
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.Encoding.JsonText
-import msocket.api.{ErrorProtocol, Subscription}
+import msocket.api.{Encoding, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import typings.rsocketDashCore.Anon_DataMimeType
 import typings.rsocketDashCore.rSocketClientMod.ClientConfig
@@ -20,16 +19,18 @@ import scala.scalajs.js.timers
 import scala.scalajs.js.timers.SetIntervalHandle
 import scala.util.{Failure, Success, Try}
 
-class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext, streamingDelay: FiniteDuration)
-    extends JsTransport[Req] {
+class RSocketTransportJs[E, Req: Encoder: ErrorProtocol](uri: String, encoding: Encoding[E])(
+    implicit ec: ExecutionContext,
+    streamingDelay: FiniteDuration
+) extends JsTransport[Req] {
 
-  private val client: RSocketClient[String, String] = new RSocketClient(
+  private val client: RSocketClient[E, E] = new RSocketClient(
     ClientConfig(
       setup = Anon_DataMimeType(
-        dataMimeType = "application/json",
+        dataMimeType = encoding.mimeType,
         keepAlive = 60000,
         lifetime = 1800000,
-        metadataMimeType = "application/json"
+        metadataMimeType = encoding.mimeType
       ),
       transport = new RSocketWebSocketClient(ClientOptions(url = uri))
     )
@@ -41,15 +42,15 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: 
     def onSubscribe(cancel: CancelCallback): Unit = println("inside onSubscribe")
   }
 
-  private val socketPromise: Promise[ReactiveSocket[String, String]] = Promise()
+  private val socketPromise: Promise[ReactiveSocket[E, E]] = Promise()
   client.connect().map(Try(_)).subscribe(PartialOf(subscriber(socketPromise)))
 
   override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {
     val responsePromise: Promise[Res] = Promise()
     socketPromise.future.foreach { socket =>
       socket
-        .requestResponse(Payload(JsonText.encode(req)))
-        .map(payload => Try(JsonText.decodeWithError(payload.data.get)))
+        .requestResponse(Payload(encoding.encode(req), encoding.encode(req)))
+        .map(payload => Try(encoding.decodeWithError(payload.data.get)))
         .subscribe(PartialOf(subscriber(responsePromise)))
     }
 
@@ -85,8 +86,8 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: 
 
     socketPromise.future.foreach { socket =>
       socket
-        .requestStream(Payload(JsonText.encode(request)))
-        .map(payload => Try(JsonText.decodeWithError(payload.data.get)))
+        .requestStream(Payload(encoding.encode(request), null.asInstanceOf[E]))
+        .map(payload => Try(encoding.decodeWithError(payload.data.get)))
         .subscribe(PartialOf(subscriber))
     }
 

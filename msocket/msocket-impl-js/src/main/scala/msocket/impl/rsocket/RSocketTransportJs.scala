@@ -2,10 +2,11 @@ package msocket.impl.rsocket
 
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.{Encoding, ErrorProtocol, Subscription}
-import msocket.impl.JsTransport
+import msocket.impl.{CborNodeBuffer, JsTransport}
 import typings.rsocketDashCore.Anon_DataMimeType
 import typings.rsocketDashCore.rSocketClientMod.ClientConfig
-import typings.rsocketDashCore.rsocketDashCoreMod.RSocketClient
+import typings.rsocketDashCore.rSocketEncodingMod.Encoders
+import typings.rsocketDashCore.rsocketDashCoreMod.{BufferEncoders, RSocketClient, Utf8Encoders}
 import typings.rsocketDashFlowable.singleMod.{CancelCallback, IFutureSubscriber}
 import typings.rsocketDashTypes.reactiveSocketTypesMod.{Payload, ReactiveSocket}
 import typings.rsocketDashTypes.reactiveStreamTypesMod.{ISubscriber, ISubscription}
@@ -24,7 +25,9 @@ class RSocketTransportJs[E, Req: Encoder: ErrorProtocol](uri: String, encoding: 
     streamingDelay: FiniteDuration
 ) extends JsTransport[Req] {
 
-  private val client: RSocketClient[E, E] = new RSocketClient(
+  private val encoders: Encoders[_] = if (encoding == CborNodeBuffer) BufferEncoders else Utf8Encoders
+
+  private val client: RSocketClient[E, Null] = new RSocketClient(
     ClientConfig(
       setup = Anon_DataMimeType(
         dataMimeType = encoding.mimeType,
@@ -32,7 +35,7 @@ class RSocketTransportJs[E, Req: Encoder: ErrorProtocol](uri: String, encoding: 
         lifetime = 1800000,
         metadataMimeType = encoding.mimeType
       ),
-      transport = new RSocketWebSocketClient(ClientOptions(url = uri))
+      transport = new RSocketWebSocketClient(ClientOptions(url = uri), encoders)
     )
   )
 
@@ -42,14 +45,14 @@ class RSocketTransportJs[E, Req: Encoder: ErrorProtocol](uri: String, encoding: 
     def onSubscribe(cancel: CancelCallback): Unit = println("inside onSubscribe")
   }
 
-  private val socketPromise: Promise[ReactiveSocket[E, E]] = Promise()
+  private val socketPromise: Promise[ReactiveSocket[E, Null]] = Promise()
   client.connect().map(Try(_)).subscribe(PartialOf(subscriber(socketPromise)))
 
   override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {
     val responsePromise: Promise[Res] = Promise()
     socketPromise.future.foreach { socket =>
       socket
-        .requestResponse(Payload(encoding.encode(req), encoding.encode(req)))
+        .requestResponse(Payload(encoding.encode(req)))
         .map(payload => Try(encoding.decodeWithError(payload.data.get)))
         .subscribe(PartialOf(subscriber(responsePromise)))
     }
@@ -86,7 +89,7 @@ class RSocketTransportJs[E, Req: Encoder: ErrorProtocol](uri: String, encoding: 
 
     socketPromise.future.foreach { socket =>
       socket
-        .requestStream(Payload(encoding.encode(request), null.asInstanceOf[E]))
+        .requestStream(Payload(encoding.encode(request)))
         .map(payload => Try(encoding.decodeWithError(payload.data.get)))
         .subscribe(PartialOf(subscriber))
     }

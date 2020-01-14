@@ -30,9 +30,9 @@ object Encoding {
     override def decode[T: Decoder](input: E): T   = Cbor.decode(input).to[T].value
   }
 
-  case object CborByteBuffer extends CborBinary[ByteBuffer] {
-    private case object CborByteArray extends CborBinary[Array[Byte]]
+  case object CborByteArray extends CborBinary[Array[Byte]]
 
+  case object CborByteBuffer extends CborBinary[ByteBuffer] {
     override def decodeWithError[T: Decoder, S](input: ByteBuffer)(implicit ep: ErrorProtocol[S]): T =
       CborByteArray.decodeWithError(input.toByteArray)
 

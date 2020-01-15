@@ -15,6 +15,6 @@ class ExampleRSocketStreamHandler(exampleApi: ExampleApi, encoding: Encoding[_])
     case Square(number)          => futureAsStream(exampleApi.square(number))
     case HelloStream(name)       => stream(exampleApi.helloStream(name))
     case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
-    case _                       => Source.failed(new RuntimeException("request-response is not supported bu request-stream handler"))
+    case _                       => Source.failed(new RuntimeException("request-response is not supported by request-stream handler"))
   }
 }

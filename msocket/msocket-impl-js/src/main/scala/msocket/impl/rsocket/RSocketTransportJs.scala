@@ -1,12 +1,11 @@
 package msocket.impl.rsocket
 
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.{Encoding, ErrorProtocol, Subscription}
-import msocket.impl.{CborNodeBuffer, JsTransport}
+import msocket.api.{ErrorProtocol, Subscription}
+import msocket.impl.JsTransport
 import typings.rsocketDashCore.Anon_DataMimeType
 import typings.rsocketDashCore.rSocketClientMod.ClientConfig
-import typings.rsocketDashCore.rSocketEncodingMod.Encoders
-import typings.rsocketDashCore.rsocketDashCoreMod.{BufferEncoders, RSocketClient, Utf8Encoders}
+import typings.rsocketDashCore.rsocketDashCoreMod.RSocketClient
 import typings.rsocketDashFlowable.singleMod.{CancelCallback, IFutureSubscriber}
 import typings.rsocketDashTypes.reactiveSocketTypesMod.{Payload, ReactiveSocket}
 import typings.rsocketDashTypes.reactiveStreamTypesMod.{ISubscriber, ISubscription}
@@ -20,12 +19,13 @@ import scala.scalajs.js.timers
 import scala.scalajs.js.timers.SetIntervalHandle
 import scala.util.{Failure, Success, Try}
 
-class RSocketTransportJs[E, Req: Encoder: ErrorProtocol](uri: String, encoding: Encoding[E])(
-    implicit ec: ExecutionContext,
+class RSocketTransportJs[E, Req: Encoder: ErrorProtocol](uri: String)(
+    implicit rSocketEncoders: RSocketEncoders[E],
+    ec: ExecutionContext,
     streamingDelay: FiniteDuration
 ) extends JsTransport[Req] {
 
-  private val encoders: Encoders[_] = if (encoding == CborNodeBuffer) BufferEncoders else Utf8Encoders
+  import rSocketEncoders._
 
   private val client: RSocketClient[E, Null] = new RSocketClient(
     ClientConfig(

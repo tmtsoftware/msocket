@@ -14,6 +14,6 @@ class ExampleRSocketResponseHandler(exampleApi: ExampleApi, encoding: Encoding[_
 
   override def handle(message: ExampleRequest): Future[Payload] = message match {
     case Hello(name) => future(exampleApi.hello(name))
-    case _           => Future.failed(new RuntimeException("request-response is not supported bu request-stream handler"))
+    case _           => Future.failed(new RuntimeException("request-stream is not supported by request-response handler"))
   }
 }

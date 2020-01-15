@@ -1,6 +1,6 @@
 package msocket.impl.rsocket
 
-import io.bullet.borer.{Decoder, Encoder}
+import io.bullet.borer.{Decoder, Encoder, Target}
 import msocket.api.{ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import typings.rsocketDashCore.Anon_DataMimeType
@@ -19,15 +19,15 @@ import scala.scalajs.js.timers
 import scala.scalajs.js.timers.SetIntervalHandle
 import scala.util.{Failure, Success, Try}
 
-class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String)(
-    implicit rSocketEncoders: RSocketEncoders[En],
+class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: Target](uri: String)(
+    implicit rSocketEncoders: RSocketEncoders[CT],
     ec: ExecutionContext,
     streamingDelay: FiniteDuration
 ) extends JsTransport[Req] {
 
   import rSocketEncoders._
 
-  private val client: RSocketClient[En, Null] = new RSocketClient(
+  private val client: RSocketClient[rSocketEncoders.En, Null] = new RSocketClient(
     ClientConfig(
       setup = Anon_DataMimeType(
         dataMimeType = encoding.mimeType,
@@ -45,7 +45,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String)(
     def onSubscribe(cancel: CancelCallback): Unit = println("inside onSubscribe")
   }
 
-  private val socketPromise: Promise[ReactiveSocket[En, Null]] = Promise()
+  private val socketPromise: Promise[ReactiveSocket[rSocketEncoders.En, Null]] = Promise()
   client.connect().map(Try(_)).subscribe(PartialOf(subscriber(socketPromise)))
 
   override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {

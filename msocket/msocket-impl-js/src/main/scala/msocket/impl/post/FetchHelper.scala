@@ -1,6 +1,6 @@
 package msocket.impl.post
 
-import io.bullet.borer.Encoder
+import io.bullet.borer.{Encoder, Target}
 import msocket.api.ErrorProtocol
 import msocket.api.models.HttpError
 import org.scalajs.dom.experimental.{Fetch, HttpMethod, Response}
@@ -10,8 +10,8 @@ import scala.scalajs.js
 import scala.util.control.NonFatal
 
 object FetchHelper {
-  def postRequest[Req: Encoder: ErrorProtocol, En](uri: String, req: Req)(
-      implicit encoders: HttpJsEncoders[En],
+  def postRequest[Req: Encoder: ErrorProtocol, CT <: Target](uri: String, req: Req)(
+      implicit encoders: HttpJsEncoders[CT],
       ec: ExecutionContext
   ): Future[Response] = {
     val fetchRequest = new FetchRequest {

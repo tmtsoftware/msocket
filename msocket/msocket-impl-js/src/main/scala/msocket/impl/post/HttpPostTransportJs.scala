@@ -1,6 +1,6 @@
 package msocket.impl.post
 
-import io.bullet.borer.{Decoder, Encoder}
+import io.bullet.borer.{Decoder, Encoder, Json, Target}
 import msocket.api.Encoding.JsonText
 import msocket.api.{ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
@@ -12,8 +12,8 @@ import scala.scalajs.js
 import scala.scalajs.js.timers
 import scala.util.control.NonFatal
 
-class HttpPostTransportJs[Req: Encoder: ErrorProtocol, En](uri: String)(
-    implicit encoders: HttpJsEncoders[En],
+class HttpPostTransportJs[Req: Encoder: ErrorProtocol, CT <: Target](uri: String)(
+    implicit encoders: HttpJsEncoders[CT],
     ec: ExecutionContext,
     streamingDelay: FiniteDuration
 ) extends JsTransport[Req] {
@@ -22,7 +22,7 @@ class HttpPostTransportJs[Req: Encoder: ErrorProtocol, En](uri: String)(
     FetchHelper.postRequest(uri, req).flatMap(response => encoders.response(response))
 
   override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
-    val readerF: Future[ReadableStreamReader[js.Object]] = FetchHelper.postRequest[Req, String](uri, request).map { response =>
+    val readerF: Future[ReadableStreamReader[js.Object]] = FetchHelper.postRequest[Req, Json.type](uri, request).map { response =>
       val reader = new CanNdJsonStream(response.body).getReader()
       def read(): Unit = {
         reader.read().toFuture.foreach { chunk =>

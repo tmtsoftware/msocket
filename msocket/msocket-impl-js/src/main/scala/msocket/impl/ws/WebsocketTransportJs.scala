@@ -1,6 +1,6 @@
 package msocket.impl.ws
 
-import io.bullet.borer.{Decoder, Encoder}
+import io.bullet.borer.{Decoder, Encoder, Target}
 import msocket.api.{ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import org.scalajs.dom.raw.WebSocket
@@ -8,8 +8,8 @@ import org.scalajs.dom.raw.WebSocket
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class WebsocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String)(
-    implicit encoders: WebsocketJsEncoders[En],
+class WebsocketTransportJs[Req: Encoder: ErrorProtocol, CT <: Target](uri: String)(
+    implicit encoders: WebsocketJsEncoders[CT],
     ec: ExecutionContext
 ) extends JsTransport[Req] {
 

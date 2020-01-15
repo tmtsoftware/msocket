@@ -6,7 +6,7 @@ import typings.node.Buffer
 import typings.rsocketDashCore.rSocketEncodingMod.Encoders
 import typings.rsocketDashCore.rsocketDashCoreMod
 
-case class RSocketEncoders[E](encoding: Encoding[E], encoders: Encoders[E])
+case class RSocketEncoders[En](encoding: Encoding[En], encoders: Encoders[En])
 
 object RSocketEncoders {
   implicit object JsonRSocketEncoders   extends RSocketEncoders[String](JsonText, rsocketDashCoreMod.Utf8Encoders)

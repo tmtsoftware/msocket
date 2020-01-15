@@ -1,16 +1,17 @@
 package msocket.impl.ws
 
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.{Encoding, ErrorProtocol, Subscription}
+import msocket.api.{ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
-import msocket.impl.ws.WebsocketJsExtensions._
 import org.scalajs.dom.raw.WebSocket
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String, encoding: Encoding[_])(implicit ec: ExecutionContext)
-    extends JsTransport[Req] {
+class WebsocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String)(
+    implicit encoders: WebsocketJsEncoders[En],
+    ec: ExecutionContext
+) extends JsTransport[Req] {
 
   override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {
     Future.failed(new RuntimeException("requestResponse protocol without timeout is not supported for this transport"))
@@ -22,12 +23,12 @@ class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String, encoding: E
       binaryType = "arraybuffer"
 
       onopen = { _ =>
-        encoding.send(this, request)
+        encoders.send(this, request)
         println("connection open")
       }
 
       onmessage = { event =>
-        try onMessage(encoding.response(event))
+        try onMessage(encoders.response(event))
         catch {
           case NonFatal(ex) => onError(ex); close()
         }

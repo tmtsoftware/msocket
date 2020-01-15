@@ -19,15 +19,15 @@ import scala.scalajs.js.timers
 import scala.scalajs.js.timers.SetIntervalHandle
 import scala.util.{Failure, Success, Try}
 
-class RSocketTransportJs[E, Req: Encoder: ErrorProtocol](uri: String)(
-    implicit rSocketEncoders: RSocketEncoders[E],
+class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String)(
+    implicit rSocketEncoders: RSocketEncoders[En],
     ec: ExecutionContext,
     streamingDelay: FiniteDuration
 ) extends JsTransport[Req] {
 
   import rSocketEncoders._
 
-  private val client: RSocketClient[E, Null] = new RSocketClient(
+  private val client: RSocketClient[En, Null] = new RSocketClient(
     ClientConfig(
       setup = Anon_DataMimeType(
         dataMimeType = encoding.mimeType,
@@ -45,7 +45,7 @@ class RSocketTransportJs[E, Req: Encoder: ErrorProtocol](uri: String)(
     def onSubscribe(cancel: CancelCallback): Unit = println("inside onSubscribe")
   }
 
-  private val socketPromise: Promise[ReactiveSocket[E, Null]] = Promise()
+  private val socketPromise: Promise[ReactiveSocket[En, Null]] = Promise()
   client.connect().map(Try(_)).subscribe(PartialOf(subscriber(socketPromise)))
 
   override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {

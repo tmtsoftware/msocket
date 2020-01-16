@@ -23,9 +23,9 @@ object ClientMainJs extends ExampleCodecs {
     lazy val sseTransport = new SseTransportJs[ExampleRequest]("http://localhost:5000/sse-endpoint").logRequestResponse()
     lazy val websocketTransport =
       new WebsocketTransportJs[ExampleRequest, Cbor.type]("ws://localhost:5000/websocket-endpoint").logRequestResponse()
-    lazy val rSocketTransport = new RSocketTransportJs[ExampleRequest, Json.type]("ws://localhost:7000").logRequestResponse()
+    lazy val rSocketTransport = new RSocketTransportJs[ExampleRequest, Cbor.type]("ws://localhost:7000").logRequestResponse()
 
-    val exampleClient = new ExampleClient(httpPostTransport)
+    val exampleClient = new ExampleClient(rSocketTransport)
     new ClientAppJs(exampleClient).testRun()
   }
 }

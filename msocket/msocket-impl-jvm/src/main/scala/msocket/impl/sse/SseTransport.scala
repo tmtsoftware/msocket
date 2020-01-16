@@ -2,16 +2,17 @@ package msocket.impl.sse
 
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
-import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.sse.ServerSentEvent
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
 import akka.stream.scaladsl.{Keep, Source}
 import akka.stream.{KillSwitches, Materializer}
 import akka.{NotUsed, actor}
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.Encoding.JsonText
-import msocket.api.{Encoding, ErrorProtocol, Subscription}
+import msocket.api.ContentEncoding.JsonText
+import msocket.api.ContentType.Json
+import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.post.ClientHttpCodecs
 import msocket.impl.{HttpUtils, JvmTransport}
 
@@ -21,7 +22,7 @@ class SseTransport[Req: Encoder: ErrorProtocol](uri: String)(implicit actorSyste
     extends JvmTransport[Req]
     with ClientHttpCodecs {
 
-  override def encoding: Encoding[_] = JsonText
+  override def clientContentType: ContentType = Json
 
   implicit val ec: ExecutionContext               = actorSystem.executionContext
   implicit val system: actor.ActorSystem          = actorSystem.toClassic
@@ -43,7 +44,7 @@ class SseTransport[Req: Encoder: ErrorProtocol](uri: String)(implicit actorSyste
   private def getResponse(request: Req): Future[HttpResponse] = {
     val payloadHeader = QueryHeader(JsonText.encode(request))
     val httpRequest   = HttpRequest(HttpMethods.GET, uri = uri, headers = List(payloadHeader))
-    new HttpUtils[Req](encoding).handleRequest(httpRequest)
+    new HttpUtils[Req](clientContentType).handleRequest(httpRequest)
   }
 
 }

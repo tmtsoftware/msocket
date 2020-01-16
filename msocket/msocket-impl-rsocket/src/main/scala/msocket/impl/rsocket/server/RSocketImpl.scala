@@ -4,7 +4,7 @@ import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.Decoder
 import io.rsocket.{AbstractRSocket, Payload}
-import msocket.api.{Encoding, ErrorProtocol}
+import msocket.api.{ContentType, ErrorProtocol}
 import msocket.impl.rsocket.RSocketExtensions._
 import reactor.core.publisher.{Flux, Mono}
 
@@ -13,18 +13,18 @@ import scala.compat.java8.FutureConverters.FutureOps
 class RSocketImpl[Req: Decoder](
     requestResponseHandler: RSocketResponseHandler[Req],
     requestStreamHandler: RSocketStreamHandler[Req],
-    encoding: Encoding[_]
+    contentType: ContentType
 )(
     implicit actorSystem: ActorSystem[_],
     ep: ErrorProtocol[Req]
 ) extends AbstractRSocket {
 
   import actorSystem.executionContext
-  val messageEncoder: RSocketPayloadEncoder[Req] = new RSocketPayloadEncoder[Req](encoding)
+  val messageEncoder: RSocketPayloadEncoder[Req] = new RSocketPayloadEncoder[Req](contentType)
 
   override def requestResponse(payload: Payload): Mono[Payload] = {
     val payloadF = requestResponseHandler
-      .handle(encoding.request(payload))
+      .handle(contentType.request(payload))
       .recover(messageEncoder.errorEncoder)
 
     Mono.fromCompletionStage(payloadF.toJava)
@@ -32,7 +32,7 @@ class RSocketImpl[Req: Decoder](
 
   override def requestStream(payload: Payload): Flux[Payload] = {
     val value = Source
-      .lazySingle[Req](() => encoding.request(payload))
+      .lazySingle[Req](() => contentType.request(payload))
       .flatMapConcat(requestStreamHandler.handle)
       .recover(messageEncoder.errorEncoder)
 

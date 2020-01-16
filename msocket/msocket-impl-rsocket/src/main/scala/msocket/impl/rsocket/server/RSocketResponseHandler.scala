@@ -2,13 +2,13 @@ package msocket.impl.rsocket.server
 
 import io.bullet.borer.Encoder
 import io.rsocket.Payload
-import msocket.api.{Encoding, MessageHandler}
+import msocket.api.{ContentType, MessageHandler}
 import msocket.impl.rsocket.RSocketExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class RSocketResponseHandler[Req](encoding: Encoding[_]) extends MessageHandler[Req, Future[Payload]] {
+abstract class RSocketResponseHandler[Req](contentType: ContentType) extends MessageHandler[Req, Future[Payload]] {
   def future[Res: Encoder](response: Future[Res])(implicit ec: ExecutionContext): Future[Payload] = {
-    response.map(response => encoding.payload(response))
+    response.map(response => contentType.payload(response))
   }
 }

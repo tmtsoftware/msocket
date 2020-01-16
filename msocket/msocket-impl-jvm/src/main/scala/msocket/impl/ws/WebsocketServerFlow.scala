@@ -5,13 +5,13 @@ import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.Decoder
-import msocket.api.Encoding.JsonText
-import msocket.api.{Encoding, ErrorProtocol, MessageHandler}
+import msocket.api.ContentEncoding.JsonText
+import msocket.api.{ContentEncoding, ContentType, ErrorProtocol, MessageHandler}
 import msocket.impl.CborByteString
 
 import scala.concurrent.duration.DurationLong
 
-class WebsocketServerFlow[T: Decoder](messageHandler: Encoding[_] => MessageHandler[T, Source[Message, NotUsed]])(
+class WebsocketServerFlow[T: Decoder](messageHandler: ContentType => MessageHandler[T, Source[Message, NotUsed]])(
     implicit actorSystem: ActorSystem[_],
     ep: ErrorProtocol[T]
 ) {
@@ -29,11 +29,11 @@ class WebsocketServerFlow[T: Decoder](messageHandler: Encoding[_] => MessageHand
       }
   }
 
-  private def handle[E](element: E, encoding: Encoding[E]): Source[Message, NotUsed] = {
-    val messageEncoder = new WebsocketMessageEncoder[T](encoding)
+  private def handle[E](element: E, contentEncoding: ContentEncoding[E]): Source[Message, NotUsed] = {
+    val messageEncoder = new WebsocketMessageEncoder[T](contentEncoding.contentType)
     Source
-      .lazySingle(() => encoding.decode[T](element))
-      .flatMapConcat(messageHandler(encoding).handle)
+      .lazySingle(() => contentEncoding.decode[T](element))
+      .flatMapConcat(messageHandler(contentEncoding.contentType).handle)
       .recover(messageEncoder.errorEncoder)
   }
 }

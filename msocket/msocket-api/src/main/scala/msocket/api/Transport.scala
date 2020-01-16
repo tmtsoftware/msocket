@@ -2,7 +2,7 @@ package msocket.api
 
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.Encoding.JsonText
+import msocket.api.ContentEncoding.JsonText
 import msocket.api.utils.{ContraMappedTransport, ResponseLoggingTransport}
 
 import scala.concurrent.{ExecutionContext, Future}

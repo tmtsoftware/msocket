@@ -2,15 +2,15 @@ package msocket.impl.rsocket.client
 
 import io.rsocket.transport.ClientTransport
 import io.rsocket.{RSocket, RSocketFactory}
-import msocket.api.Encoding
+import msocket.api.ContentType
 
-import scala.concurrent.Future
 import scala.compat.java8.FutureConverters.CompletionStageOps
+import scala.concurrent.Future
 
 object RSocketFactoryS {
-  def client(clientTransport: ClientTransport, encoding: Encoding[_]): Future[RSocket] = {
+  def client(clientTransport: ClientTransport, contentType: ContentType): Future[RSocket] = {
     RSocketFactory.connect
-      .dataMimeType(encoding.mimeType)
+      .dataMimeType(contentType.mimeType)
       .transport(clientTransport)
       .start
       .toFuture

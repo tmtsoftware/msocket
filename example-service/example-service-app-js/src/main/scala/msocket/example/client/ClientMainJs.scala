@@ -3,7 +3,7 @@ package msocket.example.client
 import akka.actor.typed.ActorSystem
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
-import io.bullet.borer.{Cbor, Json}
+import msocket.api.ContentType.{Cbor, Json}
 import msocket.impl.post.HttpPostTransportJs
 import msocket.impl.rsocket.RSocketTransportJs
 import msocket.impl.sse.SseTransportJs

@@ -1,7 +1,7 @@
 package msocket.impl.rsocket
 
-import io.bullet.borer.{Decoder, Encoder, Target}
-import msocket.api.{ErrorProtocol, Subscription}
+import io.bullet.borer.{Decoder, Encoder}
+import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import typings.rsocketDashCore.Anon_DataMimeType
 import typings.rsocketDashCore.rSocketClientMod.ClientConfig
@@ -19,7 +19,7 @@ import scala.scalajs.js.timers
 import scala.scalajs.js.timers.SetIntervalHandle
 import scala.util.{Failure, Success, Try}
 
-class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: Target](uri: String)(
+class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: String)(
     implicit rSocketEncoders: RSocketEncoders[CT],
     ec: ExecutionContext,
     streamingDelay: FiniteDuration
@@ -30,10 +30,10 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: Target](uri: String)
   private val client: RSocketClient[rSocketEncoders.En, Null] = new RSocketClient(
     ClientConfig(
       setup = Anon_DataMimeType(
-        dataMimeType = encoding.mimeType,
+        dataMimeType = contentEncoding.contentType.mimeType,
         keepAlive = 60000,
         lifetime = 1800000,
-        metadataMimeType = encoding.mimeType
+        metadataMimeType = contentEncoding.contentType.mimeType
       ),
       transport = new RSocketWebSocketClient(ClientOptions(url = uri), encoders)
     )
@@ -52,8 +52,8 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: Target](uri: String)
     val responsePromise: Promise[Res] = Promise()
     socketPromise.future.foreach { socket =>
       socket
-        .requestResponse(Payload(encoding.encode(req)))
-        .map(payload => Try(encoding.decodeWithError(payload.data.get)))
+        .requestResponse(Payload(contentEncoding.encode(req)))
+        .map(payload => Try(contentEncoding.decodeWithError(payload.data.get)))
         .subscribe(PartialOf(subscriber(responsePromise)))
     }
 
@@ -89,8 +89,8 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: Target](uri: String)
 
     socketPromise.future.foreach { socket =>
       socket
-        .requestStream(Payload(encoding.encode(request)))
-        .map(payload => Try(encoding.decodeWithError(payload.data.get)))
+        .requestStream(Payload(contentEncoding.encode(request)))
+        .map(payload => Try(contentEncoding.decodeWithError(payload.data.get)))
         .subscribe(PartialOf(subscriber))
     }
 

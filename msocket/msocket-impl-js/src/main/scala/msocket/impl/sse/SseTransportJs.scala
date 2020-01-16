@@ -1,7 +1,7 @@
 package msocket.impl.sse
 
 import io.bullet.borer.{Decoder, Encoder, Json}
-import msocket.api.Encoding.JsonText
+import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import typings.eventsource.MessageEvent

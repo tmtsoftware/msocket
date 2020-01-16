@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.Route
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
 import csw.example.impl.ExampleImpl
-import msocket.api.Encoding
+import msocket.api.ContentType
 import msocket.example.server.handlers._
 import msocket.impl.RouteFactory
 import msocket.impl.post.PostRouteFactory
@@ -25,16 +25,17 @@ class ServerWiring extends ExampleCodecs {
 //  lazy val locationService: LocationService       = HttpLocationServiceFactory.makeLocalClient(actorSystem)
 //  lazy val securityDirectives: SecurityDirectives = SecurityDirectives(locationService)
 
-  lazy val postHandler: ExamplePostStreamingHandler                           = new ExamplePostStreamingHandler(exampleImpl)
-  lazy val sseHandler: ExampleSseHandler                                      = new ExampleSseHandler(exampleImpl)
-  def websocketHandlerFactory(encoding: Encoding[_]): ExampleWebsocketHandler = new ExampleWebsocketHandler(exampleImpl, encoding)
-  def requestResponseHandler(encoding: Encoding[_]): ExampleRSocketResponseHandler =
-    new ExampleRSocketResponseHandler(exampleImpl, encoding)
-  def requestStreamHandler(encoding: Encoding[_]): ExampleRSocketStreamHandler = new ExampleRSocketStreamHandler(exampleImpl, encoding)
+  lazy val postHandler: ExamplePostStreamingHandler                       = new ExamplePostStreamingHandler(exampleImpl)
+  lazy val sseHandler: ExampleSseHandler                                  = new ExampleSseHandler(exampleImpl)
+  def websocketHandler(contentType: ContentType): ExampleWebsocketHandler = new ExampleWebsocketHandler(exampleImpl, contentType)
+  def requestResponseHandler(contentType: ContentType): ExampleRSocketResponseHandler =
+    new ExampleRSocketResponseHandler(exampleImpl, contentType)
+  def requestStreamHandler(contentType: ContentType): ExampleRSocketStreamHandler =
+    new ExampleRSocketStreamHandler(exampleImpl, contentType)
 
   lazy val applicationRoute: Route = RouteFactory.combine(
     new PostRouteFactory[ExampleRequest]("post-endpoint", postHandler),
-    new WebsocketRouteFactory[ExampleRequest]("websocket-endpoint", websocketHandlerFactory),
+    new WebsocketRouteFactory[ExampleRequest]("websocket-endpoint", websocketHandler),
     new SseRouteFactory[ExampleRequest]("sse-endpoint", sseHandler)
   )
 

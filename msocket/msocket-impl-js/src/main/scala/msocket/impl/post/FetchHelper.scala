@@ -1,8 +1,8 @@
 package msocket.impl.post
 
-import io.bullet.borer.{Encoder, Target}
-import msocket.api.ErrorProtocol
+import io.bullet.borer.Encoder
 import msocket.api.models.HttpError
+import msocket.api.{ContentType, ErrorProtocol}
 import msocket.impl.post.HttpJsExtensions.HttpJsEncoding
 import org.scalajs.dom.experimental.{Fetch, HttpMethod, Response}
 
@@ -11,15 +11,17 @@ import scala.scalajs.js
 import scala.util.control.NonFatal
 
 object FetchHelper {
-  def postRequest[Req: Encoder: ErrorProtocol](uri: String, req: Req, encoding: Target)(implicit ec: ExecutionContext): Future[Response] = {
+  def postRequest[Req: Encoder: ErrorProtocol](uri: String, req: Req, contentType: ContentType)(
+      implicit ec: ExecutionContext
+  ): Future[Response] = {
 
     val fetchRequest = new FetchRequest {
       method = HttpMethod.POST
-      body = encoding.body(req)
-      headers = js.Dictionary("content-type" -> encoding.mimeType)
+      body = contentType.body(req)
+      headers = js.Dictionary("content-type" -> contentType.mimeType)
     }
 
-    def handleError(response: Response): Future[Throwable] = encoding.responseError(response).recover {
+    def handleError(response: Response): Future[Throwable] = contentType.responseError(response).recover {
       case NonFatal(ex) => HttpError(response.status, response.statusText, ex.getMessage)
     }
 

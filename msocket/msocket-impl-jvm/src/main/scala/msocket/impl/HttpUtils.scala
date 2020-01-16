@@ -4,15 +4,16 @@ import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import msocket.api.{Encoding, ErrorProtocol}
+import msocket.api.{ContentType, ErrorProtocol}
 import msocket.api.models.{HttpError, ServiceError}
 import msocket.impl.post.ClientHttpCodecs
 
 import scala.concurrent.Future
+import scala.concurrent.duration.DurationLong
 import scala.util.control.NonFatal
-import concurrent.duration.DurationLong
 
-class HttpUtils[Req](val encoding: Encoding[_])(implicit actorSystem: ActorSystem[_], ep: ErrorProtocol[Req]) extends ClientHttpCodecs {
+class HttpUtils[Req](val clientContentType: ContentType)(implicit actorSystem: ActorSystem[_], ep: ErrorProtocol[Req])
+    extends ClientHttpCodecs {
 
   import actorSystem.executionContext
 

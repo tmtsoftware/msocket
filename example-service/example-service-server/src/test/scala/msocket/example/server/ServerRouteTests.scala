@@ -4,11 +4,10 @@ import akka.NotUsed
 import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest, WSProbe}
 import akka.stream.scaladsl.Source
 import akka.testkit.TestDuration
-import csw.example.api.protocol.ExampleCodecs
-import csw.example.api.protocol.ExampleRequest
 import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream}
-import msocket.api.Encoding
-import msocket.api.Encoding.JsonText
+import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
+import msocket.api.ContentType
+import msocket.api.ContentType.Json
 import msocket.api.models.FetchEvent
 import msocket.impl.post.ClientHttpCodecs
 import msocket.impl.ws.WebsocketExtensions.WebsocketEncoding
@@ -19,7 +18,7 @@ import scala.concurrent.duration.DurationLong
 
 class ServerRouteTests extends AnyFunSuite with ScalatestRouteTest with Matchers with ExampleCodecs with ClientHttpCodecs {
 
-  override def encoding: Encoding[_] = JsonText
+  override def clientContentType: ContentType = Json
 
   private val wiring = new ServerWiring
 
@@ -28,7 +27,7 @@ class ServerRouteTests extends AnyFunSuite with ScalatestRouteTest with Matchers
     val wsClient = WSProbe()
 
     WS(s"/websocket-endpoint", wsClient.flow) ~> wiring.exampleServer.routesForTesting ~> check {
-      wsClient.sendMessage(JsonText.strictMessage(GetNumbers(3): ExampleRequest))
+      wsClient.sendMessage(Json.strictMessage(GetNumbers(3): ExampleRequest))
       isWebSocketUpgrade shouldBe true
 //      wsClient.expectMessage().asBinaryMessage.getStreamedData.asScala.runForeach(x => println(x.utf8String))
       println(wsClient.expectMessage())

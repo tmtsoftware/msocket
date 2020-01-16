@@ -1,7 +1,7 @@
 package msocket.impl.ws
 
-import io.bullet.borer.{Decoder, Encoder, Target}
-import msocket.api.{ErrorProtocol, Subscription}
+import io.bullet.borer.{Decoder, Encoder}
+import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import msocket.impl.ws.WebsocketJsExtensions.WebsocketJsEncoding
 import org.scalajs.dom.raw.WebSocket
@@ -9,7 +9,7 @@ import org.scalajs.dom.raw.WebSocket
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String, encoding: Target)(implicit ec: ExecutionContext)
+class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType: ContentType)(implicit ec: ExecutionContext)
     extends JsTransport[Req] {
 
   override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {
@@ -22,12 +22,12 @@ class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String, encoding: T
       binaryType = "arraybuffer"
 
       onopen = { _ =>
-        encoding.send(this, request)
+        contentType.send(this, request)
         println("connection open")
       }
 
       onmessage = { event =>
-        try onMessage(encoding.response(event))
+        try onMessage(contentType.response(event))
         catch {
           case NonFatal(ex) => onError(ex); close()
         }

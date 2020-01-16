@@ -1,7 +1,7 @@
 package msocket.impl.post
 
 import io.bullet.borer.Encoder
-import msocket.api.Encoding.JsonText
+import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ErrorProtocol, MessageEncoder}
 import msocket.api.models.FetchEvent
 

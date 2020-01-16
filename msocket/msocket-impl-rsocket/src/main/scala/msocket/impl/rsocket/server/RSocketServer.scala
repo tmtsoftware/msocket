@@ -4,15 +4,15 @@ import akka.actor.typed.ActorSystem
 import io.bullet.borer.Decoder
 import io.rsocket.RSocketFactory
 import io.rsocket.transport.netty.server.WebsocketServerTransport
-import msocket.api.{Encoding, ErrorProtocol}
+import msocket.api.{ContentType, ErrorProtocol}
 import reactor.core.publisher.Mono
 
 import scala.compat.java8.FutureConverters.CompletionStageOps
 import scala.concurrent.ExecutionContext
 
 class RSocketServer[Req: Decoder: ErrorProtocol](
-    requestResponseHandler: Encoding[_] => RSocketResponseHandler[Req],
-    requestStreamHandler: Encoding[_] => RSocketStreamHandler[Req]
+    requestResponseHandler: ContentType => RSocketResponseHandler[Req],
+    requestStreamHandler: ContentType => RSocketStreamHandler[Req]
 )(implicit actorSystem: ActorSystem[_]) {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
@@ -22,8 +22,8 @@ class RSocketServer[Req: Decoder: ErrorProtocol](
 
     RSocketFactory.receive
       .acceptor { (setupPayload, _) =>
-        val encoding = Encoding.fromMimeType(setupPayload.dataMimeType())
-        Mono.just(new RSocketImpl(requestResponseHandler(encoding), requestStreamHandler(encoding), encoding))
+        val contentType = ContentType.fromMimeType(setupPayload.dataMimeType())
+        Mono.just(new RSocketImpl(requestResponseHandler(contentType), requestStreamHandler(contentType), contentType))
       }
       .transport(transport)
       .start

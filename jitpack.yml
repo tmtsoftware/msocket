@@ -1,7 +1,7 @@
 jdk:
   - adoptopenjdk11
 before_install:
-  - wget http://central.maven.org/maven2/org/scala-sbt/sbt-launch/1.3.7/sbt-launch-1.3.7.jar
+  - wget https://repo1.maven.org/maven2/org/scala-sbt/sbt-launch/1.3.7/sbt-launch-1.3.7.jar
 install:
   # Do not publish example-service as it is a test project. Moreover, it depends on csw which itself (in future) may depend on msocket creating a cycle
   - java -Xms2048m -Xmx2048m -XX:ReservedCodeCacheSize=512m -jar sbt-launch-1.3.7.jar -Dsbt.log.noformat=true clean portable-akkaJS/publishM2 portable-akkaJVM/publishM2 msocket/publishM2

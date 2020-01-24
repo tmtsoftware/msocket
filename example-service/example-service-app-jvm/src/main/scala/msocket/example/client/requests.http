@@ -5,9 +5,7 @@ Content-Type: application/json
 #Accept: application/cbor
 
 {
-  "Hello": {
-    "name": "mushtaq"
-  }
+  "Hello": "mushtaq"
 }
 
 ###

@@ -1,7 +1,6 @@
 package msocket.impl.post
 
 import io.bullet.borer.Encoder
-import msocket.api.models.HttpError
 import msocket.api.{ContentType, ErrorProtocol}
 import msocket.impl.post.HttpJsExtensions.HttpJsEncoding
 import org.scalajs.dom.experimental.{Fetch, HttpMethod, Response}

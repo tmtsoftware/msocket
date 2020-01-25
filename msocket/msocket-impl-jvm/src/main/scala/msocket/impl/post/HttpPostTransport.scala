@@ -10,7 +10,6 @@ import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
-import msocket.api.models._
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.{HttpUtils, JvmTransport}
 

@@ -8,8 +8,7 @@ import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream}
 import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
 import msocket.api.ContentType
 import msocket.api.ContentType.Json
-import msocket.api.models.FetchEvent
-import msocket.impl.post.ClientHttpCodecs
+import msocket.impl.post.{ClientHttpCodecs, FetchEvent}
 import msocket.impl.ws.WebsocketExtensions.WebsocketEncoding
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers

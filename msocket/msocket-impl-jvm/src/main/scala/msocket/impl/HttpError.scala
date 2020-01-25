@@ -1,4 +1,4 @@
-package msocket.api.models
+package msocket.impl
 
 case class HttpError(statusCode: Int, reason: String, message: String)
     extends RuntimeException(

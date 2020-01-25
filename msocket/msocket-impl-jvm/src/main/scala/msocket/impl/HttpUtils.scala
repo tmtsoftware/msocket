@@ -5,7 +5,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import msocket.api.{ContentType, ErrorProtocol}
-import msocket.api.models.{HttpError, ServiceError}
+import msocket.api.models.ServiceError
 import msocket.impl.post.ClientHttpCodecs
 
 import scala.concurrent.Future

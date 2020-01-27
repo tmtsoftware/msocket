@@ -4,7 +4,7 @@ import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
-import msocket.api.ContentType.{Cbor, Json}
+import msocket.api.ContentType.Json
 import msocket.impl.post.HttpPostTransport
 import msocket.impl.rsocket.client.RSocketTransportFactory
 import msocket.impl.sse.SseTransport

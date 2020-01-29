@@ -7,9 +7,9 @@ object Libs {
   val `silencer-plugin` = "com.github.ghik" % "silencer-plugin" % "1.4.4" cross CrossVersion.full
   val `silencer-lib`    = "com.github.ghik" % "silencer-lib"    % "1.4.4" cross CrossVersion.full
 
-  val `akka-stream`         = "com.typesafe.akka" %% "akka-stream"         % "2.6.2"
-  val `akka-actor-typed`    = "com.typesafe.akka" %% "akka-actor-typed"    % "2.6.2"
-  val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % "2.6.2"
+  val `akka-stream`         = "com.typesafe.akka" %% "akka-stream"         % "2.6.3"
+  val `akka-actor-typed`    = "com.typesafe.akka" %% "akka-actor-typed"    % "2.6.3"
+  val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % "2.6.3"
 
   val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.1.11"
   val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.1.11"

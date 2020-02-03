@@ -1,11 +1,11 @@
 package msocket.impl.rsocket
 
-import msocket.api.{ContentEncoding, ContentType}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType.{Cbor, Json}
+import msocket.api.{ContentEncoding, ContentType}
 import typings.node.Buffer
-import typings.rsocketDashCore.rSocketEncodingMod.Encoders
-import typings.rsocketDashCore.rsocketDashCoreMod
+import typings.rsocketCore.mod
+import typings.rsocketCore.rsocketencodingMod.Encoders
 
 trait RSocketEncoders[CT <: ContentType] {
   type En
@@ -19,6 +19,6 @@ object RSocketEncoders {
     override type En = _En
   }
 
-  implicit object JsonRSocketEncoders   extends RSocketEncodersFactory[Json.type, String](JsonText, rsocketDashCoreMod.Utf8Encoders)
-  implicit object BufferRSocketEncoders extends RSocketEncodersFactory[Cbor.type, Buffer](CborNodeBuffer, rsocketDashCoreMod.BufferEncoders)
+  implicit object JsonRSocketEncoders   extends RSocketEncodersFactory[Json.type, String](JsonText, mod.Utf8Encoders)
+  implicit object BufferRSocketEncoders extends RSocketEncodersFactory[Cbor.type, Buffer](CborNodeBuffer, mod.BufferEncoders)
 }

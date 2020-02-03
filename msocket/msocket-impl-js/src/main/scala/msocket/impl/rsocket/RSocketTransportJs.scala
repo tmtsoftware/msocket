@@ -3,14 +3,14 @@ package msocket.impl.rsocket
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
-import typings.rsocketDashCore.Anon_DataMimeType
-import typings.rsocketDashCore.rSocketClientMod.ClientConfig
-import typings.rsocketDashCore.rsocketDashCoreMod.RSocketClient
-import typings.rsocketDashFlowable.singleMod.{CancelCallback, IFutureSubscriber}
-import typings.rsocketDashTypes.reactiveSocketTypesMod.{Payload, ReactiveSocket}
-import typings.rsocketDashTypes.reactiveStreamTypesMod.{ISubscriber, ISubscription}
-import typings.rsocketDashWebsocketDashClient.rSocketWebSocketClientMod.ClientOptions
-import typings.rsocketDashWebsocketDashClient.rsocketDashWebsocketDashClientMod.{default => RSocketWebSocketClient}
+import typings.rsocketCore.AnonDataMimeType
+import typings.rsocketCore.mod.RSocketClient
+import typings.rsocketCore.rsocketclientMod.ClientConfig
+import typings.rsocketFlowable.singleMod.{CancelCallback, IFutureSubscriber}
+import typings.rsocketTypes.reactiveSocketTypesMod.{Payload, ReactiveSocket}
+import typings.rsocketTypes.reactiveStreamTypesMod.{ISubscriber, ISubscription}
+import typings.rsocketWebsocketClient.mod.{default => RSocketWebSocketClient}
+import typings.rsocketWebsocketClient.rsocketwebsocketclientMod.ClientOptions
 import typings.std
 
 import scala.concurrent.duration.FiniteDuration
@@ -29,7 +29,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: St
 
   private val client: RSocketClient[rSocketEncoders.En, Null] = new RSocketClient(
     ClientConfig(
-      setup = Anon_DataMimeType(
+      setup = AnonDataMimeType(
         dataMimeType = contentEncoding.contentType.mimeType,
         keepAlive = 60000,
         lifetime = 1800000,

@@ -5,7 +5,7 @@ import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import typings.eventsource.MessageEvent
-import typings.eventsource.eventsourceMod.{EventSourceInitDict, ^ => Sse}
+import typings.eventsource.mod.{EventSourceInitDict, ^ => Sse}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js

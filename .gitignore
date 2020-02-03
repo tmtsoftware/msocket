@@ -20,3 +20,9 @@ target
 .bloop
 project/.bloop
 project/project/.bloop
+.bloop/
+node_modules/
+.gradle/
+build/
+local.properties
+.expo/

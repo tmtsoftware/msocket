@@ -2,7 +2,6 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption.REPLACE_EXISTING
 
 import Libs._
-import csw._
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
@@ -132,8 +131,6 @@ lazy val `example-service-server` = project
   .dependsOn(`example-service-impl`, `msocket-impl-jvm`, `msocket-impl-rsocket`)
   .settings(
     libraryDependencies ++= Seq(
-//      `csw-location-client`,
-//      `csw-aas-http`,
       `akka-http-cors`,
       `scalatest`.value     % Test,
       `akka-http-testkit`   % Test,
@@ -146,9 +143,6 @@ lazy val `example-service-app-jvm` = project
   .dependsOn(`example-service-api`.jvm, `msocket-impl-jvm`, `msocket-impl-rsocket`)
   .settings(
     libraryDependencies ++= Seq(
-      `csw-aas-installed`,
-      `case-app`,
-      `csw-location-client`,
       `scalatest`.value % Test
     )
   )

@@ -22,9 +22,6 @@ class ServerWiring extends ExampleCodecs {
 
   lazy val exampleImpl: ExampleApi = new ExampleImpl
 
-//  lazy val locationService: LocationService       = HttpLocationServiceFactory.makeLocalClient(actorSystem)
-//  lazy val securityDirectives: SecurityDirectives = SecurityDirectives(locationService)
-
   lazy val postHandler: ExamplePostStreamingHandler                       = new ExamplePostStreamingHandler(exampleImpl)
   lazy val sseHandler: ExampleSseHandler                                  = new ExampleSseHandler(exampleImpl)
   def websocketHandler(contentType: ContentType): ExampleWebsocketHandler = new ExampleWebsocketHandler(exampleImpl, contentType)

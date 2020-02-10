@@ -28,15 +28,5 @@ object Libs {
 
   val `rsocket-core`            = "io.rsocket"                 % "rsocket-core"            % "1.0.0-RC5"
   val `rsocket-transport-netty` = "io.rsocket"                 % "rsocket-transport-netty" % "1.0.0-RC5"
-  val `case-app`                = "com.github.alexarchambault" %% "case-app"               % "2.0.0-M9"
-
 }
 
-object csw {
-  val cswVersion  = "05596e4"
-  private val Org = "com.github.tmtsoftware.csw"
-
-  val `csw-aas-http`        = Org %% "csw-aas-http"        % cswVersion
-  val `csw-aas-installed`   = Org %% "csw-aas-installed"   % cswVersion
-  val `csw-location-client` = Org %% "csw-location-client" % cswVersion
-}

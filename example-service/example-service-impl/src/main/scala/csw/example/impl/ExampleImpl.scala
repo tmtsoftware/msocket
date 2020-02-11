@@ -7,10 +7,12 @@ import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Keep, Source}
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}
+import csw.example.model.Bag
 import msocket.api.Subscription
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
+import scala.util.Random
 
 class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
   import actorSystem.executionContext
@@ -54,5 +56,28 @@ class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
     stream
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
+  }
+
+  override def juggle(bag: Bag): Future[Bag] = {
+    Future.successful(
+      randomize(bag)
+    )
+  }
+
+  override def juggleStream(bag: Bag): Source[Bag, Subscription] = {
+    Source
+      .fromIterator(() => Iterator.continually(randomize(bag)))
+      .throttle(1, 1.second)
+      .viaMat(KillSwitches.single)(Keep.right)
+      .mapMaterializedValue(switch => () => switch.shutdown())
+  }
+
+  private def randomize(bag: Bag): Bag = {
+    val random = new Random()
+    Bag(
+      red = random.between(1, 10),
+      green = random.between(1, 10),
+      blue = random.between(1, 10)
+    )
   }
 }

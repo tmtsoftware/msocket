@@ -2,8 +2,9 @@ package csw.example.api.client
 
 import akka.stream.scaladsl.Source
 import csw.example.api._
-import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Square}
+import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, Juggle, JuggleStream, Square}
 import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
+import csw.example.model.Bag
 import msocket.api.{Subscription, Transport}
 
 import scala.concurrent.Future
@@ -15,4 +16,7 @@ class ExampleClient(transport: Transport[ExampleRequest]) extends ExampleApi wit
 
   override def helloStream(name: String): Source[String, Subscription] = transport.requestStream[String](HelloStream(name))
   override def getNumbers(divisibleBy: Int): Source[Int, Subscription] = transport.requestStream[Int](GetNumbers(divisibleBy))
+
+  override def juggle(bag: Bag): Future[Bag] = transport.requestResponse[Bag](Juggle(bag))
+  override def juggleStream(bag: Bag): Source[Bag, Subscription] = transport.requestStream[Bag](JuggleStream(bag))
 }

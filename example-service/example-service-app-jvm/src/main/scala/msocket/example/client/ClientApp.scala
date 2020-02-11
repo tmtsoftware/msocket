@@ -2,6 +2,7 @@ package msocket.example.client
 
 import akka.actor.typed.ActorSystem
 import csw.example.api.client.ExampleClient
+import csw.example.model.Bag
 
 import scala.concurrent.ExecutionContext
 
@@ -22,6 +23,8 @@ class ClientApp(client: ExampleClient)(implicit ec: ExecutionContext, actorSyste
 
     client.square(3).onComplete(x => println(s"==============================> $x"))
     client.square(4).onComplete(x => println(s"==============================> $x"))
+    client.juggle(Bag(4, 3, 2)).onComplete(x => println(s"==============================> $x"))
+    client.juggleStream(Bag(1, 2, 3)).runForeach(x => println(s"==============================> $x")).onComplete(println)
   }
 
 }

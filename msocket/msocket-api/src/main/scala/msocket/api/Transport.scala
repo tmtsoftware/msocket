@@ -8,12 +8,36 @@ import msocket.api.utils.{ContraMappedTransport, ResponseLoggingTransport}
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+ * Transport API abstracts 2 main interaction models: requestResponse and requestStream with their variants
+ * Implementations of Transport API will be provided by msocket-impl* modules.
+ */
 abstract class Transport[Req: Encoder: ErrorProtocol] {
-  def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res]
-  def requestResponse[Res: Decoder: Encoder](request: Req, timeout: FiniteDuration): Future[Res]
-  def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription]
-  def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription
 
+  /**
+   * Send a request and receive a [[Future]] of response.
+   * Only supported by transports that support implicit connection
+   * timeouts if the response is not obtained within that timeout
+   */
+  def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res]
+
+  /**
+   * Send a request and receive a [[Future]] of response within a specified timeout
+   */
+  def requestResponse[Res: Decoder: Encoder](request: Req, timeout: FiniteDuration): Future[Res]
+
+  /**
+   * Send a request and receive a streaming [[Source]] of response elements
+   * The given [[Source]] will materialize to a [[Subscription]] that can be used for cancellation
+   */
+  def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription]
+
+  /**
+   * Send a request and invoke onMessage callback on each element of the streaming response and
+   * invoke onError callback on receiving an error which will terminate the stream
+   * The given [[Source]] will materialize to a [[Subscription]] that can be used for cancellation
+   */
+  def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription
 }
 
 object Transport {

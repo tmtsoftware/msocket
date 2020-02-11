@@ -2,6 +2,11 @@ package csw.example.api.protocol
 
 import csw.example.model.Bag
 
+/**
+ * Transport agnostic message protocol is defined as a Scala ADT
+ * For each API method, there needs to be a matching message in this ADT
+ * For example, Hello(name) is the message for hello(name) method in the API
+ */
 sealed trait ExampleRequest
 
 object ExampleRequest {

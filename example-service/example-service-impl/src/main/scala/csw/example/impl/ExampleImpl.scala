@@ -59,9 +59,9 @@ class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
     stream.withSubscription()
   }
 
-  override def juggle(): Future[Bag] = Future.successful(randomize())
+  override def randomBag(): Future[Bag] = Future.successful(randomize())
 
-  override def juggleStream(): Source[Bag, Subscription] = {
+  override def randomBagStream(): Source[Bag, Subscription] = {
     Source
       .fromIterator(() => Iterator.continually(randomize()))
       .throttle(1, 1.second)

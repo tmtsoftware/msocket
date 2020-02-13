@@ -17,10 +17,10 @@ class ExampleSseHandler(exampleApi: ExampleApi) extends SseHandler[ExampleReques
   override def handle(message: ExampleRequest): StandardRoute = message match {
     case Hello(name)    => complete(futureAsStream(exampleApi.hello(name)))
     case Square(number) => complete(futureAsStream(exampleApi.square(number)))
-    case RandomBag      => complete(futureAsStream(exampleApi.juggle()))
+    case RandomBag      => complete(futureAsStream(exampleApi.randomBag()))
 
     case HelloStream(name)       => complete(stream(exampleApi.helloStream(name)))
     case GetNumbers(divisibleBy) => complete(stream(exampleApi.getNumbers(divisibleBy)))
-    case RandomBagStream         => complete(stream(exampleApi.juggleStream()))
+    case RandomBagStream         => complete(stream(exampleApi.randomBagStream()))
   }
 }

@@ -20,7 +20,7 @@ class ExamplePostStreamingHandler(exampleApi: ExampleApi) extends HttpPostHandle
     case Square(number)          => complete(futureAsStream(exampleApi.square(number)))
     case HelloStream(name)       => complete(stream(exampleApi.helloStream(name)))
     case GetNumbers(divisibleBy) => complete(stream(exampleApi.getNumbers(divisibleBy)))
-    case RandomBag               => complete(exampleApi.juggle())
-    case RandomBagStream         => complete(stream(exampleApi.juggleStream()))
+    case RandomBag               => complete(exampleApi.randomBag())
+    case RandomBagStream         => complete(stream(exampleApi.randomBagStream()))
   }
 }

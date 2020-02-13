@@ -17,10 +17,10 @@ class ExampleWebsocketHandler(exampleApi: ExampleApi, contentType: ContentType) 
   override def handle(message: ExampleRequest): Source[Message, NotUsed] = message match {
     case Hello(name)    => futureAsStream(exampleApi.hello(name))
     case Square(number) => futureAsStream(exampleApi.square(number))
-    case RandomBag      => futureAsStream(exampleApi.juggle())
+    case RandomBag      => futureAsStream(exampleApi.randomBag())
 
     case HelloStream(name)       => stream(exampleApi.helloStream(name))
     case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
-    case RandomBagStream         => stream(exampleApi.juggleStream())
+    case RandomBagStream         => stream(exampleApi.randomBagStream())
   }
 }

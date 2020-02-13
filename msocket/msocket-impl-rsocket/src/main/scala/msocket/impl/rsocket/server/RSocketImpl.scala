@@ -10,21 +10,20 @@ import reactor.core.publisher.{Flux, Mono}
 
 import scala.compat.java8.FutureConverters.FutureOps
 
-class RSocketImpl[Req: Decoder](
-    requestResponseHandler: RSocketResponseHandler[Req],
-    requestStreamHandler: RSocketStreamHandler[Req],
+class RSocketImpl[RespReq: Decoder: ErrorProtocol, StreamReq: Decoder: ErrorProtocol](
+    requestResponseHandler: RSocketResponseHandler[RespReq],
+    requestStreamHandler: RSocketStreamHandler[StreamReq],
     contentType: ContentType
 )(
     implicit actorSystem: ActorSystem[_],
-    ep: ErrorProtocol[Req]
 ) extends AbstractRSocket {
 
   import actorSystem.executionContext
-  val messageEncoder: RSocketPayloadEncoder[Req] = new RSocketPayloadEncoder[Req](contentType)
+  val messageEncoder: RSocketPayloadEncoder[RespReq] = new RSocketPayloadEncoder[RespReq](contentType)
 
   override def requestResponse(payload: Payload): Mono[Payload] = {
     val payloadF = requestResponseHandler
-      .handle(contentType.request(payload))
+      .handle(contentType.request[RespReq](payload))
       .recover(messageEncoder.errorEncoder)
 
     Mono.fromCompletionStage(payloadF.toJava)
@@ -32,7 +31,7 @@ class RSocketImpl[Req: Decoder](
 
   override def requestStream(payload: Payload): Flux[Payload] = {
     val value = Source
-      .lazySingle[Req](() => contentType.request(payload))
+      .lazySingle(() => contentType.request[StreamReq](payload))
       .flatMapConcat(requestStreamHandler.handle)
       .recover(messageEncoder.errorEncoder)
 

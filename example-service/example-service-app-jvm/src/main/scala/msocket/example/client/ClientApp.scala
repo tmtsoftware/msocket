@@ -23,8 +23,8 @@ class ClientApp(client: ExampleClient)(implicit ec: ExecutionContext, actorSyste
 
     client.square(3).onComplete(x => println(s"==============================> $x"))
     client.square(4).onComplete(x => println(s"==============================> $x"))
-    client.juggle().onComplete(x => println(s"==============================> $x"))
-    client.juggleStream().runForeach(x => println(s"==============================> $x")).onComplete(println)
+    client.randomBag().onComplete(x => println(s"==============================> $x"))
+    client.randomBagStream().runForeach(x => println(s"==============================> $x")).onComplete(println)
   }
 
 }

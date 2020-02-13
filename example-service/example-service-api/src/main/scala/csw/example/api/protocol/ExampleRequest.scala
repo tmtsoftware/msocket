@@ -8,10 +8,13 @@ package csw.example.api.protocol
 sealed trait ExampleRequest
 
 object ExampleRequest {
-  case class Hello(name: String)          extends ExampleRequest
-  case class HelloStream(name: String)    extends ExampleRequest
-  case class Square(number: Int)          extends ExampleRequest
-  case class GetNumbers(divisibleBy: Int) extends ExampleRequest
-  case object RandomBag                   extends ExampleRequest
-  case object RandomBagStream             extends ExampleRequest
+  sealed trait ExampleRequestResponse extends ExampleRequest
+  case class Hello(name: String)      extends ExampleRequestResponse
+  case object RandomBag               extends ExampleRequestResponse
+
+  sealed trait ExampleRequestStream       extends ExampleRequest
+  case class HelloStream(name: String)    extends ExampleRequestStream
+  case class Square(number: Int)          extends ExampleRequestStream
+  case class GetNumbers(divisibleBy: Int) extends ExampleRequestStream
+  case object RandomBagStream             extends ExampleRequestStream
 }

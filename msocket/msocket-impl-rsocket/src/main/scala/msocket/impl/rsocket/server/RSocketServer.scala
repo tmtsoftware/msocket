@@ -10,9 +10,9 @@ import reactor.core.publisher.Mono
 import scala.compat.java8.FutureConverters.CompletionStageOps
 import scala.concurrent.ExecutionContext
 
-class RSocketServer[Req: Decoder: ErrorProtocol](
-    requestResponseHandler: ContentType => RSocketResponseHandler[Req],
-    requestStreamHandler: ContentType => RSocketStreamHandler[Req]
+class RSocketServer[RespReq: Decoder: ErrorProtocol, StreamReq: Decoder: ErrorProtocol](
+    requestResponseHandler: ContentType => RSocketResponseHandler[RespReq],
+    requestStreamHandler: ContentType => RSocketStreamHandler[StreamReq]
 )(implicit actorSystem: ActorSystem[_]) {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext

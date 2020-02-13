@@ -15,7 +15,7 @@ import scala.concurrent.Future
 trait ExampleApi {
   // these are requestResponse style APIs that are only supported by transports that have implicit timeouts
   def hello(name: String): Future[String]
-  def juggle(): Future[Bag]
+  def randomBag(): Future[Bag]
 
   // this looks like requestResponse style API but is implemented on top of streaming API with explicit timeout
   // because that timeout could be much larger than the implicit timeout of the transport
@@ -24,5 +24,5 @@ trait ExampleApi {
   // these are requestStream style APIs
   def helloStream(name: String): Source[String, Subscription]
   def getNumbers(divisibleBy: Int): Source[Int, Subscription]
-  def juggleStream(): Source[Bag, Subscription]
+  def randomBagStream(): Source[Bag, Subscription]
 }

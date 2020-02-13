@@ -6,10 +6,10 @@ import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, RequestEntity}
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.KillSwitches
-import akka.stream.scaladsl.{Keep, Source}
+import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
+import msocket.api.SourceExtension.WithSubscription
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.{HttpUtils, JvmTransport}
 
@@ -35,8 +35,7 @@ class HttpPostTransport[Req: Encoder](uri: String, contentType: ContentType, tok
       .futureSource(futureSource)
       .filter(_ != FetchEvent.Heartbeat)
       .map(event => JsonText.decodeWithError[Res, Req](event.data))
-      .viaMat(KillSwitches.single)(Keep.right)
-      .mapMaterializedValue(switch => () => switch.shutdown())
+      .withSubscription()
   }
 
   private def getResponse(request: Req): Future[HttpResponse] = {

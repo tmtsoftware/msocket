@@ -2,10 +2,10 @@ package msocket.impl.ws
 
 import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
-import akka.stream.KillSwitches
-import akka.stream.scaladsl.{Keep, Source}
+import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
+import msocket.api.SourceExtension.WithSubscription
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.ws.WebsocketExtensions.WebsocketEncoding
 import msocket.impl.{CborByteString, JvmTransport}
@@ -31,6 +31,5 @@ class WebsocketTransport[Req: Encoder: ErrorProtocol](uri: String, contentType: 
         case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decodeWithError[Res, Req](m.text))
         case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborByteString.decodeWithError[Res, Req](m.data))
       }
-      .viaMat(KillSwitches.single)(Keep.right)
-      .mapMaterializedValue[Subscription](switch => () => switch.shutdown())
+      .withSubscription()
 }

@@ -3,11 +3,11 @@ package csw.example.impl
 import akka.NotUsed
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
-import akka.stream.KillSwitches
-import akka.stream.scaladsl.{Keep, Source}
+import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}
 import csw.example.model.Bag
+import msocket.api.SourceExtension.WithSubscription
 import msocket.api.Subscription
 
 import scala.concurrent.Future
@@ -44,8 +44,7 @@ class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
       .map(x => s"hello \n $name again $x")
       .mapMaterializedValue(_ => NotUsed)
       .take(50)
-      .viaMat(KillSwitches.single)(Keep.right)
-      .mapMaterializedValue(switch => () => switch.shutdown())
+      .withSubscription()
   }
 
   override def getNumbers(divisibleBy: Int): Source[Int, Subscription] = {
@@ -57,9 +56,7 @@ class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
         .throttle(1, 1.second)
     }
 
-    stream
-      .viaMat(KillSwitches.single)(Keep.right)
-      .mapMaterializedValue(switch => () => switch.shutdown())
+    stream.withSubscription()
   }
 
   override def juggle(): Future[Bag] = Future.successful(randomize())
@@ -68,8 +65,7 @@ class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
     Source
       .fromIterator(() => Iterator.continually(randomize()))
       .throttle(1, 1.second)
-      .viaMat(KillSwitches.single)(Keep.right)
-      .mapMaterializedValue(switch => () => switch.shutdown())
+      .withSubscription()
   }
 
   private def randomize() = {

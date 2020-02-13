@@ -1,10 +1,10 @@
 package msocket.impl.rsocket.client
 
 import akka.actor.typed.ActorSystem
-import akka.stream.KillSwitches
-import akka.stream.scaladsl.{Keep, Sink, Source}
+import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import io.rsocket.RSocket
+import msocket.api.SourceExtension.WithSubscription
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.JvmTransport
 import msocket.impl.rsocket.RSocketExtensions._
@@ -33,7 +33,6 @@ class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket, contentTyp
     Source
       .fromPublisher(value)
       .map(payload => contentType.response[Res, Req](payload))
-      .viaMat(KillSwitches.single)(Keep.right)
-      .mapMaterializedValue(switch => () => switch.shutdown())
+      .withSubscription()
   }
 }

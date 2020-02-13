@@ -63,7 +63,7 @@ lazy val `msocket` = project.aggregate(
 )
 
 lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
-  .crossType(CrossType.Pure)
+  .crossType(CrossType.Full)
   .in(file("msocket/msocket-api"))
   .dependsOn(`portable-akka`)
   .settings(

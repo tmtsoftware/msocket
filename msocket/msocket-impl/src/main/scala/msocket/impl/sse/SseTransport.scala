@@ -6,12 +6,13 @@ import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
-import akka.stream.scaladsl.{Keep, Source}
-import akka.stream.{KillSwitches, Materializer}
+import akka.stream.Materializer
+import akka.stream.scaladsl.Source
 import akka.{NotUsed, actor}
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType.Json
+import msocket.api.SourceExtension.WithSubscription
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.post.ClientHttpCodecs
 import msocket.impl.{HttpUtils, JvmTransport}
@@ -37,8 +38,7 @@ class SseTransport[Req: Encoder: ErrorProtocol](uri: String)(implicit actorSyste
     Source
       .futureSource(futureSource)
       .map(event => JsonText.decodeWithError[Res, Req](event.data))
-      .viaMat(KillSwitches.single)(Keep.right)
-      .mapMaterializedValue(switch => () => switch.shutdown())
+      .withSubscription()
   }
 
   private def getResponse(request: Req): Future[HttpResponse] = {

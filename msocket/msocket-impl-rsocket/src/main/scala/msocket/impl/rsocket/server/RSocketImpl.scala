@@ -10,16 +10,17 @@ import reactor.core.publisher.{Flux, Mono}
 
 import scala.compat.java8.FutureConverters.FutureOps
 
-class RSocketImpl[RespReq: Decoder: ErrorProtocol, StreamReq: Decoder: ErrorProtocol](
-    requestResponseHandler: RSocketResponseHandler[RespReq],
-    requestStreamHandler: RSocketStreamHandler[StreamReq],
-    contentType: ContentType
-)(
-    implicit actorSystem: ActorSystem[_],
-) extends AbstractRSocket {
+class RSocketImpl[RespReq: Decoder: ErrorProtocol, StreamReq: Decoder](
+    requestResponseHandlerF: ContentType => RSocketResponseHandler[RespReq],
+    requestStreamHandlerF: ContentType => RSocketStreamHandler[StreamReq],
+    contentType: ContentType)(implicit actorSystem: ActorSystem[_])
+    extends AbstractRSocket {
 
   import actorSystem.executionContext
   val messageEncoder: RSocketPayloadEncoder[RespReq] = new RSocketPayloadEncoder[RespReq](contentType)
+
+  private lazy val requestResponseHandler = requestResponseHandlerF(contentType)
+  private lazy val requestStreamHandler   = requestStreamHandlerF(contentType)
 
   override def requestResponse(payload: Payload): Mono[Payload] = {
     val payloadF = requestResponseHandler

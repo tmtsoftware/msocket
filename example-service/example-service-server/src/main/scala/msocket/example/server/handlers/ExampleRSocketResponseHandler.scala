@@ -9,6 +9,9 @@ import msocket.impl.rsocket.server.RSocketResponseHandler
 
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+ * A RSocket handler that will create routes for RequestResponse interaction model APIs in [[ExampleApi]]
+ */
 class ExampleRSocketResponseHandler(exampleApi: ExampleApi, contentType: ContentType)(implicit ec: ExecutionContext)
     extends RSocketResponseHandler[ExampleRequest](contentType) {
 

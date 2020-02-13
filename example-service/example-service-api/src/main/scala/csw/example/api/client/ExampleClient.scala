@@ -22,6 +22,6 @@ class ExampleClient(transport: Transport[ExampleRequest]) extends ExampleApi {
   override def helloStream(name: String): Source[String, Subscription] = transport.requestStream[String](HelloStream(name))
   override def getNumbers(divisibleBy: Int): Source[Int, Subscription] = transport.requestStream[Int](GetNumbers(divisibleBy))
 
-  override def juggle(bag: Bag): Future[Bag]                     = transport.requestResponse[Bag](Juggle(bag))
-  override def juggleStream(bag: Bag): Source[Bag, Subscription] = transport.requestStream[Bag](JuggleStream(bag))
+  override def juggle(): Future[Bag]                     = transport.requestResponse[Bag](RandomBag)
+  override def juggleStream(): Source[Bag, Subscription] = transport.requestStream[Bag](RandomBagStream)
 }

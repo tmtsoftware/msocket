@@ -12,6 +12,7 @@ import msocket.impl.ws.WebsocketTransportJs
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 
+/** ScalaJS based client can be wired with the preferred transport protocol */
 object ClientMainJs extends ExampleCodecs {
 
   def main(args: Array[String]): Unit = {

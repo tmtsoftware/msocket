@@ -14,18 +14,22 @@ import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
 import scala.util.Random
 
+/**
+ * Implementation for the APIs defined in [[ExampleApi]]
+ */
 class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
   import actorSystem.executionContext
 
   override def hello(name: String): Future[String] = {
     name match {
-      case "idiot" => Future.failed(HelloError(5))
-      case "fool"  => Future.failed(new IllegalArgumentException("you are a fool"))
+      case "idiot" => Future.failed(HelloError(5)) //domain error
+      case "fool"  => Future.failed(new IllegalArgumentException("you are a fool")) //generic error
       case x       => Future.successful(s"Hello $x")
     }
   }
 
   override def square(number: Int): Future[Int] = {
+    // this is to simulate a call which takes much longer (say 3 min) than the implicit timeout of the transport (say 2 min)
     akka.pattern.after(3.minutes, actorSystem.toClassic.scheduler) {
       Future.successful(number * number)
     }
@@ -58,21 +62,17 @@ class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
       .mapMaterializedValue(switch => () => switch.shutdown())
   }
 
-  override def juggle(bag: Bag): Future[Bag] = {
-    Future.successful(
-      randomize(bag)
-    )
-  }
+  override def juggle(): Future[Bag] = Future.successful(randomize())
 
-  override def juggleStream(bag: Bag): Source[Bag, Subscription] = {
+  override def juggleStream(): Source[Bag, Subscription] = {
     Source
-      .fromIterator(() => Iterator.continually(randomize(bag)))
+      .fromIterator(() => Iterator.continually(randomize()))
       .throttle(1, 1.second)
       .viaMat(KillSwitches.single)(Keep.right)
       .mapMaterializedValue(switch => () => switch.shutdown())
   }
 
-  private def randomize(bag: Bag): Bag = {
+  private def randomize() = {
     val random = new Random()
     Bag(
       red = random.between(1, 10),

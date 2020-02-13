@@ -10,6 +10,7 @@ import msocket.impl.rsocket.client.RSocketTransportFactory
 import msocket.impl.sse.SseTransport
 import msocket.impl.ws.WebsocketTransport
 
+/** Client can be wired with the preferred transport protocol */
 object ClientMain extends ExampleCodecs {
 
   def main(args: Array[String]): Unit = {

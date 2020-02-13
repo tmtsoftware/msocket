@@ -10,6 +10,9 @@ import io.rsocket.Payload
 import msocket.api.ContentType
 import msocket.impl.rsocket.server.RSocketStreamHandler
 
+/**
+ * A RSocket handler that will create routes for RequestStream interaction model APIs in [[ExampleApi]]
+ */
 class ExampleRSocketStreamHandler(exampleApi: ExampleApi, contentType: ContentType)
     extends RSocketStreamHandler[ExampleRequest](contentType) {
   override def handle(message: ExampleRequest): Source[Payload, NotUsed] = message match {

@@ -16,6 +16,7 @@ import msocket.impl.ws.WebsocketRouteFactory
 
 import scala.concurrent.ExecutionContext
 
+/** This is where the supported handlers are wired with the server */
 class ServerWiring extends ExampleCodecs {
   implicit lazy val actorSystem: ActorSystem[_] = ActorSystem(Behaviors.empty, "server")
   implicit lazy val ec: ExecutionContext        = actorSystem.executionContext

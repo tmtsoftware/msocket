@@ -5,6 +5,7 @@ import akka.stream.scaladsl.Source
 import csw.example.api.client.ExampleClient
 import msocket.api.Subscription
 
+/** ScalaJS based client application that will send requests to the server */
 class ClientAppJs(client: ExampleClient)(implicit actorSystem: ActorSystem[_]) {
   import actorSystem.executionContext
 

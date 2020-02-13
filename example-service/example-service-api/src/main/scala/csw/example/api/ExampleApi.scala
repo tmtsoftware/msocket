@@ -13,11 +13,16 @@ import scala.concurrent.Future
  * with Subscription as its materialized value
  */
 trait ExampleApi {
+  // these are requestResponse style APIs that are only supported by transports that have implicit timeouts
   def hello(name: String): Future[String]
-  def square(number: Int): Future[Int]
-  def juggle(bag: Bag): Future[Bag]
+  def juggle(): Future[Bag]
 
+  // this looks like requestResponse style API but is implemented on top of streaming API with explicit timeout
+  // because that timeout could be much larger than the implicit timeout of the transport
+  def square(number: Int): Future[Int]
+
+  // these are requestStream style APIs
   def helloStream(name: String): Source[String, Subscription]
   def getNumbers(divisibleBy: Int): Source[Int, Subscription]
-  def juggleStream(bag: Bag): Source[Bag, Subscription]
+  def juggleStream(): Source[Bag, Subscription]
 }

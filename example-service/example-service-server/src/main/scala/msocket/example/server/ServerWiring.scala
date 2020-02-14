@@ -41,7 +41,7 @@ class ServerWiring extends ExampleCodecs {
     new SseRouteFactory[ExampleRequest]("sse-endpoint", sseHandler)
   )
 
-  lazy val exampleServer = new ExampleServer(applicationRoute)
+  lazy val exampleServer = new ExampleServer(applicationRoute)(actorSystem)
   lazy val rSocketServer = new RSocketServer(rSocketFactory)
 
 }

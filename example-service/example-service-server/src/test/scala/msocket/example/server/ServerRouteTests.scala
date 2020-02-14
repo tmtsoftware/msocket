@@ -25,7 +25,7 @@ class ServerRouteTests extends AnyFunSuite with ScalatestRouteTest with Matchers
 
     val wsClient = WSProbe()
 
-    WS(s"/websocket-endpoint", wsClient.flow) ~> wiring.exampleServer.routesForTesting ~> check {
+    WS(s"/websocket-endpoint", wsClient.flow) ~> wiring.exampleServer.routesWithCors ~> check {
       wsClient.sendMessage(Json.strictMessage(GetNumbers(3): ExampleRequest))
       isWebSocketUpgrade shouldBe true
 //      wsClient.expectMessage().asBinaryMessage.getStreamedData.asScala.runForeach(x => println(x.utf8String))
@@ -41,14 +41,14 @@ class ServerRouteTests extends AnyFunSuite with ScalatestRouteTest with Matchers
 
   test("http-streaming") {
     implicit val timeout: RouteTestTimeout = RouteTestTimeout(10.seconds.dilated)
-    Post("/post-endpoint", HelloStream("mushtaq"): ExampleRequest) ~> wiring.exampleServer.routesForTesting ~> check {
+    Post("/post-endpoint", HelloStream("mushtaq"): ExampleRequest) ~> wiring.exampleServer.routesWithCors ~> check {
       responseAs[Source[FetchEvent, NotUsed]].take(3).runForeach(println)
     }
   }
 
   test("simple-post") {
     implicit val timeout: RouteTestTimeout = RouteTestTimeout(10.seconds.dilated)
-    Post("/post-endpoint", Hello("mushtaq"): ExampleRequest) ~> wiring.exampleServer.routesForTesting ~> check {
+    Post("/post-endpoint", Hello("mushtaq"): ExampleRequest) ~> wiring.exampleServer.routesWithCors ~> check {
       println(status)
       println(response)
     }

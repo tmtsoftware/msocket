@@ -43,4 +43,5 @@ class ServerWiring extends ExampleCodecs {
 
   lazy val exampleServer = new ExampleServer(applicationRoute)
   lazy val rSocketServer = new RSocketServer(rSocketFactory)
+
 }

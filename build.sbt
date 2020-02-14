@@ -162,6 +162,15 @@ lazy val `example-service-app-js` = project
     )
   )
 
+lazy val `example-service-test` = project
+  .in(file("example-service/example-service-test"))
+  .dependsOn(`example-service-server`, `example-service-app-jvm`)
+  .settings(
+    libraryDependencies ++= Seq(
+      `scalatest`.value % Test
+    )
+  )
+
 ///////////////
 
 lazy val baseJsSettings: Project => Project =

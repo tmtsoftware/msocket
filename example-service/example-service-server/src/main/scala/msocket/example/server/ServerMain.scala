@@ -7,7 +7,7 @@ object ServerMain {
     val wiring = new ServerWiring
 
     wiring.rSocketServer.start("0.0.0.0", 7000)
-    wiring.exampleServer.start("localhost", 5000)
+    wiring.exampleServer.start("0.0.0.0", 5000)
   }
 
 }

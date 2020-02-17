@@ -11,7 +11,7 @@ import org.scalatest.matchers.should.Matchers
 
 class JvmTest extends AsyncFlatSpec with BeforeAndAfterAll with Matchers with ExampleCodecs {
   val wiring = new ServerWiring()
-  import wiring.actorSystem
+  import wiring._
   override protected def beforeAll(): Unit = {
     wiring.exampleServer.start("0.0.0.0", 1111)
   }

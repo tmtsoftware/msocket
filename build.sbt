@@ -167,7 +167,6 @@ lazy val `example-service-test` = project
   .dependsOn(`example-service-server`, `example-service-app-jvm`)
   .settings(
     libraryDependencies ++= Seq(
-      `akka-http`,
       `akka-stream-testkit` % Test,
       `scalatest`.value     % Test
     )

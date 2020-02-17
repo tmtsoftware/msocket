@@ -11,14 +11,14 @@ import org.scalatest.matchers.should.Matchers
 
 class JvmTest extends AsyncFlatSpec with BeforeAndAfterAll with Matchers with ExampleCodecs {
   val wiring = new ServerWiring()
-  import wiring._
+  import wiring.actorSystem
   override protected def beforeAll(): Unit = {
     wiring.exampleServer.start("0.0.0.0", 1111)
   }
 
   it should "return response for request using http transport" in {
     lazy val httpPostTransport =
-      new HttpPostTransport[ExampleRequest]("http://0.0.0.0:1111/post-endpoint", Json, () => None)
+      new HttpPostTransport[ExampleRequest]("http://localhost:1111/post-endpoint", Json, () => None)
     val client   = new ExampleClient(httpPostTransport)
     val response = client.hello("John")
     response map { value =>

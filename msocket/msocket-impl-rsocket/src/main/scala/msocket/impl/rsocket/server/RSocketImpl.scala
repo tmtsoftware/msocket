@@ -13,7 +13,8 @@ import scala.compat.java8.FutureConverters.FutureOps
 class RSocketImpl[RespReq: Decoder: ErrorProtocol, StreamReq: Decoder](
     requestResponseHandlerF: ContentType => RSocketResponseHandler[RespReq],
     requestStreamHandlerF: ContentType => RSocketStreamHandler[StreamReq],
-    contentType: ContentType)(implicit actorSystem: ActorSystem[_])
+    contentType: ContentType
+)(implicit actorSystem: ActorSystem[_])
     extends AbstractRSocket {
 
   import actorSystem.executionContext

@@ -50,28 +50,61 @@ class JvmTest
     val httpPostTransport  = new HttpPostTransport[ExampleRequest]("http://localhost:1111/post-endpoint", contentType, () => None)
     val websocketTransport = new WebsocketTransport[ExampleRequest]("ws://localhost:1111/websocket-endpoint", contentType)
     val rSocketTransport   = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000", contentType)
-    val sseTransport       = new SseTransport[ExampleRequest]("ws://localhost:7000")
+    val sseTransport       = new SseTransport[ExampleRequest]("http://localhost:1111/sse-endpoint")
 
     List(httpPostTransport, rSocketTransport).foreach { transport =>
       s"${transport.getClass.getSimpleName} and ${contentType.toString}" must {
-        s"requestResponse" in {
+        s"requestResponse for hello API" in {
           val client = new ExampleClient(transport)
           client.hello("John").futureValue shouldBe "Hello John"
+        }
+
+        s"requestResponse for randomBag API" in {
+          val client    = new ExampleClient(transport)
+          val randomBag = client.randomBag().futureValue
+          randomBag.red should be > 0
+          randomBag.red should be < 10
+          randomBag.blue should be > 0
+          randomBag.blue should be < 10
+          randomBag.green should be > 0
+          randomBag.green should be < 10
         }
       }
     }
 
-    val bilingualTransports = List(httpPostTransport, rSocketTransport, websocketTransport)
-    val transports          = if (contentType == Json) bilingualTransports :+ sseTransport else bilingualTransports
+    s"websocketTransport and ${contentType.toString} contentType" must {
+      "requestResponse without timeout should give error" in {
+        val client: ExampleClient = new ExampleClient(websocketTransport)
+        val caught = intercept[RuntimeException] {
+          client.hello("John").futureValue
+        }
+        caught.getCause.getMessage shouldBe "requestResponse protocol without timeout is not supported for this transport"
+      }
+    }
+
+    val bilingualTransports = List(rSocketTransport, websocketTransport)
+    val transports          = if (contentType == Json) bilingualTransports :+ sseTransport :+ httpPostTransport else bilingualTransports
 
     transports.foreach { transport =>
       s"${transport.getClass.getSimpleName} and ${contentType.toString}" must {
-        s"requestStream" in {
+        s"requestStream for getNumbers API" in {
           val client = new ExampleClient(transport)
           client
             .getNumbers(12)
             .runWith(probe)
-            .expectSubscription()
+            .request(2)
+            .expectNextN(Seq(12, 24))
+        }
+
+        s"requestStream for helloStream API" in {
+          val client = new ExampleClient(transport)
+          client
+            .helloStream("John")
+            .runWith(probe)
+            .request(2)
+            .expectNext("hello \n John again 0")
+            .expectNoMessage(100.millis)
+            .expectNext("hello \n John again 1")
         }
       }
     }

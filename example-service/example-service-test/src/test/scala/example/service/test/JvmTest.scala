@@ -6,8 +6,10 @@ import akka.stream.scaladsl.Sink
 import akka.stream.testkit.TestSubscriber.Probe
 import akka.stream.testkit.scaladsl.TestSink
 import csw.example.api.client.ExampleClient
-import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
+import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}
+import csw.example.api.protocol.{ExampleCodecs, ExampleError, ExampleRequest}
 import msocket.api.ContentType.{Cbor, Json}
+import msocket.api.models.{GenericError, ServiceError}
 import msocket.example.server.ServerWiring
 import msocket.impl.post.HttpPostTransport
 import msocket.impl.rsocket.client.RSocketTransportFactory
@@ -59,6 +61,22 @@ class JvmTest
           client.hello("John").futureValue shouldBe "Hello John"
         }
 
+        s"requestResponse expect domain error on idiot" in {
+          val client = new ExampleClient(transport)
+          val caught = intercept[RuntimeException] {
+            client.hello("idiot").futureValue
+          }
+          caught.getCause shouldBe HelloError(5)
+        }
+
+        s"requestResponse expect generic error on fool" in {
+          val client = new ExampleClient(transport)
+          val caught = intercept[RuntimeException] {
+            client.hello("fool").futureValue
+          }
+          caught.getCause shouldBe ServiceError(new GenericError("IllegalArgumentException", "you are a fool"))
+        }
+
         s"requestResponse for randomBag API" in {
           val client    = new ExampleClient(transport)
           val randomBag = client.randomBag().futureValue
@@ -105,6 +123,15 @@ class JvmTest
             .expectNext("hello \n John again 0")
             .expectNoMessage(100.millis)
             .expectNext("hello \n John again 1")
+        }
+
+        s"requestStream should throw domain error " in {
+          val client = new ExampleClient(transport)
+          client
+            .getNumbers(-1)
+            .runWith(probe)
+            .request(1)
+            .expectError(GetNumbersError(17))
         }
       }
     }

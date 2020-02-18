@@ -133,6 +133,24 @@ class JvmTest
             .request(1)
             .expectError(GetNumbersError(17))
         }
+
+        s"requestStream for randomBagStream API" in {
+          val client = new ExampleClient(transport)
+          val bags = client
+            .randomBagStream()
+            .runWith(probe)
+            .request(3)
+            .expectNextN(3)
+
+          bags.foreach(bag => {
+            bag.red should be > 0
+            bag.red should be < 10
+            bag.blue should be > 0
+            bag.blue should be < 10
+            bag.green should be > 0
+            bag.green should be < 10
+          })
+        }
       }
     }
   }

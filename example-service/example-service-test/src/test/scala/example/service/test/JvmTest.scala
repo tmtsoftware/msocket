@@ -2,14 +2,15 @@ package example.service.test
 
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
-import akka.stream.scaladsl.Sink
+import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.testkit.TestSubscriber.Probe
 import akka.stream.testkit.scaladsl.TestSink
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}
-import csw.example.api.protocol.{ExampleCodecs, ExampleError, ExampleRequest}
+import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
 import msocket.api.ContentType.{Cbor, Json}
-import msocket.api.models.{GenericError, ServiceError}
+import msocket.api.Subscription
+import msocket.api.models.ServiceError
 import msocket.example.server.ServerWiring
 import msocket.impl.post.HttpPostTransport
 import msocket.impl.rsocket.client.RSocketTransportFactory
@@ -46,7 +47,7 @@ class JvmTest
 
   override implicit def patienceConfig: PatienceConfig = PatienceConfig(timeout = 30.seconds)
 
-  def probe[T](implicit system: ActorSystem[_]): Sink[T, Probe[T]] = TestSink.probe[T](system.toClassic)
+  def makeProbe[T](implicit system: ActorSystem[_]): Sink[T, Probe[T]] = TestSink.probe[T](system.toClassic)
 
   List(Json, Cbor).foreach { contentType =>
     val httpPostTransport  = new HttpPostTransport[ExampleRequest]("http://localhost:1111/post-endpoint", contentType, () => None)
@@ -56,36 +57,25 @@ class JvmTest
 
     List(httpPostTransport, rSocketTransport).foreach { transport =>
       s"${transport.getClass.getSimpleName} and ${contentType.toString}" must {
-        s"requestResponse for hello API" in {
+        s"requestResponse" in {
           val client = new ExampleClient(transport)
           client.hello("John").futureValue shouldBe "Hello John"
         }
 
-        s"requestResponse expect domain error on idiot" in {
+        s"requestResponse with domain error" in {
           val client = new ExampleClient(transport)
-          val caught = intercept[RuntimeException] {
-            client.hello("idiot").futureValue
+          val caught = intercept[HelloError] {
+            Await.result(client.hello("idiot"), 3.second)
           }
-          caught.getCause shouldBe HelloError(5)
+          caught shouldBe HelloError(5)
         }
 
         s"requestResponse expect generic error on fool" in {
           val client = new ExampleClient(transport)
-          val caught = intercept[RuntimeException] {
-            client.hello("fool").futureValue
+          val caught = intercept[ServiceError] {
+            Await.result(client.hello("fool"), 3.second)
           }
-          caught.getCause shouldBe ServiceError(new GenericError("IllegalArgumentException", "you are a fool"))
-        }
-
-        s"requestResponse for randomBag API" in {
-          val client    = new ExampleClient(transport)
-          val randomBag = client.randomBag().futureValue
-          randomBag.red should be > 0
-          randomBag.red should be < 10
-          randomBag.blue should be > 0
-          randomBag.blue should be < 10
-          randomBag.green should be > 0
-          randomBag.green should be < 10
+          caught shouldBe ServiceError.fromThrowable(new IllegalArgumentException("you are a fool"))
         }
       }
     }
@@ -94,62 +84,54 @@ class JvmTest
       "requestResponse without timeout should give error" in {
         val client: ExampleClient = new ExampleClient(websocketTransport)
         val caught = intercept[RuntimeException] {
-          client.hello("John").futureValue
+          Await.result(client.hello("John"), 3.second)
         }
-        caught.getCause.getMessage shouldBe "requestResponse protocol without timeout is not supported for this transport"
+        caught.getMessage shouldBe "requestResponse protocol without timeout is not supported for this transport"
       }
     }
 
     val bilingualTransports = List(rSocketTransport, websocketTransport)
-    val transports          = if (contentType == Json) bilingualTransports :+ sseTransport :+ httpPostTransport else bilingualTransports
+    val jsonOnlyTransports  = List(sseTransport, httpPostTransport)
+    val transports          = if (contentType == Json) bilingualTransports ++ jsonOnlyTransports else bilingualTransports
 
     transports.foreach { transport =>
       s"${transport.getClass.getSimpleName} and ${contentType.toString}" must {
-        s"requestStream for getNumbers API" in {
+        s"requestStream" in {
           val client = new ExampleClient(transport)
           client
             .getNumbers(12)
-            .runWith(probe)
+            .runWith(makeProbe)
             .request(2)
             .expectNextN(Seq(12, 24))
         }
 
-        s"requestStream for helloStream API" in {
+        s"requestStream with interval" in {
           val client = new ExampleClient(transport)
           client
             .helloStream("John")
-            .runWith(probe)
+            .runWith(makeProbe)
             .request(2)
             .expectNext("hello \n John again 0")
             .expectNoMessage(100.millis)
             .expectNext("hello \n John again 1")
         }
 
-        s"requestStream should throw domain error " in {
+        s"requestStream with domain error " in {
           val client = new ExampleClient(transport)
           client
             .getNumbers(-1)
-            .runWith(probe)
+            .runWith(makeProbe)
             .request(1)
             .expectError(GetNumbersError(17))
         }
 
-        s"requestStream for randomBagStream API" in {
-          val client = new ExampleClient(transport)
-          val bags = client
-            .randomBagStream()
-            .runWith(probe)
-            .request(3)
-            .expectNextN(3)
-
-          bags.foreach(bag => {
-            bag.red should be > 0
-            bag.red should be < 10
-            bag.blue should be > 0
-            bag.blue should be < 10
-            bag.green should be > 0
-            bag.green should be < 10
-          })
+        s"requestStream subscription with cancellation " in {
+          val client                                            = new ExampleClient(transport)
+          val source: Source[Int, Subscription]                 = client.getNumbers(3)
+          val (subscription, probe): (Subscription, Probe[Int]) = source.toMat(makeProbe)(Keep.both).run()
+          probe.request(2)
+          subscription.cancel()
+          probe.expectComplete()
         }
       }
     }

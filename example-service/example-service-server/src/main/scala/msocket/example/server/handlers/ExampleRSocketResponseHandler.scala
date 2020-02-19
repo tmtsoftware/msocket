@@ -5,6 +5,7 @@ import csw.example.api.protocol.ExampleRequest.{ExampleRequestResponse, Hello, R
 import io.rsocket.Payload
 import msocket.api.ContentType
 import msocket.impl.rsocket.server.RSocketResponseHandler
+import csw.example.api.protocol.ExampleCodecs._
 
 import scala.concurrent.{ExecutionContext, Future}
 

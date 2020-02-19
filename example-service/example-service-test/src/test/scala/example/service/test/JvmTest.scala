@@ -50,14 +50,15 @@ class JvmTest
 
   def makeProbe[T](implicit system: ActorSystem[_]): Sink[T, Probe[T]] = TestSink.probe[T](system.toClassic)
 
-  val PostEndpoint      = "http://localhost:5000/post-endpoint"
-  val SseEndpoint       = "http://localhost:5000/sse-endpoint"
-  val WebsocketEndpoint = "ws://localhost:5000/websocket-endpoint"
-  val RSocketEndpoint   = "ws://localhost:7000"
+  val PostEndpoint          = "http://localhost:5000/post-endpoint"
+  val PostStreamingEndpoint = "http://localhost:5000/post-streaming-endpoint"
+  val SseEndpoint           = "http://localhost:5000/sse-endpoint"
+  val WebsocketEndpoint     = "ws://localhost:5000/websocket-endpoint"
+  val RSocketEndpoint       = "ws://localhost:7000"
 
   List(Json, Cbor).foreach { contentType =>
     lazy val httpResponseTransport = new HttpPostTransport[ExampleRequestResponse](PostEndpoint, contentType, () => None)
-    lazy val httpStreamTransport   = new HttpPostTransport[ExampleRequestStream](PostEndpoint, contentType, () => None)
+    lazy val httpStreamTransport   = new HttpPostTransport[ExampleRequestStream](PostStreamingEndpoint, contentType, () => None)
 
     lazy val rSocketResponseTransport = new RSocketTransportFactory[ExampleRequestResponse].transport(RSocketEndpoint, contentType)
     lazy val rSocketStreamTransport   = new RSocketTransportFactory[ExampleRequestStream].transport(RSocketEndpoint, contentType)

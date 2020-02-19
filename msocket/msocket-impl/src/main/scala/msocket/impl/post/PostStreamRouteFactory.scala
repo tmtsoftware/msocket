@@ -6,7 +6,7 @@ import io.bullet.borer.Decoder
 import msocket.api.ErrorProtocol
 import msocket.impl.RouteFactory
 
-class PostRouteFactory[Req: Decoder: ErrorProtocol](endpoint: String, postHandler: HttpPostHandler[Req])
+class PostStreamRouteFactory[Req: Decoder: ErrorProtocol](endpoint: String, postHandler: HttpStreamHandler[Req])
     extends RouteFactory
     with ServerHttpCodecs {
 
@@ -17,7 +17,7 @@ class PostRouteFactory[Req: Decoder: ErrorProtocol](endpoint: String, postHandle
       path(endpoint) {
         PostDirectives.withAcceptHeader {
           withExceptionHandler {
-            entity(as[Req])(postHandler.handle)
+            entity(as[Req])(x => complete(postHandler.handle(x)))
           }
         }
       }

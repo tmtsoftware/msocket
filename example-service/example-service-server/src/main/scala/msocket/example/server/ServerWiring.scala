@@ -4,14 +4,14 @@ import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.server.Route
 import csw.example.api.ExampleApi
-import csw.example.api.protocol.ExampleRequest.ExampleRequestStream
-import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
+import csw.example.api.protocol.ExampleCodecs
+import csw.example.api.protocol.ExampleRequest.{ExampleRequestResponse, ExampleRequestStream}
 import csw.example.impl.ExampleImpl
 import io.rsocket.RSocket
 import msocket.api.ContentType
 import msocket.example.server.handlers._
 import msocket.impl.RouteFactory
-import msocket.impl.post.PostRouteFactory
+import msocket.impl.post.{PostRouteFactory, PostStreamRouteFactory}
 import msocket.impl.rsocket.server.{RSocketImpl, RSocketServer}
 import msocket.impl.sse.SseRouteFactory
 import msocket.impl.ws.WebsocketRouteFactory
@@ -25,7 +25,8 @@ class ServerWiring extends ExampleCodecs {
 
   lazy val exampleImpl: ExampleApi = new ExampleImpl
 
-  lazy val postHandler: ExamplePostStreamingHandler                       = new ExamplePostStreamingHandler(exampleImpl)
+  lazy val postHandler: ExampleHttpPostHandler                            = new ExampleHttpPostHandler(exampleImpl)
+  lazy val postStreamHandler: ExampleHttpStreamHandler                    = new ExampleHttpStreamHandler(exampleImpl)
   lazy val sseHandler: ExampleSseHandler                                  = new ExampleSseHandler(exampleImpl)
   def websocketHandler(contentType: ContentType): ExampleWebsocketHandler = new ExampleWebsocketHandler(exampleImpl, contentType)
 
@@ -37,7 +38,8 @@ class ServerWiring extends ExampleCodecs {
     new RSocketImpl(requestResponseHandler, requestStreamHandler, contentType)
 
   lazy val applicationRoute: Route = RouteFactory.combine(
-    new PostRouteFactory[ExampleRequest]("post-endpoint", postHandler),
+    new PostRouteFactory[ExampleRequestResponse]("post-endpoint", postHandler),
+    new PostStreamRouteFactory[ExampleRequestStream]("post-streaming-endpoint", postStreamHandler),
     new WebsocketRouteFactory[ExampleRequestStream]("websocket-endpoint", websocketHandler),
     new SseRouteFactory[ExampleRequestStream]("sse-endpoint", sseHandler)
   )

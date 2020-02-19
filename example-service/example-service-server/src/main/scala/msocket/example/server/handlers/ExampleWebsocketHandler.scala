@@ -10,7 +10,8 @@ import msocket.api.ContentType
 import msocket.impl.ws.WebsocketHandler
 
 /**
- * A Websocket handler that will create routes for defined APIs in [[ExampleApi]]
+ * Implements WebsocketHandler for requestStream messages in the protocol
+ * These handlers receive message and responds with [[Source]] of [[Message]]
  */
 class ExampleWebsocketHandler(exampleApi: ExampleApi, contentType: ContentType)
     extends WebsocketHandler[ExampleRequestStream](contentType) {

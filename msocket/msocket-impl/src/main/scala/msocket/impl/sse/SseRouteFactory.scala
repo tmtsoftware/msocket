@@ -5,6 +5,7 @@ import akka.http.scaladsl.server.{Directive1, Route}
 import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.impl.RouteFactory
+import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling.toEventStream
 
 class SseRouteFactory[Req: Decoder](endpoint: String, sseHandler: SseHandler[Req]) extends RouteFactory {
 
@@ -16,7 +17,7 @@ class SseRouteFactory[Req: Decoder](endpoint: String, sseHandler: SseHandler[Req
     get {
       path(endpoint) {
         extractPayloadFromHeader { streamReq =>
-          sseHandler.handle(streamReq)
+          complete(sseHandler.handle(streamReq))
         }
       }
     }

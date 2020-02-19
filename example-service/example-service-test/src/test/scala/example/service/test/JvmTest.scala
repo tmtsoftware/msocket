@@ -6,8 +6,9 @@ import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.testkit.TestSubscriber.Probe
 import akka.stream.testkit.scaladsl.TestSink
 import csw.example.api.client.ExampleClient
+import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}
-import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
+import csw.example.api.protocol.ExampleRequest.{ExampleRequestResponse, ExampleRequestStream}
 import msocket.api.ContentType.{Cbor, Json}
 import msocket.api.Subscription
 import msocket.api.models.ServiceError
@@ -36,8 +37,8 @@ class JvmTest
 
   import wiring._
 
+  Await.result(exampleServer.start("0.0.0.0", 5000), 50.seconds)
   Await.result(rSocketServer.start("0.0.0.0", 7000), 50.seconds)
-  Await.result(exampleServer.start("0.0.0.0", 1111), 50.seconds)
 
   override protected def afterAll(): Unit = {
     rSocketServer.stop()
@@ -49,21 +50,30 @@ class JvmTest
 
   def makeProbe[T](implicit system: ActorSystem[_]): Sink[T, Probe[T]] = TestSink.probe[T](system.toClassic)
 
-  List(Json, Cbor).foreach { contentType =>
-    val httpPostTransport  = new HttpPostTransport[ExampleRequest]("http://localhost:1111/post-endpoint", contentType, () => None)
-    val websocketTransport = new WebsocketTransport[ExampleRequest]("ws://localhost:1111/websocket-endpoint", contentType)
-    val rSocketTransport   = new RSocketTransportFactory[ExampleRequest].transport("ws://localhost:7000", contentType)
-    val sseTransport       = new SseTransport[ExampleRequest]("http://localhost:1111/sse-endpoint")
+  val PostEndpoint      = "http://localhost:5000/post-endpoint"
+  val SseEndpoint       = "http://localhost:5000/sse-endpoint"
+  val WebsocketEndpoint = "ws://localhost:5000/websocket-endpoint"
+  val RSocketEndpoint   = "ws://localhost:7000"
 
-    List(httpPostTransport, rSocketTransport).foreach { transport =>
+  List(Json, Cbor).foreach { contentType =>
+    lazy val httpResponseTransport = new HttpPostTransport[ExampleRequestResponse](PostEndpoint, contentType, () => None)
+    lazy val httpStreamTransport   = new HttpPostTransport[ExampleRequestStream](PostEndpoint, contentType, () => None)
+
+    lazy val rSocketResponseTransport = new RSocketTransportFactory[ExampleRequestResponse].transport(RSocketEndpoint, contentType)
+    lazy val rSocketStreamTransport   = new RSocketTransportFactory[ExampleRequestStream].transport(RSocketEndpoint, contentType)
+
+    lazy val sseTransport       = new SseTransport[ExampleRequestStream](SseEndpoint)
+    lazy val websocketTransport = new WebsocketTransport[ExampleRequestStream](WebsocketEndpoint, contentType)
+
+    List(httpResponseTransport, rSocketResponseTransport).foreach { transport =>
       s"${transport.getClass.getSimpleName} and ${contentType.toString}" must {
         s"requestResponse" in {
-          val client = new ExampleClient(transport)
+          val client = new ExampleClient(transport, null)
           client.hello("John").futureValue shouldBe "Hello John"
         }
 
         s"requestResponse with domain error" in {
-          val client = new ExampleClient(transport)
+          val client = new ExampleClient(transport, null)
           val caught = intercept[HelloError] {
             Await.result(client.hello("idiot"), 3.second)
           }
@@ -71,7 +81,7 @@ class JvmTest
         }
 
         s"requestResponse expect generic error on fool" in {
-          val client = new ExampleClient(transport)
+          val client = new ExampleClient(transport, null)
           val caught = intercept[ServiceError] {
             Await.result(client.hello("fool"), 3.second)
           }
@@ -80,24 +90,14 @@ class JvmTest
       }
     }
 
-    s"websocketTransport and ${contentType.toString} contentType" must {
-      "requestResponse without timeout should give error" in {
-        val client: ExampleClient = new ExampleClient(websocketTransport)
-        val caught = intercept[RuntimeException] {
-          Await.result(client.hello("John"), 3.second)
-        }
-        caught.getMessage shouldBe "requestResponse protocol without timeout is not supported for this transport"
-      }
-    }
-
-    val bilingualTransports = List(rSocketTransport, websocketTransport)
-    val jsonOnlyTransports  = List(sseTransport, httpPostTransport)
+    val bilingualTransports = List(rSocketStreamTransport, websocketTransport)
+    val jsonOnlyTransports  = List(sseTransport, httpStreamTransport)
     val transports          = if (contentType == Json) bilingualTransports ++ jsonOnlyTransports else bilingualTransports
 
     transports.foreach { transport =>
       s"${transport.getClass.getSimpleName} and ${contentType.toString}" must {
         s"requestStream" in {
-          val client = new ExampleClient(transport)
+          val client = new ExampleClient(null, transport)
           client
             .getNumbers(12)
             .runWith(makeProbe)
@@ -106,7 +106,7 @@ class JvmTest
         }
 
         s"requestStream with interval" in {
-          val client = new ExampleClient(transport)
+          val client = new ExampleClient(null, transport)
           client
             .helloStream("John")
             .runWith(makeProbe)
@@ -117,7 +117,7 @@ class JvmTest
         }
 
         s"requestStream with domain error " in {
-          val client = new ExampleClient(transport)
+          val client = new ExampleClient(null, transport)
           client
             .getNumbers(-1)
             .runWith(makeProbe)
@@ -126,7 +126,7 @@ class JvmTest
         }
 
         s"requestStream subscription with cancellation " in {
-          val client                                            = new ExampleClient(transport)
+          val client                                            = new ExampleClient(null, transport)
           val source: Source[Int, Subscription]                 = client.getNumbers(3)
           val (subscription, probe): (Subscription, Probe[Int]) = source.toMat(makeProbe)(Keep.both).run()
           probe.request(2)

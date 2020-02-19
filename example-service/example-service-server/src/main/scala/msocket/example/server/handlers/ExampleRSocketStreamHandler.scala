@@ -10,12 +10,13 @@ import msocket.api.ContentType
 import msocket.impl.rsocket.server.RSocketStreamHandler
 
 /**
- * A RSocket handler that will create routes for RequestStream interaction model APIs in [[ExampleApi]]
+ * Implements RSocketStreamHandler for all requestStream messages in the protocol
+ * These handlers handle RSocket's requestStream interaction model and returns a [[Source]] of [[Payload]]
  */
 class ExampleRSocketStreamHandler(exampleApi: ExampleApi, contentType: ContentType)
     extends RSocketStreamHandler[ExampleRequestStream](contentType) {
   override def handle(message: ExampleRequestStream): Source[Payload, NotUsed] = message match {
-    case Square(number)          => futureAsStream(exampleApi.square(number))
+    case Square(number)          => stream(exampleApi.square(number))
     case HelloStream(name)       => stream(exampleApi.helloStream(name))
     case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
     case RandomBagStream         => stream(exampleApi.randomBagStream())

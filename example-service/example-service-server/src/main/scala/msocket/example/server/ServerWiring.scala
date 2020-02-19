@@ -4,6 +4,7 @@ import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.server.Route
 import csw.example.api.ExampleApi
+import csw.example.api.protocol.ExampleRequest.ExampleRequestStream
 import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
 import csw.example.impl.ExampleImpl
 import io.rsocket.RSocket
@@ -37,8 +38,8 @@ class ServerWiring extends ExampleCodecs {
 
   lazy val applicationRoute: Route = RouteFactory.combine(
     new PostRouteFactory[ExampleRequest]("post-endpoint", postHandler),
-    new WebsocketRouteFactory[ExampleRequest]("websocket-endpoint", websocketHandler),
-    new SseRouteFactory[ExampleRequest]("sse-endpoint", sseHandler)
+    new WebsocketRouteFactory[ExampleRequestStream]("websocket-endpoint", websocketHandler),
+    new SseRouteFactory[ExampleRequestStream]("sse-endpoint", sseHandler)
   )
 
   lazy val exampleServer = new ExampleServer(applicationRoute)(actorSystem)

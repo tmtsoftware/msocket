@@ -8,10 +8,12 @@ package csw.example.api.protocol
 sealed trait ExampleRequest
 
 object ExampleRequest {
+  // these messages are used for requestResponse interaction model
   sealed trait ExampleRequestResponse extends ExampleRequest
   case class Hello(name: String)      extends ExampleRequestResponse
   case object RandomBag               extends ExampleRequestResponse
 
+  // these messages are used for requestStream interaction model
   sealed trait ExampleRequestStream       extends ExampleRequest
   case class HelloStream(name: String)    extends ExampleRequestStream
   case class Square(number: Int)          extends ExampleRequestStream

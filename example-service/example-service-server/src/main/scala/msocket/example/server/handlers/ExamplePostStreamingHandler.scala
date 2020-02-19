@@ -9,18 +9,19 @@ import csw.example.api.protocol.ExampleRequest.{GetNumbers, Hello, HelloStream, 
 import msocket.impl.post.{HttpPostHandler, ServerHttpCodecs}
 
 /**
- * A HTTP handler that will create routes for defined APIs in [[ExampleApi]]
- *
- * This extends the [[HttpPostHandler]] and leverages its stream functionality for APIs
- * that return streaming response
+ * Implements HttpPostHandler for all messages in the protocol (requestResponse + requestStream)
+ * These handlers receive POST requests and responds via [[Route]] instance
  */
 class ExamplePostStreamingHandler(exampleApi: ExampleApi) extends HttpPostHandler[ExampleRequest] with ServerHttpCodecs {
   override def handle(request: ExampleRequest): Route = request match {
-    case Hello(name)             => complete(exampleApi.hello(name))
-    case Square(number)          => complete(futureAsStream(exampleApi.square(number)))
+    // requestResponse interactions
+    case Hello(name) => complete(exampleApi.hello(name))
+    case RandomBag   => complete(exampleApi.randomBag())
+
+    // requestStream interactions
+    case Square(number)          => complete(stream(exampleApi.square(number))) // streams a Future returned by square, see square API docs
     case HelloStream(name)       => complete(stream(exampleApi.helloStream(name)))
     case GetNumbers(divisibleBy) => complete(stream(exampleApi.getNumbers(divisibleBy)))
-    case RandomBag               => complete(exampleApi.randomBag())
     case RandomBagStream         => complete(stream(exampleApi.randomBagStream()))
   }
 }

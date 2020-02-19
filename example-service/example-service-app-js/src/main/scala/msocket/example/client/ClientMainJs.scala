@@ -2,7 +2,8 @@ package msocket.example.client
 
 import akka.actor.typed.ActorSystem
 import csw.example.api.client.ExampleClient
-import csw.example.api.protocol.{ExampleCodecs, ExampleRequest}
+import csw.example.api.protocol.ExampleCodecs
+import csw.example.api.protocol.ExampleRequest.{ExampleRequestResponse, ExampleRequestStream}
 import msocket.api.ContentType.{Cbor, Json}
 import msocket.impl.post.HttpPostTransportJs
 import msocket.impl.rsocket.RSocketTransportJs
@@ -19,13 +20,21 @@ object ClientMainJs extends ExampleCodecs {
     implicit val streamingDelay: FiniteDuration = 1.second
     implicit val actorSystem: ActorSystem[Any]  = new ActorSystem
 
-    lazy val httpPostTransport = new HttpPostTransportJs[ExampleRequest]("http://localhost:5000/post-endpoint", Json).logRequestResponse()
-    lazy val sseTransport      = new SseTransportJs[ExampleRequest]("http://localhost:5000/sse-endpoint").logRequestResponse()
-    lazy val websocketTransport =
-      new WebsocketTransportJs[ExampleRequest]("ws://localhost:5000/websocket-endpoint", Cbor).logRequestResponse()
-    lazy val rSocketTransport = new RSocketTransportJs[ExampleRequest, Cbor.type]("ws://localhost:7000").logRequestResponse()
+    val PostEndpoint      = "http://localhost:5000/post-endpoint"
+    val SseEndpoint       = "http://localhost:5000/sse-endpoint"
+    val WebsocketEndpoint = "ws://localhost:5000/websocket-endpoint"
+    val RSocketEndpoint   = "ws://localhost:7000"
 
-    val exampleClient = new ExampleClient(rSocketTransport)
+    lazy val httpResponseTransport = new HttpPostTransportJs[ExampleRequestResponse](PostEndpoint, Json)
+    lazy val httpStreamTransport   = new HttpPostTransportJs[ExampleRequestStream](PostEndpoint, Json)
+
+    lazy val rSocketResponseTransport = new RSocketTransportJs[ExampleRequestResponse, Cbor.type](RSocketEndpoint)
+    lazy val rSocketStreamTransport   = new RSocketTransportJs[ExampleRequestStream, Cbor.type](RSocketEndpoint)
+
+    lazy val sseTransport       = new SseTransportJs[ExampleRequestStream](SseEndpoint)
+    lazy val websocketTransport = new WebsocketTransportJs[ExampleRequestStream](WebsocketEndpoint, Json)
+
+    val exampleClient = new ExampleClient(rSocketResponseTransport, rSocketStreamTransport)
     new ClientAppJs(exampleClient).testRun()
   }
 }

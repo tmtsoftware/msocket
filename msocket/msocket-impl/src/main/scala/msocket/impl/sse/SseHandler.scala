@@ -10,7 +10,7 @@ import msocket.impl.ServerStreamingSupport
 import scala.concurrent.duration.DurationLong
 
 /**
- * This helper class can be extended to define custom SSe routes[[akka.http.scaladsl.server.StandardRoute]] handler in the server.
+ * This helper class can be extended to define custom SSE handler in the server which returns [[Source]] of [[ServerSentEvent]].
  * SseHandler takes a request type which will be bound to Domain specific error using ErrorProtocol.
  */
 abstract class SseHandler[Req: ErrorProtocol]

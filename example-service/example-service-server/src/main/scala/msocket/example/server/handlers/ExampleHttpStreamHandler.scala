@@ -8,8 +8,8 @@ import csw.example.api.protocol.ExampleRequest._
 import msocket.impl.post.{FetchEvent, HttpStreamHandler, ServerHttpCodecs}
 
 /**
- * Implements HttpPostHandler for all messages in the protocol (requestResponse + requestStream)
- * These handlers receive POST requests and responds via [[Route]] instance
+ * Implements HttpPostHandler for all requestStream messages in the protocol
+ * These handlers receive POST requests and responds via [[Source]] of [[FetchEvent]] instance
  */
 class ExampleHttpStreamHandler(exampleApi: ExampleApi) extends HttpStreamHandler[ExampleRequestStream] with ServerHttpCodecs {
   override def handle(request: ExampleRequestStream): Source[FetchEvent, NotUsed] = request match {

@@ -8,7 +8,7 @@ import csw.example.api.protocol.ExampleRequest.{ExampleRequestResponse, Hello, R
 import msocket.impl.post.{HttpPostHandler, ServerHttpCodecs}
 
 /**
- * Implements HttpPostHandler for all messages in the protocol (requestResponse + requestStream)
+ * Implements HttpPostHandler for all requestResponse messages in the protocol
  * These handlers receive POST requests and responds via [[Route]] instance
  */
 class ExampleHttpPostHandler(exampleApi: ExampleApi) extends HttpPostHandler[ExampleRequestResponse] with ServerHttpCodecs {

@@ -9,8 +9,8 @@ import msocket.impl.ServerStreamingSupport
 import scala.concurrent.duration.DurationLong
 
 /**
- * This helper class can be extended to define custom HTTP routes[[Route]] handler in the server.
- * HttpPostHandler takes a request type which will be bound to Domain specific error using ErrorProtocol.
+ * This helper class can be extended to define custom HTTP streaming source handler in the server.
+ * HttpStreamHandler takes a request type which will be bound to Domain specific error using ErrorProtocol.
  */
 abstract class HttpStreamHandler[Req: ErrorProtocol]
     extends ServerStreamingSupport[Req, FetchEvent](new FetchEventEncoder[Req])

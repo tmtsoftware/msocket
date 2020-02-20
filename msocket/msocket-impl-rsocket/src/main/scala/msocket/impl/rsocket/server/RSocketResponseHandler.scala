@@ -22,6 +22,9 @@ abstract class RSocketResponseHandler[Req: ErrorProtocol](contentType: ContentTy
   override def encode[Res: Encoder](response: Res): Payload = contentType.payload(response)
 }
 
+/**
+ * to be added
+ */
 object RSocketResponseHandler {
   def Missing(contentType: ContentType): RSocketResponseHandler[Unit] = {
     new RSocketResponseHandler[Unit](contentType)(ErrorProtocol.bind[Unit, ServiceError]) {

@@ -1,5 +1,6 @@
 package msocket.impl.rsocket.server
 
+import io.bullet.borer.Dom.Element
 import io.bullet.borer.Encoder
 import io.rsocket.Payload
 import msocket.api.models.ServiceError
@@ -26,9 +27,9 @@ abstract class RSocketResponseHandler[Req: ErrorProtocol](contentType: ContentTy
  * to be added
  */
 object RSocketResponseHandler {
-  def Missing(contentType: ContentType): RSocketResponseHandler[Unit] = {
-    new RSocketResponseHandler[Unit](contentType)(ErrorProtocol.bind[Unit, ServiceError]) {
-      override def handle(request: Unit): Future[Payload] = Future.failed(new RuntimeException("missing response handler"))
+  val Missing: ContentType => RSocketResponseHandler[Element] = { contentType =>
+    new RSocketResponseHandler[Element](contentType)(ErrorProtocol.bind[Element, ServiceError]) {
+      override def handle(request: Element): Future[Payload] = Future.failed(new RuntimeException("missing response handler"))
     }
   }
 }

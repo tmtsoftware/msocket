@@ -13,3 +13,5 @@ jobs:
           java-version: adopt@1.11
       - name: Compile
         run: sbt clean test:compile
+      - name: Run tests
+          run: sbt test:test

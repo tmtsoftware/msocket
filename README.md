@@ -1,3 +1,5 @@
+![CI](https://github.com/tmtsoftware/msocket/workflows/CI/badge.svg?branch=master) &nbsp;&nbsp;
+![CI](https://github.com/tmtsoftware/msocket/workflows/CI/badge.svg?branch=master&event=release)
 
 What is MSocket?
 ---------------

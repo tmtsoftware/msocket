@@ -27,14 +27,14 @@ case class Book(name: String) extends WithMessage {
 class WithMessageTest extends AnyFunSuite {
   implicit lazy val bookCodec: Codec[Book] = WithMessage.codec(CompactMapBasedCodecs.deriveCodec)
 
-  test("json") {
+  ignore("json") {
     val utf8String = Json.encode(Book("abc")).toUtf8String
     println(utf8String)
     val book = Json.decode(utf8String.getBytes()).to[Book].value
     println(book)
   }
 
-  test("cbor") {
+  ignore("cbor") {
     val bytes = Cbor.encode(Book("abc")).toByteArray
     println(bytes)
     val book = Cbor.decode(bytes).to[Book].value

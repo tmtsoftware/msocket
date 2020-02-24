@@ -41,7 +41,7 @@ class ServerRouteTests extends AnyFunSuite with ScalatestRouteTest with Matchers
 
   test("http-streaming") {
     implicit val timeout: RouteTestTimeout = RouteTestTimeout(10.seconds.dilated)
-    Post("/post-endpoint", HelloStream("mushtaq"): ExampleRequest) ~> wiring.exampleServer.routesWithCors ~> check {
+    Post("/post-streaming-endpoint", HelloStream("mushtaq"): ExampleRequest) ~> wiring.exampleServer.routesWithCors ~> check {
       responseAs[Source[FetchEvent, NotUsed]].take(3).runForeach(println)
     }
   }

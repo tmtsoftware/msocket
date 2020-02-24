@@ -14,4 +14,4 @@ jobs:
       - name: Compile
         run: sbt clean test:compile
       - name: Run tests
-          run: sbt test:test
+        run: sbt test:test

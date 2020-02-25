@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive0, ExceptionHandler, Route}
 import io.bullet.borer.Decoder
 import io.prometheus.client.Counter
-import msocket.api.{ErrorProtocol, Labellable}
+import msocket.api.{ErrorProtocol, Labelled}
 import msocket.impl.post.ServerHttpCodecs._
 
 object PostDirectives {
@@ -19,16 +19,14 @@ object PostDirectives {
     }
   }
 
-  def withMetrics[Req: Decoder: ErrorProtocol](counter: Counter)(handle: Req => Route)(implicit labels: Req => Labellable[Req]): Route =
-    extractRequest { request =>
-      val hostAddress = request.uri.authority.host.address
+  def withMetrics[Req: Decoder: ErrorProtocol](counter: Counter)(handle: Req => Route)(implicit labelGen: Req => Labelled[Req]): Route =
+    extractRequest { httpRequest =>
+      val hostAddress = httpRequest.uri.authority.host.address
 
       entity(as[Req]) { req =>
-        val labelValues = labels(req).metricLabels().labels
-        val msgValue    = labelValues("msg")
-        val updated     = labelValues.removed("msg").values
+        val labels = labelGen(req).labels().withHost(hostAddress).labelValues
 
-        counter.labels(List(msgValue, hostAddress) ++ updated: _*)
+        counter.labels(labels: _*).inc()
         handle(req)
       }
     }

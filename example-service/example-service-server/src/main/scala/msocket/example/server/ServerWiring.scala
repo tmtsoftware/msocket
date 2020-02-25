@@ -2,6 +2,7 @@ package msocket.example.server
 
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
+import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleCodecs
@@ -10,8 +11,7 @@ import csw.example.impl.ExampleImpl
 import io.rsocket.RSocket
 import msocket.api.ContentType
 import msocket.example.server.handlers._
-import msocket.impl.RouteFactory
-import msocket.impl.post.{PostRouteFactory, PostStreamRouteFactory}
+import msocket.impl.post.{PostRouteFactory1, PostStreamRouteFactory}
 import msocket.impl.rsocket.server.{RSocketImpl, RSocketServer}
 import msocket.impl.sse.SseRouteFactory
 import msocket.impl.ws.WebsocketRouteFactory
@@ -37,12 +37,11 @@ class ServerWiring extends ExampleCodecs {
   def rSocketFactory(contentType: ContentType): RSocket =
     new RSocketImpl(requestResponseHandler, requestStreamHandler, contentType)
 
-  lazy val applicationRoute: Route = RouteFactory.combine(
-    new PostRouteFactory[ExampleRequestResponse]("post-endpoint", postHandler),
-    new PostStreamRouteFactory[ExampleRequestStream]("post-streaming-endpoint", postStreamHandler),
-    new WebsocketRouteFactory[ExampleRequestStream]("websocket-endpoint", websocketHandler),
-    new SseRouteFactory[ExampleRequestStream]("sse-endpoint", sseHandler)
-  )
+  lazy val applicationRoute: Route =
+    new PostRouteFactory1[ExampleRequestResponse]("post-endpoint", postHandler).make(List("appName")) ~
+      new PostStreamRouteFactory[ExampleRequestStream]("post-streaming-endpoint", postStreamHandler).make() ~
+      new WebsocketRouteFactory[ExampleRequestStream]("websocket-endpoint", websocketHandler).make() ~
+      new SseRouteFactory[ExampleRequestStream]("sse-endpoint", sseHandler).make()
 
   lazy val exampleServer = new ExampleServer(applicationRoute)(actorSystem)
   lazy val rSocketServer = new RSocketServer(rSocketFactory)

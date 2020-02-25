@@ -26,7 +26,8 @@ object Libs {
   val `eventsource`              = dep("com.github.tmtsoftware.tmt-typed" %%% "eventsource"              % "afadaa6")
   val `rsocket-websocket-client` = dep("com.github.tmtsoftware.tmt-typed" %%% "rsocket-websocket-client" % "afadaa6")
 
-  val `rsocket-core`            = "io.rsocket"                 % "rsocket-core"            % "1.0.0-RC5"
-  val `rsocket-transport-netty` = "io.rsocket"                 % "rsocket-transport-netty" % "1.0.0-RC5"
-}
+  val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % "1.0.0-RC5"
+  val `rsocket-transport-netty` = "io.rsocket" % "rsocket-transport-netty" % "1.0.0-RC5"
 
+  val `prometheus-akka-http` = "com.lonelyplanet" %% "prometheus-akka-http" % "0.5.0"
+}

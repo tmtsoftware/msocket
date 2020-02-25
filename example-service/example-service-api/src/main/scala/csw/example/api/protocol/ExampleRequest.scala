@@ -1,5 +1,10 @@
 package csw.example.api.protocol
 
+import msocket.api.Labellable
+import msocket.api.models.MetricLabels
+
+import scala.reflect.ClassTag
+
 /**
  * Transport agnostic message protocol is defined as a Scala ADT
  * For each API method, there needs to be a matching message in this ADT
@@ -12,6 +17,17 @@ object ExampleRequest {
   sealed trait ExampleRequestResponse extends ExampleRequest
   case class Hello(name: String)      extends ExampleRequestResponse
   case object RandomBag               extends ExampleRequestResponse
+
+  object ExampleRequestResponse {
+    implicit val labellable: ExampleRequestResponse => Labellable[ExampleRequestResponse] =
+      req =>
+        Labellable.make {
+          req match {
+            case Hello(_)  => Map("msg" -> "Hello", "appName"     -> "Example")
+            case RandomBag => Map("msg" -> "RandomBag", "appName" -> "Example")
+          }
+        }
+  }
 
   // these messages are used for requestStream interaction model
   sealed trait ExampleRequestStream       extends ExampleRequest

@@ -12,7 +12,8 @@ inThisBuild(
     organizationName := "ThoughtWorks",
     resolvers ++= Seq(
       Resolver.jcenterRepo,
-      "jitpack" at "https://jitpack.io"
+      "jitpack" at "https://jitpack.io",
+      Resolver.bintrayRepo("lonelyplanet", "maven")
     ),
     scalafmtOnCompile := true,
     scalacOptions ++= Seq(
@@ -79,7 +80,8 @@ lazy val `msocket-impl` = project
   .settings(
     libraryDependencies ++= Seq(
       `akka-http`,
-      `borer-compat-akka`
+      `borer-compat-akka`,
+      `prometheus-akka-http`
     )
   )
 

@@ -5,7 +5,7 @@ final case class MetricLabels(labelNames: List[String], labels: Map[String, Stri
 
   def get(labelName: String): String = labels.getOrElse(labelName, "")
 
-  def withHost(address: String): MetricLabels = copy(labelNames, labels + (HostAddressLabel -> address))
+  def withHost(address: String): MetricLabels = copy(labels = labels + (HostAddressLabel -> address))
 
   def labelValues: List[String] = labelNames.map(get)
 }

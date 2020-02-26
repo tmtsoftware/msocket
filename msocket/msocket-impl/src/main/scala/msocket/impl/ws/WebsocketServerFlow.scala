@@ -9,6 +9,7 @@ import io.prometheus.client.Gauge
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentEncoding, ContentType, Labelled}
 import msocket.impl.CborByteString
+import msocket.impl.metrics.WebsocketMetrics
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
@@ -43,25 +44,7 @@ class WebsocketServerFlow[T: Decoder](
       .flatMapConcat(handler.handle)
       .recover(handler.errorEncoder)
 
-    if (metricsEnabled) sourceWithMetrics(source, reqF)
-    else source
-
-  }
-
-  private def sourceWithMetrics(source: Source[Message, NotUsed], req: Future[T]): Source[Message, NotUsed] = {
-    val child = labelledGauge(req)
-    child.map(_.inc())
-    source.watchTermination() {
-      case (mat, completion) =>
-        completion.onComplete(_ => child.map(_.dec()))
-        mat
-    }
-  }
-
-  private def labelledGauge(reqF: Future[T]): Future[Gauge.Child] = reqF.map { req =>
-    val labelValues = labelGen(req).labels().withHost(hostAddress).labelValues
-    val child       = gauge.labels(labelValues: _*)
-    child
+    WebsocketMetrics.streamMetrics(source, reqF, metricsEnabled, gauge, hostAddress)
   }
 
 }

@@ -44,7 +44,7 @@ class WebsocketServerFlow[T: Decoder](
       .flatMapConcat(handler.handle)
       .recover(handler.errorEncoder)
 
-    WebsocketMetrics.streamMetrics(source, reqF, metricsEnabled, gauge, hostAddress)
+    WebsocketMetrics.wsMetrics(source, reqF, metricsEnabled, gauge, hostAddress)
   }
 
 }

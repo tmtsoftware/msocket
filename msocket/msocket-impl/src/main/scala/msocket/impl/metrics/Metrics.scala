@@ -1,15 +1,16 @@
 package msocket.impl.metrics
 
 import akka.NotUsed
-import akka.actor.typed.ActorSystem
-import akka.http.scaladsl.model.ws.Message
-import akka.http.scaladsl.server.Directives.{as, entity, extractRequest}
+import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling.toEventStream
+import akka.http.scaladsl.model.sse.ServerSentEvent
+import akka.http.scaladsl.server.Directives.{as, complete, entity, extractRequest}
 import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.Source
 import com.lonelyplanet.prometheus.PrometheusResponseTimeRecorder
 import com.lonelyplanet.prometheus.api.MetricsEndpoint
 import io.bullet.borer.Decoder
 import io.prometheus.client.{CollectorRegistry, Counter, Gauge}
+import msocket.api.models.MetricLabels
 import msocket.api.{ErrorProtocol, Labelled}
 import msocket.impl.post.ServerHttpCodecs._
 
@@ -22,20 +23,20 @@ trait Metrics {
 
   val metricsRoute: Route = new MetricsEndpoint(prometheusRegistry).routes
 
-  def counter(metricName: String, help: String, labelNames: String*): Counter =
+  def counter(metricName: String, help: String, labelNames: List[String]): Counter =
     Counter
       .build()
       .name(metricName)
       .help(help)
-      .labelNames(labelNames: _*)
+      .labelNames(MetricLabels.DefaultLabels ++ labelNames: _*)
       .register(prometheusRegistry)
 
-  def gauge(metricName: String, help: String, labelNames: String*): Gauge =
+  def gauge(metricName: String, help: String, labelNames: List[String]): Gauge =
     Gauge
       .build()
       .name(metricName)
       .help(help)
-      .labelNames(labelNames: _*)
+      .labelNames(MetricLabels.DefaultLabels ++ labelNames: _*)
       .register(prometheusRegistry)
 
   def routeMetrics[Req: Decoder: ErrorProtocol](metricsEnabled: Boolean, counter: => Counter)(
@@ -52,15 +53,14 @@ trait Metrics {
         } else entity(as[Req])(handle)
     }
 
-  def streamMetrics[T: Decoder](
-      source: Source[Message, NotUsed],
+  def wsMetrics[Msg, T: Decoder](
+      source: Source[Msg, NotUsed],
       reqF: Future[T],
       metricsEnabled: Boolean,
       gauge: => Gauge,
       hostAddress: String
-  )(implicit actorSystem: ActorSystem[_], labelGen: T => Labelled[T]): Source[Message, NotUsed] =
+  )(implicit ec: ExecutionContext, labelGen: T => Labelled[T]): Source[Msg, NotUsed] =
     if (metricsEnabled) {
-      import actorSystem.executionContext
       val child = labelledGauge(reqF, gauge, hostAddress)
       child.map(_.inc())
       source.watchTermination() {
@@ -78,4 +78,26 @@ trait Metrics {
     val child       = gauge.labels(labelValues: _*)
     child
   }
+
+  def sseMetrics[Req: Decoder](req: Req, source: Source[ServerSentEvent, NotUsed], metricsEnabled: Boolean, gauge: => Gauge)(
+      implicit labelGen: Req => Labelled[Req],
+      ec: ExecutionContext
+  ): Route =
+    if (metricsEnabled) {
+      extractRequest { httpRequest =>
+        val hostAddress = httpRequest.uri.authority.host.address
+
+        val labelValues = labelGen(req).labels().withHost(hostAddress).labelValues
+        val child       = gauge.labels(labelValues: _*)
+        child.inc()
+        complete {
+          source
+            .watchTermination() {
+              case (mat, completion) =>
+                completion.onComplete(_ => child.dec())
+                mat
+            }
+        }
+      }
+    } else complete(source)
 }

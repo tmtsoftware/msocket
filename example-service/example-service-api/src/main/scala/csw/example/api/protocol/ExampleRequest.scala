@@ -18,7 +18,7 @@ object ExampleRequest {
   object ExampleRequestResponse {
     private val appName = "appName"
 
-    implicit val labelNames: LabelNames[ExampleRequestResponse] = LabelNames.withDefault(appName)
+    implicit val labelNames: LabelNames[ExampleRequestResponse] = LabelNames.make(appName)
 
     implicit val labelled: ExampleRequestResponse => Labelled[ExampleRequestResponse] =
       Labelled.withDefault {

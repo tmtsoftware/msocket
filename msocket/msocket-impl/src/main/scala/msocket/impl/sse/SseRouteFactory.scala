@@ -15,7 +15,7 @@ class SseRouteFactory[Req: Decoder: LabelNames](endpoint: String, sseHandler: Ss
   }
 
   def make(metricsEnabled: Boolean = false)(implicit labelGen: Req => Labelled[Req]): Route = {
-    lazy val gauge = sseGauge(LabelNames[Req].names())
+    lazy val gauge = sseGauge(LabelNames[Req].get)
 
     get {
       path(endpoint) {

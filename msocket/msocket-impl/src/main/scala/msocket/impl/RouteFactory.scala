@@ -1,12 +1,8 @@
 package msocket.impl
 
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.Directives._
+import msocket.api.Labelled
 
-trait RouteFactory {
-  def make(): Route
-}
-
-object RouteFactory {
-  def combine(factory: RouteFactory, factories: RouteFactory*): Route = factories.foldLeft(factory.make())(_ ~ _.make())
+trait RouteFactory[T] {
+  def make(labelNames: List[String], metricsEnabled: Boolean)(implicit labelGen: T => Labelled[T]): Route
 }

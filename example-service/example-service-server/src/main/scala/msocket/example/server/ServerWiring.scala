@@ -11,7 +11,8 @@ import csw.example.impl.ExampleImpl
 import io.rsocket.RSocket
 import msocket.api.ContentType
 import msocket.example.server.handlers._
-import msocket.impl.post.{PostRouteFactory1, PostStreamRouteFactory}
+import msocket.impl.metrics.Metrics
+import msocket.impl.post.{PostRouteFactory, PostStreamRouteFactory}
 import msocket.impl.rsocket.server.{RSocketImpl, RSocketServer}
 import msocket.impl.sse.SseRouteFactory
 import msocket.impl.ws.WebsocketRouteFactory
@@ -38,10 +39,11 @@ class ServerWiring extends ExampleCodecs {
     new RSocketImpl(requestResponseHandler, requestStreamHandler, contentType)
 
   lazy val applicationRoute: Route =
-    new PostRouteFactory1[ExampleRequestResponse]("post-endpoint", postHandler).make(List("appName")) ~
+    new PostRouteFactory[ExampleRequestResponse]("post-endpoint", postHandler).make(List("appName"), metricsEnabled = true) ~
       new PostStreamRouteFactory[ExampleRequestStream]("post-streaming-endpoint", postStreamHandler).make() ~
-      new WebsocketRouteFactory[ExampleRequestStream]("websocket-endpoint", websocketHandler).make() ~
-      new SseRouteFactory[ExampleRequestStream]("sse-endpoint", sseHandler).make()
+      new WebsocketRouteFactory[ExampleRequestStream]("websocket-endpoint", websocketHandler).make(metricsEnabled = true) ~
+      new SseRouteFactory[ExampleRequestStream]("sse-endpoint", sseHandler).make() ~
+      Metrics.metricsRoute
 
   lazy val exampleServer = new ExampleServer(applicationRoute)(actorSystem)
   lazy val rSocketServer = new RSocketServer(rSocketFactory)

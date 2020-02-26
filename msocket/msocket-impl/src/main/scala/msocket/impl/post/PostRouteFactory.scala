@@ -23,7 +23,7 @@ class PostRouteFactory[Req: Decoder: ErrorProtocol: LabelNames](endpoint: String
       path(endpoint) {
         PostDirectives.withAcceptHeader {
           withExceptionHandler {
-            routeMetrics(metricsEnabled, counter)(postHandler.handle)
+            httpMetrics(metricsEnabled, counter)(postHandler.handle)
           }
         }
       }

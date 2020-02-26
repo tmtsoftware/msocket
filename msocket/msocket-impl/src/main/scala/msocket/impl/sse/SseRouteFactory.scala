@@ -1,7 +1,9 @@
 package msocket.impl.sse
 
-import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling.toEventStream
+import akka.http.scaladsl.server.Directives.{complete, _}
 import akka.http.scaladsl.server.{Directive1, Route}
+import akka.http.scaladsl.server.directives.HostDirectives.extractHost
 import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{LabelNames, Labelled}
@@ -21,8 +23,10 @@ class SseRouteFactory[Req: Decoder: LabelNames](endpoint: String, sseHandler: Ss
       path(endpoint) {
         extractPayloadFromHeader { streamReq =>
           extractExecutionContext { implicit ec =>
-            val source = sseHandler.handle(streamReq)
-            sseMetrics(streamReq, source, metricsEnabled, gauge)
+            extractHost { address =>
+              val source = sseHandler.handle(streamReq)
+              complete(withMetrics(source, streamReq, metricsEnabled, gauge, address))
+            }
           }
         }
       }

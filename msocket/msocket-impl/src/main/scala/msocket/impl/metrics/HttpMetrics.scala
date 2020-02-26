@@ -20,15 +20,15 @@ trait HttpMetrics extends Metrics {
       labelNames = labelNames
     )
 
-  def httpMetrics[Req: Decoder: ErrorProtocol](metricsEnabled: Boolean, counter: => Counter)(
-    handle: Req => Route
+  def withHttpMetrics[Req: Decoder: ErrorProtocol](metricsEnabled: Boolean, counter: => Counter)(
+      handle: Req => Route
   )(implicit labelGen: Req => Labelled[Req]): Route =
-    extractHost { address =>
-      if (metricsEnabled)
+    if (metricsEnabled)
+      extractHost { address =>
         entity(as[Req]) { req =>
           val labels = labelValues(labelGen(req), address)
           counter.labels(labels: _*).inc()
           handle(req)
-        } else entity(as[Req])(handle)
-    }
+        }
+      } else entity(as[Req])(handle)
 }

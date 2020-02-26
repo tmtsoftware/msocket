@@ -9,7 +9,7 @@ import io.prometheus.client.Gauge
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentEncoding, ContentType, Labelled}
 import msocket.impl.CborByteString
-import msocket.impl.metrics.WebsocketMetrics
+import msocket.impl.metrics.Metrics.withMetrics
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
@@ -35,16 +35,18 @@ class WebsocketServerFlow[T: Decoder](
       }
   }
 
-  private def handle[E](element: E, contentEncoding: ContentEncoding[E]): Source[Message, NotUsed] = {
+  private def handle[E](element: E, contentEncoding: ContentEncoding[E]): Source[Message, Future[NotUsed]] = {
     val handler = messageHandler(contentEncoding.contentType)
-    val reqF    = Future(contentEncoding.decode[T](element))
+    Source.futureSource(
+      Future(contentEncoding.decode[T](element)).map { req =>
+        val source = Source
+          .single(req)
+          .flatMapConcat(handler.handle)
+          .recover(handler.errorEncoder)
 
-    val source = Source
-      .future(reqF)
-      .flatMapConcat(handler.handle)
-      .recover(handler.errorEncoder)
-
-    WebsocketMetrics.wsMetrics(source, reqF, metricsEnabled, gauge, hostAddress)
+        withMetrics(source, req, metricsEnabled, gauge, hostAddress)
+      }
+    )
   }
 
 }

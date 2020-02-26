@@ -20,12 +20,9 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: LabelNames](
 
   def make(metricsEnabled: Boolean = false)(implicit labelGen: Req => Labelled[Req]): Route = {
     lazy val gauge = websocketGauge(LabelNames[Req].get)
-
     get {
       path(endpoint) {
-        extractRequest { httpRequest =>
-          val hostAddress = httpRequest.uri.authority.host.address
-
+        extractHost { hostAddress =>
           handleWebSocketMessages {
             new WebsocketServerFlow(websocketHandler, metricsEnabled, gauge, hostAddress).flow
           }

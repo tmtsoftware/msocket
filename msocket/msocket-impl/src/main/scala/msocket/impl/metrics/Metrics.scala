@@ -9,7 +9,7 @@ import io.bullet.borer.Decoder
 import io.prometheus.client.{CollectorRegistry, Counter, Gauge}
 import msocket.api.Labelled
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 object Metrics extends Metrics
 
@@ -34,22 +34,25 @@ trait Metrics {
       .labelNames(labelNames: _*)
       .register(prometheusRegistry)
 
-  private[metrics] def labelledGauge[T: Decoder](reqF: Future[T], gauge: => Gauge, hostAddress: String)(
-      implicit ec: ExecutionContext,
-      labelGen: T => Labelled[T]
-  ): Future[Gauge.Child] = reqF.map { req =>
-    val values = labelValues(labelGen(req), hostAddress)
-    gauge.labels(values: _*)
-  }
-
-  private[metrics] def onTermination[T](source: Source[T, NotUsed], onCompletion: () => Unit)(implicit ec: ExecutionContext) =
-    source.watchTermination() {
-      case (mat, completion) =>
-        completion.onComplete(_ => onCompletion())
-        mat
-    }
+  def withMetrics[Msg, Req: Decoder](
+      source: Source[Msg, NotUsed],
+      req: Req,
+      metricsEnabled: Boolean,
+      gauge: => Gauge,
+      hostAddress: String
+  )(implicit ec: ExecutionContext, labelGen: Req => Labelled[Req]): Source[Msg, NotUsed] =
+    if (metricsEnabled) {
+      val values = labelValues(labelGen(req), hostAddress)
+      val child  = gauge.labels(values: _*)
+      child.inc()
+      source.watchTermination() {
+        case (mat, completion) =>
+          completion.onComplete(_ => child.dec())
+          mat
+      }
+    } else source
 
   private[metrics] def labelValues[T](labelled: Labelled[T], address: String) =
-    labelled.labels().withHost(address).labelValues
+    labelled.labels().withHost(address).values
 
 }

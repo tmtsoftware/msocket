@@ -1,13 +1,13 @@
 package msocket.api.models
 
-final case class MetricLabels(labelNames: List[String], labels: Map[String, String]) {
+final case class MetricLabels(labelNames: List[String], private val labels: Map[String, String]) {
   import MetricLabels._
 
   def get(labelName: String): String = labels.getOrElse(labelName, "")
 
   def withHost(address: String): MetricLabels = copy(labels = labels + (HostAddressLabel -> address))
 
-  def labelValues: List[String] = labelNames.map(get)
+  def values: List[String] = labelNames.map(get)
 }
 
 object MetricLabels {

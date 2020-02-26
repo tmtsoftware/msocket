@@ -15,15 +15,12 @@ class PostRouteFactory[Req: Decoder: ErrorProtocol: LabelNames](endpoint: String
   private val withExceptionHandler: Directive0 = PostDirectives.exceptionHandlerFor[Req]
 
   def make(metricsEnabled: Boolean = false)(implicit labelGen: Req => Labelled[Req]): Route = {
-    val labelNames = LabelNames[Req].get
-    println(labelNames.mkString(","))
-    lazy val counter = httpCounter(labelNames)
-
+    lazy val counter = httpCounter(LabelNames[Req].get)
     post {
       path(endpoint) {
         PostDirectives.withAcceptHeader {
           withExceptionHandler {
-            httpMetrics(metricsEnabled, counter)(postHandler.handle)
+            withHttpMetrics(metricsEnabled, counter)(postHandler.handle)
           }
         }
       }

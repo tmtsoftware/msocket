@@ -10,7 +10,6 @@ import com.lonelyplanet.prometheus.PrometheusResponseTimeRecorder
 import com.lonelyplanet.prometheus.api.MetricsEndpoint
 import io.bullet.borer.Decoder
 import io.prometheus.client.{CollectorRegistry, Counter, Gauge}
-import msocket.api.models.MetricLabels
 import msocket.api.{ErrorProtocol, Labelled}
 import msocket.impl.post.ServerHttpCodecs._
 
@@ -28,7 +27,7 @@ trait Metrics {
       .build()
       .name(metricName)
       .help(help)
-      .labelNames(MetricLabels.DefaultLabels ++ labelNames: _*)
+      .labelNames(labelNames: _*)
       .register(prometheusRegistry)
 
   def gauge(metricName: String, help: String, labelNames: List[String]): Gauge =
@@ -36,7 +35,7 @@ trait Metrics {
       .build()
       .name(metricName)
       .help(help)
-      .labelNames(MetricLabels.DefaultLabels ++ labelNames: _*)
+      .labelNames(labelNames: _*)
       .register(prometheusRegistry)
 
   def routeMetrics[Req: Decoder: ErrorProtocol](metricsEnabled: Boolean, counter: => Counter)(
@@ -47,7 +46,6 @@ trait Metrics {
       if (metricsEnabled)
         entity(as[Req]) { req =>
           val labels = labelGen(req).labels().withHost(hostAddress).labelValues
-
           counter.labels(labels: _*).inc()
           handle(req)
         } else entity(as[Req])(handle)

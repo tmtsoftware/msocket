@@ -39,7 +39,7 @@ class ServerWiring extends ExampleCodecs {
     new RSocketImpl(requestResponseHandler, requestStreamHandler, contentType)
 
   lazy val applicationRoute: Route =
-    new PostRouteFactory[ExampleRequestResponse]("post-endpoint", postHandler).make(List("appName"), metricsEnabled = true) ~
+    new PostRouteFactory[ExampleRequestResponse]("post-endpoint", postHandler).make(metricsEnabled = true) ~
       new PostStreamRouteFactory[ExampleRequestStream]("post-streaming-endpoint", postStreamHandler).make() ~
       new WebsocketRouteFactory[ExampleRequestStream]("websocket-endpoint", websocketHandler).make(metricsEnabled = true) ~
       new SseRouteFactory[ExampleRequestStream]("sse-endpoint", sseHandler).make() ~

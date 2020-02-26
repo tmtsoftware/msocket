@@ -4,20 +4,18 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive1, Route}
 import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
-import msocket.api.Labelled
+import msocket.api.{LabelNames, Labelled}
 import msocket.impl.RouteFactory
 import msocket.impl.metrics.SseMetrics
 
-class SseRouteFactory[Req: Decoder](endpoint: String, sseHandler: SseHandler[Req]) extends RouteFactory[Req] with SseMetrics {
+class SseRouteFactory[Req: Decoder: LabelNames](endpoint: String, sseHandler: SseHandler[Req]) extends RouteFactory[Req] with SseMetrics {
 
   private val extractPayloadFromHeader: Directive1[Req] = headerValuePF {
     case QueryHeader(query) => JsonText.decode(query)
   }
 
-  override def make(labelNames: List[String] = List.empty, metricsEnabled: Boolean = false)(
-      implicit labelGen: Req => Labelled[Req]
-  ): Route = {
-    lazy val gauge = sseGauge(labelNames)
+  def make(metricsEnabled: Boolean = false)(implicit labelGen: Req => Labelled[Req]): Route = {
+    lazy val gauge = sseGauge(LabelNames[Req].names())
 
     get {
       path(endpoint) {

@@ -1,7 +1,6 @@
 package csw.example.api.protocol
 
-import msocket.api.Labelled
-import msocket.api.models.MetricLabels
+import msocket.api.{LabelNames, Labelled}
 
 /**
  * Transport agnostic message protocol is defined as a Scala ADT
@@ -17,9 +16,13 @@ object ExampleRequest {
   case object RandomBag               extends ExampleRequestResponse
 
   object ExampleRequestResponse {
+    private val appName = "appName"
+
+    implicit val labelNames: LabelNames[ExampleRequestResponse] = LabelNames.withDefault(appName)
+
     implicit val labelled: ExampleRequestResponse => Labelled[ExampleRequestResponse] =
       Labelled.withDefault {
-        case _ => MetricLabels(Map("appName" -> "example"))
+        case _ => Map(appName -> "example")
       }
   }
 

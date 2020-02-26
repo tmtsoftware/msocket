@@ -5,7 +5,7 @@ import akka.http.scaladsl.server.{Directive0, Route}
 import io.bullet.borer.Decoder
 import msocket.api.{ErrorProtocol, LabelNames, Labelled}
 import msocket.impl.RouteFactory
-import msocket.impl.metrics.HttpMetrics
+import msocket.impl.metrics.{HttpMetrics, MetricMetadata}
 
 class PostRouteFactory[Req: Decoder: ErrorProtocol: LabelNames](endpoint: String, postHandler: HttpPostHandler[Req])
     extends RouteFactory[Req]
@@ -20,7 +20,10 @@ class PostRouteFactory[Req: Decoder: ErrorProtocol: LabelNames](endpoint: String
       path(endpoint) {
         PostDirectives.withAcceptHeader {
           withExceptionHandler {
-            withHttpMetrics(metricsEnabled, counter)(postHandler.handle)
+            extractHost { address =>
+              val metadata = MetricMetadata(metricsEnabled, address, counter)
+              withHttpMetrics(metadata, postHandler.handle)
+            }
           }
         }
       }

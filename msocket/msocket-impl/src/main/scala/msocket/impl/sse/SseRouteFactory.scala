@@ -8,7 +8,7 @@ import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{LabelNames, Labelled}
 import msocket.impl.RouteFactory
-import msocket.impl.metrics.SseMetrics
+import msocket.impl.metrics.{MetricMetadata, SseMetrics}
 
 class SseRouteFactory[Req: Decoder: LabelNames](endpoint: String, sseHandler: SseHandler[Req]) extends RouteFactory[Req] with SseMetrics {
 
@@ -24,8 +24,9 @@ class SseRouteFactory[Req: Decoder: LabelNames](endpoint: String, sseHandler: Ss
         extractPayloadFromHeader { streamReq =>
           extractExecutionContext { implicit ec =>
             extractHost { address =>
-              val source = sseHandler.handle(streamReq)
-              complete(withMetrics(source, streamReq, metricsEnabled, gauge, address))
+              val source   = sseHandler.handle(streamReq)
+              val metadata = MetricMetadata(metricsEnabled, address, gauge)
+              complete(withMetrics(source, streamReq, metadata))
             }
           }
         }

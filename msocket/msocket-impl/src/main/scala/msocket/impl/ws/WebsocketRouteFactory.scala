@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.Route
 import io.bullet.borer.Decoder
 import msocket.api.{ContentType, ErrorProtocol, LabelNames, Labelled}
 import msocket.impl.RouteFactory
-import msocket.impl.metrics.WebsocketMetrics
+import msocket.impl.metrics.{MetricMetadata, WebsocketMetrics}
 import msocket.impl.post.ServerHttpCodecs
 
 class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: LabelNames](
@@ -22,9 +22,10 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: LabelNames](
     lazy val gauge = websocketGauge(LabelNames[Req].get)
     get {
       path(endpoint) {
-        extractHost { hostAddress =>
+        extractHost { address =>
           handleWebSocketMessages {
-            new WebsocketServerFlow(websocketHandler, metricsEnabled, gauge, hostAddress).flow
+            val metadata = MetricMetadata(metricsEnabled, address, gauge)
+            new WebsocketServerFlow(websocketHandler, metadata).flow
           }
         }
       }

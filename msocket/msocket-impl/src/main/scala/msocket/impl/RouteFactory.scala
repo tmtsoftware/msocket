@@ -3,6 +3,6 @@ package msocket.impl
 import akka.http.scaladsl.server.Route
 import msocket.api.Labelled
 
-trait RouteFactory[T] {
-  def make(metricsEnabled: Boolean = false)(implicit labelGen: Labelled[T]): Route
+abstract class RouteFactory[T: Labelled] {
+  def make(metricsEnabled: Boolean = false): Route
 }

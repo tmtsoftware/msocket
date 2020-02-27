@@ -8,15 +8,15 @@ import msocket.impl.RouteFactory
 import msocket.impl.metrics.PostStreamMetrics
 import msocket.impl.post.PostDirectives.withAcceptHeader
 
-class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: LabelNames](endpoint: String, postHandler: HttpStreamHandler[Req])
+class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: LabelNames: Labelled](endpoint: String, postHandler: HttpStreamHandler[Req])
     extends RouteFactory[Req]
     with ServerHttpCodecs
     with PostStreamMetrics {
 
   private val withExceptionHandler: Directive0 = PostDirectives.exceptionHandlerFor[Req]
 
-  def make(metricsEnabled: Boolean = false)(implicit labelGen: Labelled[Req]): Route = {
-    lazy val gauge = postStreamGauge(LabelNames[Req].get)
+  def make(metricsEnabled: Boolean = false): Route = {
+    lazy val gauge = postStreamGauge
 
     post {
       path(endpoint) {

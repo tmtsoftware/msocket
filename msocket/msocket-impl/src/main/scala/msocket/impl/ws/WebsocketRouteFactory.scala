@@ -9,17 +9,17 @@ import msocket.impl.RouteFactory
 import msocket.impl.metrics.WebsocketMetrics
 import msocket.impl.post.ServerHttpCodecs
 
-class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: LabelNames](
+class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: LabelNames: Labelled](
     endpoint: String,
     websocketHandler: ContentType => WebsocketHandler[Req]
-)(
-    implicit actorSystem: ActorSystem[_]
-) extends RouteFactory[Req]
+)(implicit actorSystem: ActorSystem[_])
+    extends RouteFactory[Req]
     with ServerHttpCodecs
     with WebsocketMetrics {
 
-  def make(metricsEnabled: Boolean = false)(implicit labelGen: Labelled[Req]): Route = {
-    lazy val gauge = websocketGauge(LabelNames[Req].get)
+  def make(metricsEnabled: Boolean = false): Route = {
+    lazy val gauge = websocketGauge
+
     get {
       path(endpoint) {
         withMetricMetadata(metricsEnabled, gauge) { metadata =>

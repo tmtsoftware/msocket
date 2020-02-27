@@ -9,14 +9,16 @@ import msocket.api.{LabelNames, Labelled}
 import msocket.impl.RouteFactory
 import msocket.impl.metrics.SseMetrics
 
-class SseRouteFactory[Req: Decoder: LabelNames](endpoint: String, sseHandler: SseHandler[Req]) extends RouteFactory[Req] with SseMetrics {
+class SseRouteFactory[Req: Decoder: LabelNames: Labelled](endpoint: String, sseHandler: SseHandler[Req])
+    extends RouteFactory[Req]
+    with SseMetrics {
 
   private val extractPayloadFromHeader: Directive1[Req] = headerValuePF {
     case QueryHeader(query) => JsonText.decode(query)
   }
 
-  def make(metricsEnabled: Boolean = false)(implicit labelGen: Labelled[Req]): Route = {
-    lazy val gauge = sseGauge(LabelNames[Req].get)
+  def make(metricsEnabled: Boolean = false): Route = {
+    lazy val gauge = sseGauge
 
     get {
       path(endpoint) {

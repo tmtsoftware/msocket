@@ -5,20 +5,19 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.directives.HostDirectives.extractHost
 import io.bullet.borer.Decoder
 import io.prometheus.client.Counter
-import msocket.api.{ErrorProtocol, Labelled}
+import msocket.api.{ErrorProtocol, LabelNames, Labelled}
 import msocket.impl.post.ServerHttpCodecs._
 
 object HttpMetrics extends HttpMetrics
 
 trait HttpMetrics extends Metrics {
 
-  private[metrics] val httpCounterMetricName = "http_requests_total"
-  def httpCounter(labelNames: List[String]): Counter =
-    counter(
-      metricName = httpCounterMetricName,
-      help = "Total http requests",
-      labelNames = labelNames
-    )
+  private[metrics] val HttpCounterMetricName = "http_requests_total"
+
+  def httpCounter[Req: LabelNames]: Counter = counter(
+    metricName = HttpCounterMetricName,
+    help = "Total http requests"
+  )
 
   def withHttpMetrics[Req: Decoder: ErrorProtocol: Labelled](metadata: MetricMetadata[Counter.Child], handle: Req => Route): Route = {
     import metadata._

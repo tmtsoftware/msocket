@@ -8,15 +8,16 @@ import msocket.impl.RouteFactory
 import msocket.impl.metrics.HttpMetrics
 import msocket.impl.post.PostDirectives.withAcceptHeader
 
-class PostRouteFactory[Req: Decoder: ErrorProtocol: LabelNames](endpoint: String, postHandler: HttpPostHandler[Req])
+class PostRouteFactory[Req: Decoder: ErrorProtocol: LabelNames: Labelled](endpoint: String, postHandler: HttpPostHandler[Req])
     extends RouteFactory[Req]
     with ServerHttpCodecs
     with HttpMetrics {
 
   private val withExceptionHandler: Directive0 = PostDirectives.exceptionHandlerFor[Req]
 
-  def make(metricsEnabled: Boolean = false)(implicit labelGen: Labelled[Req]): Route = {
-    lazy val counter = httpCounter(LabelNames[Req].get)
+  def make(metricsEnabled: Boolean = false): Route = {
+    lazy val counter = httpCounter
+
     post {
       path(endpoint) {
         withAcceptHeader {

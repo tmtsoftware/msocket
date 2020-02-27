@@ -3,15 +3,15 @@ package msocket.api
 import msocket.api.models.MetricLabels
 
 trait LabelNames[T] {
-  def names(): List[String]
-
-  // always use this internally
-  final def get: List[String] = (MetricLabels.DefaultLabels ++ names()).distinct
+  def get: List[String]
 }
 
 object LabelNames {
   def apply[T](implicit ev: LabelNames[T]): LabelNames[T] = ev
-  def make[T](labelNames: String*): LabelNames[T]         = () => labelNames.toList
+
+  def make[T](labelNames: String*): LabelNames[T] = new LabelNames[T] {
+    override def get: List[String] = MetricLabels.DefaultLabels ++ labelNames
+  }
 
   implicit def defaultLabels[T]: LabelNames[T] = make()
 }

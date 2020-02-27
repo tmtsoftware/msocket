@@ -27,7 +27,7 @@ trait HttpMetrics extends Metrics {
     if (enabled)
       extractHost { address =>
         entity(as[Req]) { req =>
-          val labels = labelValues(labelGen(req), address)
+          val labels = labelValues(req, labelGen(req), address)
           collector.labels(labels: _*).inc()
           handle(req)
         }

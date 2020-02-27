@@ -29,9 +29,9 @@ object Labelled {
 
   implicit def emptyLabelled[T]: T => Labelled[T] = make(_ => Map.empty)
 
-  private def make[Req](labelsFactory: Req => Labels): Req => Labelled[Req] =
+  private def make[T: LabelNames](labelsFactory: T => Labels): T => Labelled[T] =
     req =>
-      new Labelled[Req] {
-        override def labels(): MetricLabels = MetricLabels(LabelNames[Req].get, labelsFactory(req))
-      }
+      new Labelled[T] {
+        override def labels(): MetricLabels = MetricLabels(LabelNames[T].get, labelsFactory(req))
+    }
 }

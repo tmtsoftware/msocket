@@ -116,7 +116,8 @@ lazy val `example-service` = project.aggregate(
   `example-service-impl`,
   `example-service-server`,
   `example-service-app-jvm`,
-  `example-service-app-js`
+  `example-service-app-js`,
+  `example-service-test`
 )
 
 lazy val `example-service-api` = crossProject(JSPlatform, JVMPlatform)

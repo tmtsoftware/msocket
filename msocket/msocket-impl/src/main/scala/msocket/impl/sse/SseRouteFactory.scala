@@ -15,7 +15,7 @@ class SseRouteFactory[Req: Decoder: LabelNames](endpoint: String, sseHandler: Ss
     case QueryHeader(query) => JsonText.decode(query)
   }
 
-  def make(metricsEnabled: Boolean = false)(implicit labelGen: Req => Labelled[Req]): Route = {
+  def make(metricsEnabled: Boolean = false)(implicit labelGen: Labelled[Req]): Route = {
     lazy val gauge = sseGauge(LabelNames[Req].get)
 
     get {

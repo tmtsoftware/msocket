@@ -18,7 +18,7 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: LabelNames](
     with ServerHttpCodecs
     with WebsocketMetrics {
 
-  def make(metricsEnabled: Boolean = false)(implicit labelGen: Req => Labelled[Req]): Route = {
+  def make(metricsEnabled: Boolean = false)(implicit labelGen: Labelled[Req]): Route = {
     lazy val gauge = websocketGauge(LabelNames[Req].get)
     get {
       path(endpoint) {

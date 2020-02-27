@@ -32,11 +32,11 @@ trait Metrics {
       .register(prometheusRegistry)
 
   def withMetrics[Msg, Req](source: Source[Msg, NotUsed], req: Req, metadata: MetricMetadata[Gauge.Child])(
-      implicit labelGen: Req => Labelled[Req]
+      implicit labelGen: Labelled[Req]
   ): Source[Msg, NotUsed] = {
     import metadata._
     if (enabled) {
-      val values = labelValues(req, labelGen(req), hostAddress)
+      val values = labelValues(req, labelGen, hostAddress)
       val child  = collector.labels(values: _*)
       child.inc()
       source.watchTermination() {
@@ -48,9 +48,9 @@ trait Metrics {
   }
 
   def withMetricMetadata[T](enabled: Boolean, collector: => SimpleCollector[T]): Directive1[MetricMetadata[T]] =
-    extract(MetricMetadata(enabled, collector, _))
+    extract(new MetricMetadata(enabled, collector, _))
 
   private[metrics] def labelValues[T](req: T, labelled: Labelled[T], address: String) =
-    labelled.labels().withMandatoryLabels(req, address).values
+    labelled.labels(req).withMandatoryLabels(req, address).values
 
 }

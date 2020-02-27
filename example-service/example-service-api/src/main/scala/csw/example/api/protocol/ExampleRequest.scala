@@ -18,7 +18,7 @@ object ExampleRequest {
   object ExampleRequestResponse {
     private val appName                                         = "appName"
     implicit val labelNames: LabelNames[ExampleRequestResponse] = LabelNames.make(appName)
-    implicit val labelled: ExampleRequestResponse => Labelled[ExampleRequestResponse] =
+    implicit val labelled: Labelled[ExampleRequestResponse] =
       Labelled.make { case _ => Map(appName -> "example") }
   }
 

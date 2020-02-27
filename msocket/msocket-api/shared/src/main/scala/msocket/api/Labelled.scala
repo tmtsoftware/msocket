@@ -17,7 +17,7 @@ object LabelNames {
 }
 
 abstract class Labelled[T: LabelNames] {
-  def labels(): MetricLabels
+  def labels(req: T): MetricLabels
 }
 
 object Labelled {
@@ -25,13 +25,11 @@ object Labelled {
 
   def apply[T: Labelled]: Labelled[T] = implicitly[Labelled[T]]
 
-  def make[T: LabelNames](pf: PartialFunction[T, Labels]): T => Labelled[T] = make(pf.lift(_).getOrElse(Map.empty))
+  def make[T: LabelNames](pf: PartialFunction[T, Labels]): Labelled[T] = make(pf.lift(_).getOrElse(Map.empty))
 
-  implicit def emptyLabelled[T]: T => Labelled[T] = make(_ => Map.empty)
+  implicit def emptyLabelled[T]: Labelled[T] = make(_ => Map.empty)
 
-  private def make[T: LabelNames](labelsFactory: T => Labels): T => Labelled[T] =
-    req =>
-      new Labelled[T] {
-        override def labels(): MetricLabels = MetricLabels(LabelNames[T].get, labelsFactory(req))
-    }
+  private def make[T: LabelNames](labelsFactory: T => Labels): Labelled[T] = new Labelled[T] {
+    override def labels(req: T): MetricLabels = MetricLabels(LabelNames[T].get, labelsFactory(req))
+  }
 }

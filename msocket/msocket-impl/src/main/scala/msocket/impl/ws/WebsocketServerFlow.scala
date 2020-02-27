@@ -17,7 +17,7 @@ import scala.concurrent.duration.DurationLong
 class WebsocketServerFlow[T: Decoder](
     messageHandler: ContentType => WebsocketHandler[T],
     metadata: MetricMetadata[Gauge.Child]
-)(implicit actorSystem: ActorSystem[_], labelGen: T => Labelled[T]) {
+)(implicit actorSystem: ActorSystem[_], labelGen: Labelled[T]) {
 
   val flow: Flow[Message, Message, NotUsed] = {
     Flow[Message]

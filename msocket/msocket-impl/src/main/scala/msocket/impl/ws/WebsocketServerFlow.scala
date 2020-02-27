@@ -12,14 +12,12 @@ import msocket.impl.CborByteString
 import msocket.impl.metrics.MetricMetadata
 import msocket.impl.metrics.Metrics.withMetrics
 
-import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
 
 class WebsocketServerFlow[T: Decoder](
     messageHandler: ContentType => WebsocketHandler[T],
     metadata: MetricMetadata[Gauge.Child]
 )(implicit actorSystem: ActorSystem[_], labelGen: T => Labelled[T]) {
-  import actorSystem.executionContext
 
   val flow: Flow[Message, Message, NotUsed] = {
     Flow[Message]
@@ -34,18 +32,15 @@ class WebsocketServerFlow[T: Decoder](
       }
   }
 
-  private def handle[E](element: E, contentEncoding: ContentEncoding[E]): Source[Message, Future[NotUsed]] = {
+  private def handle[E](element: E, contentEncoding: ContentEncoding[E]): Source[Message, NotUsed] = {
     val handler = messageHandler(contentEncoding.contentType)
-    Source.futureSource(
-      Future(contentEncoding.decode[T](element)).map { req =>
-        val source = Source
-          .single(req)
-          .flatMapConcat(handler.handle)
-          .recover(handler.errorEncoder)
-
+    Source
+      .lazySingle(() => contentEncoding.decode[T](element))
+      .flatMapConcat { req =>
+        val source = handler.handle(req)
         withMetrics(source, req, metadata)
       }
-    )
+      .recover(handler.errorEncoder)
   }
 
 }

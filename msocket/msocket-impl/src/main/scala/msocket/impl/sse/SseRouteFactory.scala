@@ -3,12 +3,11 @@ package msocket.impl.sse
 import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling.toEventStream
 import akka.http.scaladsl.server.Directives.{complete, _}
 import akka.http.scaladsl.server.{Directive1, Route}
-import akka.http.scaladsl.server.directives.HostDirectives.extractHost
 import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{LabelNames, Labelled}
 import msocket.impl.RouteFactory
-import msocket.impl.metrics.{MetricMetadata, SseMetrics}
+import msocket.impl.metrics.SseMetrics
 
 class SseRouteFactory[Req: Decoder: LabelNames](endpoint: String, sseHandler: SseHandler[Req]) extends RouteFactory[Req] with SseMetrics {
 
@@ -22,12 +21,9 @@ class SseRouteFactory[Req: Decoder: LabelNames](endpoint: String, sseHandler: Ss
     get {
       path(endpoint) {
         extractPayloadFromHeader { streamReq =>
-          extractExecutionContext { implicit ec =>
-            extractHost { address =>
-              val source   = sseHandler.handle(streamReq)
-              val metadata = MetricMetadata(metricsEnabled, address, gauge)
-              complete(withMetrics(source, streamReq, metadata))
-            }
+          withMetricMetadata(metricsEnabled, gauge) { metadata =>
+            val source = sseHandler.handle(streamReq)
+            complete(withMetrics(source, streamReq, metadata))
           }
         }
       }

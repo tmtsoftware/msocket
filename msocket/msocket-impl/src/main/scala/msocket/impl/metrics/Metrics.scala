@@ -1,14 +1,13 @@
 package msocket.impl.metrics
 
 import akka.NotUsed
-import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server.directives.BasicDirectives.extract
+import akka.http.scaladsl.server.{Directive1, Route}
 import akka.stream.scaladsl.Source
 import com.lonelyplanet.prometheus.PrometheusResponseTimeRecorder
 import com.lonelyplanet.prometheus.api.MetricsEndpoint
-import io.prometheus.client.{Counter, Gauge}
+import io.prometheus.client.{Counter, Gauge, SimpleCollector}
 import msocket.api.Labelled
-
-import scala.concurrent.ExecutionContext
 
 object Metrics extends Metrics
 
@@ -33,8 +32,7 @@ trait Metrics {
       .register(prometheusRegistry)
 
   def withMetrics[Msg, Req](source: Source[Msg, NotUsed], req: Req, metadata: MetricMetadata[Gauge.Child])(
-      implicit ec: ExecutionContext,
-      labelGen: Req => Labelled[Req]
+      implicit labelGen: Req => Labelled[Req]
   ): Source[Msg, NotUsed] = {
     import metadata._
     if (enabled) {
@@ -48,6 +46,9 @@ trait Metrics {
       }
     } else source
   }
+
+  def withMetricMetadata[T](enabled: Boolean, collector: => SimpleCollector[T]): Directive1[MetricMetadata[T]] =
+    extract(MetricMetadata(enabled, collector, _))
 
   private[metrics] def labelValues[T](labelled: Labelled[T], address: String) =
     labelled.labels().withHost(address).values

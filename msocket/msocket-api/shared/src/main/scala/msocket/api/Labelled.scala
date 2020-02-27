@@ -1,9 +1,6 @@
 package msocket.api
 
 import msocket.api.models.MetricLabels
-import msocket.api.models.MetricLabels.MsgLabel
-
-import scala.reflect.ClassTag
 
 trait LabelNames[T] {
   def names(): List[String]
@@ -24,25 +21,17 @@ abstract class Labelled[T: LabelNames] {
 }
 
 object Labelled {
+  type Labels = Map[String, String]
+
   def apply[T: Labelled]: Labelled[T] = implicitly[Labelled[T]]
 
-  def make[T: LabelNames](obj: T): Labelled[T] = new Labelled[T] {
-    override def labels(): MetricLabels = MetricLabels(LabelNames[T].get, msgLabel(obj))
-  }
+  def make[T: LabelNames](pf: PartialFunction[T, Labels]): T => Labelled[T] = make(pf.lift(_).getOrElse(Map.empty))
 
-  type Labels = Map[String, String]
-  def withDefault[T: LabelNames](pf: PartialFunction[T, Labels]): T => Labelled[T] =
+  implicit def emptyLabelled[T]: T => Labelled[T] = make(_ => Map.empty)
+
+  private def make[Req](labelsFactory: Req => Labels): Req => Labelled[Req] =
     req =>
-      new Labelled[T] {
-        override def labels(): MetricLabels = MetricLabels(LabelNames[T].get, msgLabel(req) ++ pf.lift(req).getOrElse(Map.empty))
+      new Labelled[Req] {
+        override def labels(): MetricLabels = MetricLabels(LabelNames[Req].get, labelsFactory(req))
       }
-
-  implicit def genericLabelled[T: ClassTag]: T => Labelled[T] = req => make(req)
-
-  private def msgLabel[T](obj: T): Map[String, String] = Map(MsgLabel -> createLabel(obj))
-
-  private def createLabel[A](obj: A): String = {
-    val name = obj.getClass.getSimpleName
-    if (name.endsWith("$")) name.dropRight(1) else name
-  }
 }

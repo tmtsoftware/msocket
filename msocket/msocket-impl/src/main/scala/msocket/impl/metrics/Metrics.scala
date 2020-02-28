@@ -7,7 +7,7 @@ import akka.stream.scaladsl.Source
 import com.lonelyplanet.prometheus.PrometheusResponseTimeRecorder
 import com.lonelyplanet.prometheus.api.MetricsEndpoint
 import io.prometheus.client.{Counter, Gauge, SimpleCollector}
-import msocket.api.{LabelNames, Labelled}
+import msocket.api.{LabelNames, Labelled, RequestMetadata}
 
 object Metrics extends Metrics
 
@@ -38,7 +38,7 @@ trait Metrics {
   ): Source[Msg, NotUsed] = {
     import metadata._
     if (enabled) {
-      val values = labelValues(req, hostAddress)
+      val values = labelValues(req, RequestMetadata(hostAddress))
       val child  = collector.labels(values: _*)
       child.inc()
       source.watchTermination() {
@@ -52,7 +52,7 @@ trait Metrics {
   def withMetricMetadata[T](enabled: Boolean, collector: => SimpleCollector[T]): Directive1[MetricMetadata[T]] =
     extract(new MetricMetadata(enabled, collector, _))
 
-  private[metrics] def labelValues[T: Labelled](req: T, address: String) =
-    Labelled[T].labels(req).withMandatoryLabels(req, address).values
+  private[metrics] def labelValues[T: Labelled](req: T, requestMetadata: RequestMetadata) =
+    Labelled[T].labels(req, requestMetadata).values
 
 }

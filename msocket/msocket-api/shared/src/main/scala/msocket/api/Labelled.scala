@@ -10,7 +10,7 @@ object RequestMetadata {
   val DefaultLabels    = List(MsgLabel, HostAddressLabel)
 }
 
-abstract class Labelled[T] {
+sealed abstract class Labelled[T] {
   def labelNames: List[String]
   def labels(req: T, requestMetadata: RequestMetadata): MetricLabels
 }
@@ -20,7 +20,8 @@ object Labelled {
 
   def apply[T: Labelled]: Labelled[T] = implicitly[Labelled[T]]
 
-  def make[T](labelNames: List[String], pf: PartialFunction[T, Labels]): Labelled[T] = make(labelNames, pf.lift(_).getOrElse(Map.empty))
+  def make[T](labelNames: List[String], labelsFactory: PartialFunction[T, Labels]): Labelled[T] =
+    make(labelNames, labelsFactory.lift(_).getOrElse(Map.empty))
 
   implicit def emptyLabelled[T]: Labelled[T] = make(List.empty, _ => Map.empty)
 

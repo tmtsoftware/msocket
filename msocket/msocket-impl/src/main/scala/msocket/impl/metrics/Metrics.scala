@@ -38,7 +38,7 @@ trait Metrics {
   ): Source[Msg, NotUsed] = {
     import metadata._
     if (enabled) {
-      val values = labelValues(req, RequestMetadata(hostAddress))
+      val values = Labelled[Req].labels(req, RequestMetadata(hostAddress)).values
       val child  = collector.labels(values: _*)
       child.inc()
       source.watchTermination() {
@@ -51,8 +51,5 @@ trait Metrics {
 
   def withMetricMetadata[T](enabled: Boolean, collector: => SimpleCollector[T]): Directive1[MetricMetadata[T]] =
     extract(new MetricMetadata(enabled, collector, _))
-
-  private[metrics] def labelValues[T: Labelled](req: T, requestMetadata: RequestMetadata) =
-    Labelled[T].labels(req, requestMetadata).values
 
 }

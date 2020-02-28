@@ -3,12 +3,12 @@ package msocket.impl.post
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive0, Route}
 import io.bullet.borer.Decoder
-import msocket.api.{ErrorProtocol, LabelNames, Labelled}
+import msocket.api.{ErrorProtocol, Labelled}
 import msocket.impl.RouteFactory
 import msocket.impl.metrics.PostStreamMetrics
 import msocket.impl.post.PostDirectives.withAcceptHeader
 
-class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: LabelNames: Labelled](endpoint: String, postHandler: HttpStreamHandler[Req])
+class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, postHandler: HttpStreamHandler[Req])
     extends RouteFactory[Req]
     with ServerHttpCodecs
     with PostStreamMetrics {

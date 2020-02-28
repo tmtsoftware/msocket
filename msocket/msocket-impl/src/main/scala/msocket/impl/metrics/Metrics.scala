@@ -7,7 +7,7 @@ import akka.stream.scaladsl.Source
 import com.lonelyplanet.prometheus.PrometheusResponseTimeRecorder
 import com.lonelyplanet.prometheus.api.MetricsEndpoint
 import io.prometheus.client.{Counter, Gauge, SimpleCollector}
-import msocket.api.{LabelNames, Labelled, RequestMetadata}
+import msocket.api.{Labelled, RequestMetadata}
 
 object Metrics extends Metrics
 
@@ -15,20 +15,20 @@ trait Metrics {
   private lazy val prometheusRegistry = PrometheusResponseTimeRecorder.DefaultRegistry
   lazy val metricsRoute: Route        = new MetricsEndpoint(prometheusRegistry).routes
 
-  def counter[Req: LabelNames](metricName: String, help: String): Counter =
+  def counter[Req: Labelled](metricName: String, help: String): Counter =
     Counter
       .build()
       .name(metricName)
       .help(help)
-      .labelNames(LabelNames[Req].get: _*)
+      .labelNames(Labelled[Req].labelNames: _*)
       .register(prometheusRegistry)
 
-  def gauge[Req: LabelNames](metricName: String, help: String): Gauge =
+  def gauge[Req: Labelled](metricName: String, help: String): Gauge =
     Gauge
       .build()
       .name(metricName)
       .help(help)
-      .labelNames(LabelNames[Req].get: _*)
+      .labelNames(Labelled[Req].labelNames: _*)
       .register(prometheusRegistry)
 
   def withMetrics[Msg, Req: Labelled](

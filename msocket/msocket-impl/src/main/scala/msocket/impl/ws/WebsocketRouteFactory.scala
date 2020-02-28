@@ -4,12 +4,12 @@ import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import io.bullet.borer.Decoder
-import msocket.api.{ContentType, ErrorProtocol, LabelNames, Labelled}
+import msocket.api.{ContentType, ErrorProtocol, Labelled}
 import msocket.impl.RouteFactory
 import msocket.impl.metrics.WebsocketMetrics
 import msocket.impl.post.ServerHttpCodecs
 
-class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: LabelNames: Labelled](
+class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
     endpoint: String,
     websocketHandler: ContentType => WebsocketHandler[Req]
 )(implicit actorSystem: ActorSystem[_])

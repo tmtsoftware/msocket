@@ -3,20 +3,6 @@ package msocket.api
 import msocket.api.models.MetricLabels
 import RequestMetadata._
 
-trait LabelNames[T] {
-  def get: List[String]
-}
-
-object LabelNames {
-  def apply[T](implicit ev: LabelNames[T]): LabelNames[T] = ev
-
-  def make[T](labelNames: String*): LabelNames[T] = new LabelNames[T] {
-    override def get: List[String] = DefaultLabels ++ labelNames
-  }
-
-  implicit def defaultLabels[T]: LabelNames[T] = make()
-}
-
 case class RequestMetadata(address: String)
 object RequestMetadata {
   val MsgLabel         = "msg"
@@ -25,6 +11,7 @@ object RequestMetadata {
 }
 
 abstract class Labelled[T] {
+  def labelNames: List[String]
   def labels(req: T, requestMetadata: RequestMetadata): MetricLabels
 }
 
@@ -33,13 +20,17 @@ object Labelled {
 
   def apply[T: Labelled]: Labelled[T] = implicitly[Labelled[T]]
 
-  def make[T: LabelNames](pf: PartialFunction[T, Labels]): Labelled[T] = make(pf.lift(_).getOrElse(Map.empty))
+  def make[T](labelNames: List[String], pf: PartialFunction[T, Labels]): Labelled[T] = make(labelNames, pf.lift(_).getOrElse(Map.empty))
 
-  implicit def emptyLabelled[T]: Labelled[T] = make(_ => Map.empty)
+  implicit def emptyLabelled[T]: Labelled[T] = make(List.empty, _ => Map.empty)
 
-  private def make[T: LabelNames](labelsFactory: T => Labels): Labelled[T] = (req: T, requestMetadata: RequestMetadata) => {
-    labelsFactory(req) ++ Map(MsgLabel -> createLabel(req), HostAddressLabel -> requestMetadata.address)
-    MetricLabels(LabelNames[T].get, labelsFactory(req))
+  private def make[T](labelList: List[String], labelsFactory: T => Labels): Labelled[T] = new Labelled[T] {
+    override def labelNames: List[String] = DefaultLabels ++ labelList
+
+    override def labels(req: T, requestMetadata: RequestMetadata): MetricLabels = {
+      val labelMap = labelsFactory(req) ++ Map(MsgLabel -> createLabel(req), HostAddressLabel -> requestMetadata.address)
+      MetricLabels(labelNames, labelMap)
+    }
   }
 
   private def createLabel[A](obj: A): String = {

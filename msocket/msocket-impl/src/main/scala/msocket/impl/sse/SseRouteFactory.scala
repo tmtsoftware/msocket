@@ -5,13 +5,11 @@ import akka.http.scaladsl.server.Directives.{complete, _}
 import akka.http.scaladsl.server.{Directive1, Route}
 import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
-import msocket.api.{LabelNames, Labelled}
+import msocket.api.Labelled
 import msocket.impl.RouteFactory
 import msocket.impl.metrics.SseMetrics
 
-class SseRouteFactory[Req: Decoder: LabelNames: Labelled](endpoint: String, sseHandler: SseHandler[Req])
-    extends RouteFactory[Req]
-    with SseMetrics {
+class SseRouteFactory[Req: Decoder: Labelled](endpoint: String, sseHandler: SseHandler[Req]) extends RouteFactory[Req] with SseMetrics {
 
   private val extractPayloadFromHeader: Directive1[Req] = headerValuePF {
     case QueryHeader(query) => JsonText.decode(query)

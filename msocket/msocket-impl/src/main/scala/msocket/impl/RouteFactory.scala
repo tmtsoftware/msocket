@@ -11,6 +11,7 @@ abstract class RouteFactory[T: Labelled] {
 
 object RouteFactory {
   def combine(metricsEnabled: Boolean)(factory: RouteFactory[_], factories: RouteFactory[_]*): Route = {
-    factories.foldLeft(factory.make(metricsEnabled))(_ ~ _.make(metricsEnabled)) ~ Metrics.metricsRoute
+    val route = factories.foldLeft(factory.make(metricsEnabled))(_ ~ _.make(metricsEnabled))
+    if (metricsEnabled) route ~ Metrics.metricsRoute else route
   }
 }

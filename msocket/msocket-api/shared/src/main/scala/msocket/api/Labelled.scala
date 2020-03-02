@@ -20,7 +20,7 @@ object Labelled {
 
   def apply[T: Labelled]: Labelled[T] = implicitly[Labelled[T]]
 
-  def make[T](labelNames: List[String], labelsFactory: PartialFunction[T, Labels]): Labelled[T] =
+  def make[T](labelNames: List[String])(labelsFactory: PartialFunction[T, Labels]): Labelled[T] =
     make(labelNames, labelsFactory.lift(_).getOrElse(Map.empty))
 
   implicit def emptyLabelled[T]: Labelled[T] = make(List.empty, _ => Map.empty)

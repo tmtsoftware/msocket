@@ -19,7 +19,7 @@ object ExampleRequest {
     private val appName                   = "appName"
     implicit val labelNames: List[String] = List(appName)
     implicit val labelled: Labelled[ExampleRequestResponse] =
-      Labelled.make(labelNames, { case _ => Map(appName -> "example") })
+      Labelled.make(labelNames) { case _ => Map(appName -> "example") }
   }
 
   // these messages are used for requestStream interaction model

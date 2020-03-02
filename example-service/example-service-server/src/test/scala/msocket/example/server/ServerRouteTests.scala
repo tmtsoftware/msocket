@@ -1,6 +1,7 @@
 package msocket.example.server
 
 import akka.NotUsed
+import akka.http.scaladsl.model.ws.TextMessage
 import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest, WSProbe}
 import akka.stream.scaladsl.Source
 import akka.testkit.TestDuration
@@ -28,14 +29,11 @@ class ServerRouteTests extends AnyFunSuite with ScalatestRouteTest with Matchers
     WS(s"/websocket-endpoint", wsClient.flow) ~> wiring.exampleServer.routesWithCors ~> check {
       wsClient.sendMessage(Json.strictMessage(GetNumbers(3): ExampleRequest))
       isWebSocketUpgrade shouldBe true
-//      wsClient.expectMessage().asBinaryMessage.getStreamedData.asScala.runForeach(x => println(x.utf8String))
-      println(wsClient.expectMessage())
-      println(wsClient.expectMessage())
-      println(wsClient.expectMessage())
-      println(wsClient.expectMessage())
-      println(wsClient.expectMessage())
-
-      Thread.sleep(100000)
+      wsClient.expectMessage() shouldBe TextMessage.Strict("3")
+      wsClient.expectMessage() shouldBe TextMessage.Strict("6")
+      wsClient.expectMessage() shouldBe TextMessage.Strict("9")
+      wsClient.expectMessage() shouldBe TextMessage.Strict("12")
+      wsClient.expectMessage() shouldBe TextMessage.Strict("15")
     }
   }
 

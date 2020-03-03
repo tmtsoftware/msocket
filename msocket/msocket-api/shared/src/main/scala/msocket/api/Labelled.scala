@@ -34,7 +34,7 @@ object Labelled {
     }
   }
 
-  private def createLabel[A](obj: A): String = {
+  def createLabel[A](obj: A): String = {
     val name = obj.getClass.getSimpleName
     if (name.endsWith("$")) name.dropRight(1) else name
   }

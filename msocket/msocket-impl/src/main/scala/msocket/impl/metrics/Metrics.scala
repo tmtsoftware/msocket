@@ -1,6 +1,7 @@
 package msocket.impl.metrics
 
 import akka.NotUsed
+import akka.http.scaladsl.model.RemoteAddress
 import akka.http.scaladsl.server.directives.BasicDirectives.extract
 import akka.http.scaladsl.server.{Directive1, Route}
 import akka.stream.scaladsl.Source
@@ -38,7 +39,7 @@ trait Metrics {
   ): Source[Msg, NotUsed] = {
     import metadata._
     if (enabled) {
-      val values = Labelled[Req].labels(req, RequestMetadata(hostAddress)).values
+      val values = Labelled[Req].labels(req, RequestMetadata(clientIp)).values
       val child  = collector.labels(values: _*)
       child.inc()
       source.watchTermination() {
@@ -49,7 +50,7 @@ trait Metrics {
     } else source
   }
 
-  def withMetricMetadata[T](enabled: Boolean, collector: => SimpleCollector[T]): Directive1[MetricMetadata[T]] =
-    extract(new MetricMetadata(enabled, collector, _))
+  def withMetricMetadata[T](enabled: Boolean, collector: => SimpleCollector[T], clientIp: RemoteAddress): Directive1[MetricMetadata[T]] =
+    extract(new MetricMetadata(enabled, collector, clientIp, _))
 
 }

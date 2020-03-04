@@ -22,8 +22,10 @@ class PostRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, 
       path(endpoint) {
         withAcceptHeader {
           withExceptionHandler {
-            withMetricMetadata(metricsEnabled, counter) { metadata =>
-              withHttpMetrics(metadata, postHandler.handle)
+            extractClientIP { clientIp =>
+              withMetricMetadata(metricsEnabled, counter, clientIp) { metadata =>
+                withHttpMetrics(metadata, postHandler.handle)
+              }
             }
           }
         }

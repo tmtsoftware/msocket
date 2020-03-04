@@ -2,7 +2,6 @@ package msocket.impl.metrics
 
 import akka.http.scaladsl.server.Directives.{as, entity}
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.directives.HostDirectives.extractHost
 import io.bullet.borer.Decoder
 import io.prometheus.client.Counter
 import msocket.api.{ErrorProtocol, Labelled, RequestMetadata}
@@ -22,12 +21,10 @@ trait HttpMetrics extends Metrics {
   def withHttpMetrics[Req: Decoder: ErrorProtocol: Labelled](metadata: MetricMetadata[Counter.Child], handle: Req => Route): Route = {
     import metadata._
     if (enabled)
-      extractHost { address =>
-        entity(as[Req]) { req =>
-          val labels = Labelled[Req].labels(req, RequestMetadata(address)).values
-          collector.labels(labels: _*).inc()
-          handle(req)
-        }
+      entity(as[Req]) { req =>
+        val labels = Labelled[Req].labels(req, RequestMetadata(clientIp)).values
+        collector.labels(labels: _*).inc()
+        handle(req)
       } else entity(as[Req])(handle)
   }
 }

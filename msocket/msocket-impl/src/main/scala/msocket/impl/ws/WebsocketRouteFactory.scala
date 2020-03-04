@@ -22,8 +22,10 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
 
     get {
       path(endpoint) {
-        withMetricMetadata(metricsEnabled, gauge) { metadata =>
-          handleWebSocketMessages(new WebsocketServerFlow(websocketHandler, metadata).flow)
+        extractClientIP { clientIp =>
+          withMetricMetadata(metricsEnabled, gauge, clientIp) { metadata =>
+            handleWebSocketMessages(new WebsocketServerFlow(websocketHandler, metadata).flow)
+          }
         }
       }
     }

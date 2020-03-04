@@ -15,5 +15,5 @@ class MetricMetadata[T](
   lazy val collector: SimpleCollector[T] = _collector
   implicit lazy val ec: ExecutionContext = requestContext.executionContext
 
-  val clientIp: String = clientAddress.toOption.map(_.getHostAddress).getOrElse("Unknown")
+  val clientIp: String = clientAddress.toString()
 }

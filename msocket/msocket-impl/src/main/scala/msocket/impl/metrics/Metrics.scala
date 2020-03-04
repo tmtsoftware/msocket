@@ -1,7 +1,7 @@
 package msocket.impl.metrics
 
 import akka.NotUsed
-import akka.http.scaladsl.model.RemoteAddress
+import akka.http.scaladsl.server.Directives.extractClientIP
 import akka.http.scaladsl.server.directives.BasicDirectives.extract
 import akka.http.scaladsl.server.{Directive1, Route}
 import akka.stream.scaladsl.Source
@@ -50,7 +50,9 @@ trait Metrics {
     } else source
   }
 
-  def withMetricMetadata[T](enabled: Boolean, collector: => SimpleCollector[T], clientIp: RemoteAddress): Directive1[MetricMetadata[T]] =
-    extract(new MetricMetadata(enabled, collector, clientIp, _))
+  def withMetricMetadata[T](enabled: Boolean, collector: => SimpleCollector[T]): Directive1[MetricMetadata[T]] =
+    extractClientIP.flatMap { clientIp =>
+      extract(new MetricMetadata(enabled, collector, clientIp, _))
+    }
 
 }

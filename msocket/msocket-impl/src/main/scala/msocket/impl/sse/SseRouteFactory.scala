@@ -21,11 +21,9 @@ class SseRouteFactory[Req: Decoder: Labelled](endpoint: String, sseHandler: SseH
     get {
       path(endpoint) {
         extractPayloadFromHeader { streamReq =>
-          extractClientIP { clientIp =>
-            withMetricMetadata(metricsEnabled, gauge, clientIp) { metadata =>
-              val source = sseHandler.handle(streamReq)
-              complete(withMetrics(source, streamReq, metadata))
-            }
+          withMetricMetadata(metricsEnabled, gauge) { metadata =>
+            val source = sseHandler.handle(streamReq)
+            complete(withMetrics(source, streamReq, metadata))
           }
         }
       }

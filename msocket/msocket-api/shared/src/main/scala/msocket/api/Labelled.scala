@@ -3,11 +3,12 @@ package msocket.api
 import msocket.api.models.MetricLabels
 import RequestMetadata._
 
-case class RequestMetadata(address: String)
+case class RequestMetadata(address: String, appName: String)
 object RequestMetadata {
   val MsgLabel         = "msg"
   val HostAddressLabel = "hostname"
-  val DefaultLabels    = List(MsgLabel, HostAddressLabel)
+  val AppNameLabel     = "app_name"
+  val DefaultLabels    = List(MsgLabel, HostAddressLabel, AppNameLabel)
 }
 
 sealed abstract class Labelled[T] {
@@ -29,7 +30,11 @@ object Labelled {
     override def labelNames: List[String] = DefaultLabels ++ labelList
 
     override def labels(req: T, requestMetadata: RequestMetadata): MetricLabels = {
-      val labelMap = labelsFactory(req) ++ Map(MsgLabel -> createLabel(req), HostAddressLabel -> requestMetadata.address)
+      val labelMap = labelsFactory(req) ++ Map(
+        MsgLabel         -> createLabel(req),
+        HostAddressLabel -> requestMetadata.address,
+        AppNameLabel     -> requestMetadata.appName
+      )
       MetricLabels(labelNames, labelMap)
     }
   }

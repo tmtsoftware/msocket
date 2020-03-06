@@ -16,9 +16,9 @@ object ExampleRequest {
   case object RandomBag               extends ExampleRequestResponse
 
   object ExampleRequestResponse {
-    private val appName = "appName"
+    private val testLabel = "test_label"
     implicit val labelled: Labelled[ExampleRequestResponse] =
-      Labelled.make(List(appName)) { case _ => Map(appName -> "example") }
+      Labelled.make(List(testLabel)) { case _ => Map(testLabel -> "test_value") }
   }
 
   // these messages are used for requestStream interaction model

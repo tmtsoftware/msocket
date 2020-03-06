@@ -18,12 +18,13 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
     with WebsocketMetrics {
 
   def make(metricsEnabled: Boolean = false): Route = {
-    lazy val gauge = websocketGauge
+    lazy val gauge         = websocketGauge
+    lazy val perMsgCounter = websocketPerMsgCounter
 
     get {
       path(endpoint) {
-        withMetricMetadata(metricsEnabled, gauge = Some(gauge)) { metadata =>
-          handleWebSocketMessages(new WebsocketServerFlow(websocketHandler, metadata).flow)
+        withPartialMetricCollector[Req](metricsEnabled, Some(perMsgCounter), Some(gauge)).apply { pmc =>
+          handleWebSocketMessages(new WebsocketServerFlow(websocketHandler, pmc).flow)
         }
       }
     }

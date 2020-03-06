@@ -8,14 +8,14 @@ import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentEncoding, ContentType, Labelled}
 import msocket.impl.CborByteString
-import msocket.impl.metrics.MetricMetadata
+import msocket.impl.metrics.MetricCollector
 import msocket.impl.metrics.Metrics.withMetrics
 
 import scala.concurrent.duration.DurationLong
 
 class WebsocketServerFlow[T: Decoder: Labelled](
     messageHandler: ContentType => WebsocketHandler[T],
-    metadata: MetricMetadata
+    collectorFactory: T => MetricCollector[T]
 )(implicit actorSystem: ActorSystem[_]) {
 
   val flow: Flow[Message, Message, NotUsed] = {
@@ -37,7 +37,7 @@ class WebsocketServerFlow[T: Decoder: Labelled](
       .lazySingle(() => contentEncoding.decode[T](element))
       .flatMapConcat { req =>
         val source = handler.handle(req)
-        withMetrics(source, req, metadata)
+        withMetrics(source, collectorFactory(req))
       }
       .recover(handler.errorEncoder)
   }

@@ -16,15 +16,16 @@ class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: St
   private val withExceptionHandler: Directive0 = PostDirectives.exceptionHandlerFor[Req]
 
   def make(metricsEnabled: Boolean = false): Route = {
-    lazy val gauge = postStreamGauge
+    lazy val gauge         = postStreamGauge
+    lazy val perMsgCounter = postStreamPerMsgCounter
 
     post {
       path(endpoint) {
         withAcceptHeader {
           withExceptionHandler {
-            withMetricMetadata(metricsEnabled, gauge = Some(gauge)) { metadata =>
-              entity(as[Req]) { req =>
-                complete(withMetrics(postHandler.handle(req), req, metadata))
+            entity(as[Req]) { req =>
+              withMetricCollector(metricsEnabled, req, counter = Some(perMsgCounter), gauge = Some(gauge)).apply { collector =>
+                complete(withMetrics(postHandler.handle(req), collector))
               }
             }
           }

@@ -16,14 +16,15 @@ class SseRouteFactory[Req: Decoder: Labelled](endpoint: String, sseHandler: SseH
   }
 
   def make(metricsEnabled: Boolean = false): Route = {
-    lazy val gauge = sseGauge
+    lazy val gauge         = sseGauge
+    lazy val perMsgCounter = ssePerMsgCounter
 
     get {
       path(endpoint) {
         extractPayloadFromHeader { streamReq =>
-          withMetricMetadata(metricsEnabled, gauge = Some(gauge)) { metadata =>
+          withMetricCollector(metricsEnabled, streamReq, counter = Some(perMsgCounter), gauge = Some(gauge)).apply { collector =>
             val source = sseHandler.handle(streamReq)
-            complete(withMetrics(source, streamReq, metadata))
+            complete(withMetrics(source, collector))
           }
         }
       }

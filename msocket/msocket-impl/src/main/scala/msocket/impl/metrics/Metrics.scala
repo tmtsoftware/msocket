@@ -8,7 +8,7 @@ import akka.stream.scaladsl.Source
 import com.lonelyplanet.prometheus.PrometheusResponseTimeRecorder
 import com.lonelyplanet.prometheus.api.MetricsEndpoint
 import io.prometheus.client.{Counter, Gauge}
-import msocket.api.{Labelled, RequestMetadata}
+import msocket.api.Labelled
 
 object Metrics extends Metrics
 
@@ -34,35 +34,39 @@ trait Metrics {
 
   def withMetrics[Msg, Req: Labelled](
       source: Source[Msg, NotUsed],
-      req: Req,
-      metadata: MetricMetadata
+      collector: MetricCollector[Req]
   ): Source[Msg, NotUsed] = {
-    import metadata._
+    import collector._
     if (enabled) {
-      val values = Labelled[Req].labels(req, RequestMetadata(clientIp)).values
-      incGauge(values)
-      val perMsgCounter = metricsCounter.map(_.labels(values: _*))
-
+      incGauge()
       source
         .map { msg =>
-          perMsgCounter.foreach(_.inc())
+          incCounter()
           msg
         }
         .watchTermination() {
           case (mat, completion) =>
-            completion.onComplete(_ => decGauge(values))
+            completion.onComplete(_ => decGauge())
             mat
         }
     } else source
   }
 
-  def withMetricMetadata[T](
+  def withMetricCollector[Req: Labelled](
+      enabled: Boolean,
+      req: Req,
+      counter: => Option[Counter] = None,
+      gauge: => Option[Gauge] = None
+  ): Directive1[MetricCollector[Req]] =
+    withPartialMetricCollector[Req](enabled, counter, gauge).map(_.apply(req))
+
+  def withPartialMetricCollector[Req: Labelled](
       enabled: Boolean,
       counter: => Option[Counter] = None,
       gauge: => Option[Gauge] = None
-  ): Directive1[MetricMetadata] =
+  ): Directive1[Req => MetricCollector[Req]] =
     extractClientIP.flatMap { clientIp =>
-      extract(new MetricMetadata(enabled, counter, gauge, clientIp, _))
+      extract(ctx => new MetricCollector(enabled, _, counter, gauge, clientIp, ctx))
     }
 
 }

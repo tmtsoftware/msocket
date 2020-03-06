@@ -22,7 +22,7 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
 
     get {
       path(endpoint) {
-        withMetricMetadata(metricsEnabled, gauge) { metadata =>
+        withMetricMetadata(metricsEnabled, gauge = Some(gauge)) { metadata =>
           handleWebSocketMessages(new WebsocketServerFlow(websocketHandler, metadata).flow)
         }
       }

@@ -11,19 +11,17 @@ object HttpMetrics extends HttpMetrics
 
 trait HttpMetrics extends Metrics {
 
-  private[metrics] val HttpCounterMetricName = "http_requests_total"
-
   def httpCounter[Req: Labelled]: Counter = counter(
-    metricName = HttpCounterMetricName,
+    metricName = "http_requests_total",
     help = "Total http requests"
   )
 
-  def withHttpMetrics[Req: Decoder: ErrorProtocol: Labelled](metadata: MetricMetadata[Counter.Child], handle: Req => Route): Route = {
+  def withHttpMetrics[Req: Decoder: ErrorProtocol: Labelled](metadata: MetricMetadata, handle: Req => Route): Route = {
     import metadata._
     if (enabled)
       entity(as[Req]) { req =>
         val labels = Labelled[Req].labels(req, RequestMetadata(clientIp)).values
-        collector.labels(labels: _*).inc()
+        incCounter(labels)
         handle(req)
       } else entity(as[Req])(handle)
   }

@@ -22,7 +22,7 @@ class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: St
       path(endpoint) {
         withAcceptHeader {
           withExceptionHandler {
-            withMetricMetadata(metricsEnabled, gauge) { metadata =>
+            withMetricMetadata(metricsEnabled, gauge = Some(gauge)) { metadata =>
               entity(as[Req]) { req =>
                 complete(withMetrics(postHandler.handle(req), req, metadata))
               }

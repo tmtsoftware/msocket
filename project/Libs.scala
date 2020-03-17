@@ -14,17 +14,17 @@ object Libs {
   val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.1.11"
   val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.1.11"
 
-  val `borer-core`        = dep("io.bullet" %%% "borer-core" % "1.4.0")
-  val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "1.4.0")
-  val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "1.4.0"
+  val `borer-core`        = dep("io.bullet" %%% "borer-core" % "1.5.0")
+  val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "1.5.0")
+  val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "1.5.0"
 
   val `akka-http-cors` = "ch.megard" %% "akka-http-cors" % "0.4.2"
-  val `scalatest`      = dep("org.scalatest" %%% "scalatest" % "3.1.0")
-  val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "0.9.8")
+  val `scalatest`      = dep("org.scalatest" %%% "scalatest" % "3.1.1")
+  val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "1.0.0")
 
-  val `std`                      = dep("com.github.tmtsoftware.tmt-typed" %%% "std"                      % "afadaa6")
-  val `eventsource`              = dep("com.github.tmtsoftware.tmt-typed" %%% "eventsource"              % "afadaa6")
-  val `rsocket-websocket-client` = dep("com.github.tmtsoftware.tmt-typed" %%% "rsocket-websocket-client" % "afadaa6")
+  val `std`                      = dep("org.scalablytyped" %%% "std"                      % "3.8-6572c3")
+  val `eventsource`              = dep("org.scalablytyped" %%% "eventsource"              % "1.1.2-f523b6")
+  val `rsocket-websocket-client` = dep("org.scalablytyped" %%% "rsocket-websocket-client" % "0.0.3-4b68c6")
 
   val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % "1.0.0-RC5"
   val `rsocket-transport-netty` = "io.rsocket" % "rsocket-transport-netty" % "1.0.0-RC5"

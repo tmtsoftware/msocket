@@ -180,8 +180,15 @@ lazy val `example-service-test` = project
 lazy val baseJsSettings: Project => Project =
   _.enablePlugins(ScalaJSPlugin)
     .settings(
-      scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
       scalaJSUseMainModuleInitializer := true,
+      scalaJSModuleKind := ModuleKind.CommonJSModule,
+      scalaJSLinkerConfig ~= { _.withESFeatures(_.withUseECMAScript2015(true)) },
+      /* disabled because it somehow triggers many warnings */
+      emitSourceMaps := false,
+      /* in preparation for scala.js 1.0 */
+      scalacOptions += "-P:scalajs:sjsDefinedByDefault",
+      /* for ScalablyTyped */
+      resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")
     )
 
 lazy val start = TaskKey[Unit]("start")
@@ -189,7 +196,6 @@ lazy val start = TaskKey[Unit]("start")
 lazy val bundlerSettings: Project => Project =
   _.enablePlugins(ScalaJSBundlerPlugin)
     .settings(
-      scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
       start := {
         (Compile / fastOptJS / startWebpackDevServer).value
         val indexFrom = baseDirectory.value / "html" / "index.html"

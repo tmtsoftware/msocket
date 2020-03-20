@@ -6,12 +6,11 @@ import msocket.impl.JsTransport
 import typings.rsocketCore.AnonDataMimeType
 import typings.rsocketCore.mod.RSocketClient
 import typings.rsocketCore.rsocketclientMod.ClientConfig
-import typings.rsocketFlowable.singleMod.{CancelCallback, IFutureSubscriber}
+import typings.rsocketFlowable.singleMod.IFutureSubscriber
 import typings.rsocketTypes.reactiveSocketTypesMod.{Payload, ReactiveSocket}
 import typings.rsocketTypes.reactiveStreamTypesMod.{ISubscriber, ISubscription}
 import typings.rsocketWebsocketClient.mod.{default => RSocketWebSocketClient}
 import typings.rsocketWebsocketClient.rsocketwebsocketclientMod.ClientOptions
-import typings.std
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future, Promise}
@@ -39,11 +38,11 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: St
     )
   )
 
-  private def subscriber[T](p: Promise[T]): IFutureSubscriber[Try[T]] = new IFutureSubscriber[Try[T]] {
-    def onComplete(value: Try[T]): Unit           = p.tryComplete(value)
-    def onError(error: std.Error): Unit           = p.tryFailure(new RuntimeException(error.toString))
-    def onSubscribe(cancel: CancelCallback): Unit = println("inside onSubscribe")
-  }
+  private def subscriber[T](p: Promise[T]): IFutureSubscriber[Try[T]] = IFutureSubscriber[Try[T]](
+    p.tryComplete,
+    e => p.tryFailure(new RuntimeException(e.message)),
+    _ => println("inside onSubscribe")
+  )
 
   private val socketPromise: Promise[ReactiveSocket[rSocketEncoders.En, Null]] = Promise()
   client.connect().map(Try(_)).subscribe(PartialOf(subscriber(socketPromise)))
@@ -62,7 +61,6 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: St
 
   override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
     val subscriptionPromise: Promise[ISubscription] = Promise()
-    val _onError                                    = onError
 
     val pullStreamHandle: Future[SetIntervalHandle] = subscriptionPromise.future.map { subscription =>
       timers.setInterval(streamingDelay) {
@@ -75,17 +73,16 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: St
       pullStreamHandle.foreach(timers.clearInterval)
     }
 
-    val subscriber: ISubscriber[Try[Res]] = new ISubscriber[Try[Res]] {
-      override def onComplete(): Unit              = println("stream completed")
-      override def onError(error: std.Error): Unit = _onError(new RuntimeException(error.toString))
-      override def onNext(value: Try[Res]): Unit = value match {
+    val subscriber: ISubscriber[Try[Res]] = ISubscriber[Try[Res]](
+      () => println("stream completed"),
+      e => onError(new RuntimeException(e.message)), {
         case Failure(exception) =>
-          _onError(exception)
+          onError(exception)
           cancelSubscription()
         case Success(value) => onMessage(value)
-      }
-      override def onSubscribe(subscription: ISubscription): Unit = subscriptionPromise.trySuccess(subscription)
-    }
+      },
+      subscriptionPromise.trySuccess
+    )
 
     socketPromise.future.foreach { socket =>
       socket

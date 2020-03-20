@@ -13,7 +13,8 @@ inThisBuild(
     resolvers ++= Seq(
       Resolver.jcenterRepo,
       "jitpack" at "https://jitpack.io",
-      Resolver.bintrayRepo("lonelyplanet", "maven")
+      Resolver.bintrayRepo("lonelyplanet", "maven"),
+      Resolver.bintrayRepo("mausamy", "tmtyped")
     ),
     scalafmtOnCompile := true,
     scalacOptions ++= Seq(
@@ -90,7 +91,6 @@ lazy val `msocket-impl-js` = project
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(`msocket-api`.js)
   .settings(
-    scalacOptions += "-P:scalajs:sjsDefinedByDefault",
     libraryDependencies ++= Seq(
       `eventsource`.value,
       `rsocket-websocket-client`.value,

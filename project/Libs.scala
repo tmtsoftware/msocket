@@ -4,12 +4,12 @@ import sbt._
 
 object Libs {
 
-  val `silencer-plugin` = "com.github.ghik" % "silencer-plugin" % "1.4.4" cross CrossVersion.full
-  val `silencer-lib`    = "com.github.ghik" % "silencer-lib"    % "1.4.4" cross CrossVersion.full
+  val `silencer-plugin` = "com.github.ghik" % "silencer-plugin" % "1.6.0" cross CrossVersion.full
+  val `silencer-lib`    = "com.github.ghik" % "silencer-lib"    % "1.6.0" cross CrossVersion.full
 
-  val `akka-stream`         = "com.typesafe.akka" %% "akka-stream"         % "2.6.3"
-  val `akka-actor-typed`    = "com.typesafe.akka" %% "akka-actor-typed"    % "2.6.3"
-  val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % "2.6.3"
+  val `akka-stream`         = "com.typesafe.akka" %% "akka-stream"         % "2.6.4"
+  val `akka-actor-typed`    = "com.typesafe.akka" %% "akka-actor-typed"    % "2.6.4"
+  val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % "2.6.4"
 
   val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.1.11"
   val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.1.11"
@@ -19,7 +19,7 @@ object Libs {
   val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "1.4.0"
 
   val `akka-http-cors` = "ch.megard" %% "akka-http-cors" % "0.4.2"
-  val `scalatest`      = dep("org.scalatest" %%% "scalatest" % "3.1.0")
+  val `scalatest`      = dep("org.scalatest" %%% "scalatest" % "3.1.1")
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "0.9.8")
 
   val `std`                      = dep("org.scalablytyped" %%% "std"                      % "3.8-04799d")

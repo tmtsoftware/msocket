@@ -12,7 +12,6 @@ inThisBuild(
     organizationName := "ThoughtWorks",
     resolvers ++= Seq(
       Resolver.jcenterRepo,
-      "jitpack" at "https://jitpack.io",
       Resolver.bintrayRepo("lonelyplanet", "maven"),
       Resolver.bintrayRepo("mausamy", "tmtyped")
     ),

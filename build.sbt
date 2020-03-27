@@ -1,8 +1,7 @@
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption.REPLACE_EXISTING
-
 import Libs._
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
+
+import scala.sys.process.Process
 
 inThisBuild(
   Seq(
@@ -152,13 +151,8 @@ lazy val `example-service-app-jvm` = project
 lazy val `example-service-app-js` = project
   .in(file("example-service/example-service-app-js"))
   .dependsOn(`example-service-api`.js, `msocket-impl-js`)
-  .configure(baseJsSettings, bundlerSettings)
+  .configure(baseJsSettings, npmSettings)
   .settings(
-    npmDependencies in Compile ++= Seq(
-      "eventsource"              -> "1.0.7",
-      "can-ndjson-stream"        -> "1.0.2",
-      "rsocket-websocket-client" -> "0.0.18"
-    ),
     libraryDependencies ++= Seq(
       `scalatest`.value % Test
     )
@@ -192,21 +186,18 @@ lazy val baseJsSettings: Project => Project =
 
 lazy val start = TaskKey[Unit]("start")
 
-lazy val bundlerSettings: Project => Project =
-  _.enablePlugins(ScalaJSBundlerPlugin)
-    .settings(
-      start := {
-        (Compile / fastOptJS / startWebpackDevServer).value
-        val indexFrom = baseDirectory.value / "html" / "index.html"
-        val indexTo   = (Compile / fastOptJS / crossTarget).value / "index.html"
-        Files.copy(indexFrom.toPath, indexTo.toPath, REPLACE_EXISTING)
-      },
-      /* Specify current versions and modes */
-      startWebpackDevServer / version := "3.8.0",
-      webpack / version := "4.39.3",
-      Compile / fastOptJS / webpackExtraArgs += "--mode=development",
-      Compile / fullOptJS / webpackExtraArgs += "--mode=production",
-      Compile / fastOptJS / webpackDevServerExtraArgs += "--mode=development",
-      Compile / fullOptJS / webpackDevServerExtraArgs += "--mode=production",
-      useYarn := true
-    )
+lazy val npmSettings: Project => Project =
+  _.settings(
+    start := {
+//        import scala.sys.process._
+//        (Compile / fastOptJS).value
+ //     Process("cd example-service/example-service-app-js").!
+      Process("echo 'before'").!
+      Process("/usr/local/bin/npm start").!
+      Process("echo 'after'").!
+      //        "cd example-service/example-service-app-js && npm start" !
+//        val indexFrom = baseDirectory.value / "html" / "index.html"
+//        val indexTo   = (Compile / fastOptJS / crossTarget).value / "index.html"
+//        Files.copy(indexFrom.toPath, indexTo.toPath, REPLACE_EXISTING)
+    }
+  )

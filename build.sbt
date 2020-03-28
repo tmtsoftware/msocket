@@ -184,20 +184,24 @@ lazy val baseJsSettings: Project => Project =
       resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")
     )
 
-lazy val start = TaskKey[Unit]("start")
+lazy val start      = TaskKey[Unit]("start")
+lazy val buildProdS = TaskKey[Unit]("build prod package")
 
 lazy val npmSettings: Project => Project =
   _.settings(
     start := {
-//        import scala.sys.process._
-//        (Compile / fastOptJS).value
- //     Process("cd example-service/example-service-app-js").!
-      Process("echo 'before'").!
-      Process("/usr/local/bin/npm start").!
-      Process("echo 'after'").!
+      import scala.sys.process._
+      import scala.language.postfixOps
+      s"./npmsh.sh development" !
+    },
+    buildProdS := {
+      import scala.sys.process._
+      import scala.language.postfixOps
+      s"./npmsh.sh production" !
+
       //        "cd example-service/example-service-app-js && npm start" !
-//        val indexFrom = baseDirectory.value / "html" / "index.html"
-//        val indexTo   = (Compile / fastOptJS / crossTarget).value / "index.html"
-//        Files.copy(indexFrom.toPath, indexTo.toPath, REPLACE_EXISTING)
+      //        val indexFrom = baseDirectory.value / "html" / "index.html"
+      //        val indexTo   = (Compile / fastOptJS / crossTarget).value / "index.html"
+      //        Files.copy(indexFrom.toPath, indexTo.toPath, REPLACE_EXISTING)
     }
   )

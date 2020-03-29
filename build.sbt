@@ -1,8 +1,6 @@
 import Libs._
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
-import scala.sys.process.Process
-
 inThisBuild(
   Seq(
     scalaVersion := "2.13.1",
@@ -187,16 +185,14 @@ lazy val baseJsSettings: Project => Project =
 lazy val start      = TaskKey[Unit]("start")
 lazy val buildProdS = TaskKey[Unit]("build prod package")
 
+import scala.language.postfixOps
+import scala.sys.process._
 lazy val npmSettings: Project => Project =
   _.settings(
     start := {
-      import scala.sys.process._
-      import scala.language.postfixOps
       s"./npmsh.sh development" !
     },
     buildProdS := {
-      import scala.sys.process._
-      import scala.language.postfixOps
       s"./npmsh.sh production" !
 
       //        "cd example-service/example-service-app-js && npm start" !

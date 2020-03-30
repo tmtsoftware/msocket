@@ -1,6 +1,3 @@
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption.REPLACE_EXISTING
-
 import Libs._
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
@@ -184,23 +181,15 @@ lazy val baseJsSettings: Project => Project =
       resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")
     )
 
-lazy val start = TaskKey[Unit]("start")
-
 lazy val bundlerSettings: Project => Project =
   _.enablePlugins(ScalaJSBundlerPlugin)
     .settings(
-      start := {
-        (Compile / fastOptJS / startWebpackDevServer).value
-        val indexFrom = baseDirectory.value / "html" / "index.html"
-        val indexTo   = (Compile / fastOptJS / crossTarget).value / "index.html"
-        Files.copy(indexFrom.toPath, indexTo.toPath, REPLACE_EXISTING)
-      },
-      /* Specify current versions and modes */
       startWebpackDevServer / version := "3.8.0",
       webpack / version := "4.39.3",
       Compile / fastOptJS / webpackExtraArgs += "--mode=development",
       Compile / fullOptJS / webpackExtraArgs += "--mode=production",
       Compile / fastOptJS / webpackDevServerExtraArgs += "--mode=development",
       Compile / fullOptJS / webpackDevServerExtraArgs += "--mode=production",
-      useYarn := true
+      useYarn := true,
+      Compile / jsSourceDirectories += baseDirectory.value / "html"
     )

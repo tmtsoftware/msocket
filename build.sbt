@@ -149,7 +149,7 @@ lazy val `example-service-app-jvm` = project
 lazy val `example-service-app-js` = project
   .in(file("example-service/example-service-app-js"))
   .dependsOn(`example-service-api`.js, `msocket-impl-js`)
-  .configure(baseJsSettings, npmSettings)
+  .configure(baseJsSettings)
   .settings(
     libraryDependencies ++= Seq(
       `scalatest`.value % Test
@@ -181,23 +181,3 @@ lazy val baseJsSettings: Project => Project =
       /* for ScalablyTyped */
       resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")
     )
-
-lazy val start      = TaskKey[Unit]("start")
-lazy val buildProdS = TaskKey[Unit]("build prod package")
-
-import scala.language.postfixOps
-import scala.sys.process._
-lazy val npmSettings: Project => Project =
-  _.settings(
-    start := {
-      s"./npmsh.sh development" !
-    },
-    buildProdS := {
-      s"./npmsh.sh production" !
-
-      //        "cd example-service/example-service-app-js && npm start" !
-      //        val indexFrom = baseDirectory.value / "html" / "index.html"
-      //        val indexTo   = (Compile / fastOptJS / crossTarget).value / "index.html"
-      //        Files.copy(indexFrom.toPath, indexTo.toPath, REPLACE_EXISTING)
-    }
-  )

@@ -14,7 +14,7 @@ class ExampleServer(routes: Route)(system: ActorSystem[_]) {
 
   def start(host: String, port: Int): Future[Http.ServerBinding] = {
     implicit val classic: actor.ActorSystem = system.toClassic
-    Http().bindAndHandle(routes, host, port)
+    Http().bindAndHandle(routesWithCors, host, port)
   }
 
   def routesWithCors: Route = cors() {

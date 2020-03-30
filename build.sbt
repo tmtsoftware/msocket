@@ -157,7 +157,7 @@ lazy val `example-service-app-js` = project
     npmDependencies in Compile ++= Seq(
       "eventsource"              -> "1.0.7",
       "can-ndjson-stream"        -> "1.0.2",
-      "rsocket-websocket-client" -> "0.0.18"
+      "rsocket-websocket-client" -> "0.0.19"
     ),
     libraryDependencies ++= Seq(
       `scalatest`.value % Test
@@ -180,13 +180,7 @@ lazy val baseJsSettings: Project => Project =
   _.enablePlugins(ScalaJSPlugin)
     .settings(
       scalaJSUseMainModuleInitializer := true,
-      scalaJSModuleKind := ModuleKind.CommonJSModule,
-      scalaJSLinkerConfig ~= { _.withESFeatures(_.withUseECMAScript2015(true)) },
-      /* disabled because it somehow triggers many warnings */
-      emitSourceMaps := false,
-      /* in preparation for scala.js 1.0 */
-      scalacOptions += "-P:scalajs:sjsDefinedByDefault",
-      /* for ScalablyTyped */
+      scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule).withSourceMap(false) },
       resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")
     )
 

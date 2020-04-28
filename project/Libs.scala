@@ -3,10 +3,6 @@ import sbt.Def.{setting => dep}
 import sbt._
 
 object Libs {
-
-  val `silencer-plugin` = "com.github.ghik" % "silencer-plugin" % "1.6.0" cross CrossVersion.full
-  val `silencer-lib`    = "com.github.ghik" % "silencer-lib"    % "1.6.0" cross CrossVersion.full
-
   val `akka-stream`         = "com.typesafe.akka" %% "akka-stream"         % "2.6.4"
   val `akka-actor-typed`    = "com.typesafe.akka" %% "akka-actor-typed"    % "2.6.4"
   val `akka-stream-testkit` = "com.typesafe.akka" %% "akka-stream-testkit" % "2.6.4"

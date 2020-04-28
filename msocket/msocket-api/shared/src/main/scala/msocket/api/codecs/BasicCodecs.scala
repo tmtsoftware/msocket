@@ -4,11 +4,11 @@ import java.util.concurrent.TimeUnit
 
 import akka.Done
 import akka.util.Timeout
-import com.github.ghik.silencer.silent
 import io.bullet.borer.derivation.CompactMapBasedCodecs
 import io.bullet.borer.{Codec, Decoder, Encoder}
 import msocket.api.models.Result
 
+import scala.annotation.nowarn
 import scala.concurrent.duration.FiniteDuration
 
 object BasicCodecs extends BasicCodecs
@@ -19,7 +19,7 @@ trait BasicCodecs {
   implicit lazy val doneCodec: Codec[Done] = Codec.bimap[String, Done](_ => "done", _ => Done)
 
   implicit lazy val timeoutInSecondsCodec: Codec[Timeout] = {
-    @silent implicit val durationInSecondsCodec: Codec[FiniteDuration] =
+    @nowarn implicit val durationInSecondsCodec: Codec[FiniteDuration] =
       Codec.bimap[Long, FiniteDuration](_.toSeconds, FiniteDuration(_, TimeUnit.SECONDS))
 
     CompactMapBasedCodecs.deriveCodec

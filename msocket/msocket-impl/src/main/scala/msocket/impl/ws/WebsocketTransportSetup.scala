@@ -2,7 +2,6 @@ package msocket.impl.ws
 
 import akka.NotUsed
 import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.ws.{Message, WebSocketRequest}
 import akka.stream.scaladsl.{Flow, Sink, Source}

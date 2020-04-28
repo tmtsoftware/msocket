@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
   Seq(
-    scalaVersion := "2.13.1",
+    scalaVersion := "2.13.2",
     version := "0.1.0-SNAPSHOT",
     organization := "com.github.tmtsoftware.msocket",
     organizationName := "ThoughtWorks",
@@ -20,13 +20,8 @@ inThisBuild(
       "-unchecked",
       "-deprecation",
       "-Xlint:_,-missing-interpolator",
-      "-Ywarn-dead-code",
-      "-P:silencer:checkUnused"
+      "-Ywarn-dead-code"
       //      "-Xprint:typer"
-    ),
-    libraryDependencies ++= Seq(
-      compilerPlugin(`silencer-plugin`),
-      `silencer-lib` % Provided
     )
   )
 )

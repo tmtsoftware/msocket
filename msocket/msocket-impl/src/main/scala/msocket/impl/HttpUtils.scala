@@ -18,7 +18,7 @@ class HttpUtils[Req](val clientContentType: ContentType)(implicit actorSystem: A
   import actorSystem.executionContext
 
   def handleRequest(httpRequest: HttpRequest): Future[HttpResponse] = {
-    Http(actorSystem).singleRequest(httpRequest).flatMap { response =>
+    Http().singleRequest(httpRequest).flatMap { response =>
       response.status match {
         case StatusCodes.OK => Future.successful(response)
         case _              => handleError(response).map(throw _)

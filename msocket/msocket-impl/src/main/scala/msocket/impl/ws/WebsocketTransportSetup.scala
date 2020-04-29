@@ -14,7 +14,7 @@ class WebsocketTransportSetup(webSocketRequest: WebSocketRequest)(implicit actor
 
     val requestSource = Source.single(message).concat(Source.maybe)
     val flow          = Flow.fromSinkAndSourceCoupled(connectionSink, requestSource)
-    Http()(actorSystem.toClassic).singleWebSocketRequest(webSocketRequest, flow)
+    Http().singleWebSocketRequest(webSocketRequest, flow)
 
     connectionSource
   }

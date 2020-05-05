@@ -138,7 +138,8 @@ lazy val `example-service-app-jvm` = project
   .settings(
     libraryDependencies ++= Seq(
       `scalatest`.value % Test
-    )
+    ),
+    scalacOptions += "-Wunused:-locals"
   )
 
 lazy val `example-service-app-js` = project
@@ -153,7 +154,8 @@ lazy val `example-service-app-js` = project
     ),
     libraryDependencies ++= Seq(
       `scalatest`.value % Test
-    )
+    ),
+    scalacOptions += "-Wunused:-locals"
   )
 
 lazy val `example-service-test` = project

@@ -1,0 +1,8 @@
+libraryDependencies ++= Seq(
+  "org.scalablytyped" %%% "csw-aas-js" % "2.0.0-12712d",
+  "org.scalablytyped" %%% "eventsource" % "1.1.2-3917e7",
+  "org.scalablytyped" %%% "react" % "16.9.34-d0a54d",
+  "org.scalablytyped" %%% "react-dom" % "16.9.6-d69171",
+  "org.scalablytyped" %%% "rsocket-websocket-client" % "0.0.3-6ed313",
+  "org.scalablytyped" %%% "rxjs" % "6.5.5-5f9050"
+)

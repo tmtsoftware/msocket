@@ -6,7 +6,7 @@ target
 .idea
 .metals
 *.iml
-/out
+out
 .idea_modules
 .classpath
 .project

@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@types/eventsource": "1.1.2",
+    "@types/react": "16.9.34",
+    "@types/react-dom": "16.9.6",
+    "@types/rsocket-websocket-client": "0.0.3",
+    "csw-aas-js": "2.0.0",
+    "rxjs": "6.5.5"
+  }
+}

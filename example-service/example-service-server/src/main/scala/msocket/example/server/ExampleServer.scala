@@ -17,7 +17,8 @@ class ExampleServer(routes: Route)(system: ActorSystem[_]) {
     Http().bindAndHandle(routesWithCors, host, port)
   }
 
-  def routesWithCors: Route = cors() {
-    routes
-  }
+  def routesWithCors: Route =
+    cors() {
+      routes
+    }
 }

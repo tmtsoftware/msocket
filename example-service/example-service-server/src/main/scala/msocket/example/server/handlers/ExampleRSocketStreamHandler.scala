@@ -15,10 +15,11 @@ import msocket.impl.rsocket.server.RSocketStreamHandler
  */
 class ExampleRSocketStreamHandler(exampleApi: ExampleApi, contentType: ContentType)
     extends RSocketStreamHandler[ExampleRequestStream](contentType) {
-  override def handle(message: ExampleRequestStream): Source[Payload, NotUsed] = message match {
-    case Square(number)          => stream(exampleApi.square(number))
-    case HelloStream(name)       => stream(exampleApi.helloStream(name))
-    case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
-    case RandomBagStream         => stream(exampleApi.randomBagStream())
-  }
+  override def handle(message: ExampleRequestStream): Source[Payload, NotUsed] =
+    message match {
+      case Square(number)          => stream(exampleApi.square(number))
+      case HelloStream(name)       => stream(exampleApi.helloStream(name))
+      case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
+      case RandomBagStream         => stream(exampleApi.randomBagStream())
+    }
 }

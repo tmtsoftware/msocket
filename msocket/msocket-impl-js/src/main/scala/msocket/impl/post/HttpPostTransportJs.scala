@@ -14,8 +14,8 @@ import scala.scalajs.js
 import scala.scalajs.js.timers
 import scala.util.control.NonFatal
 
-class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType: ContentType)(
-    implicit ec: ExecutionContext,
+class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType: ContentType)(implicit
+    ec: ExecutionContext,
     streamingDelay: FiniteDuration
 ) extends JsTransport[Req] {
 

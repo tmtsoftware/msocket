@@ -18,8 +18,9 @@ object PostDirectives {
 
   val withAcceptHeader: Directive0 = mapRequest(addMissingAcceptHeader)
 
-  def exceptionHandlerFor[Req: ErrorProtocol]: Directive0 = handleExceptions {
-    ExceptionHandler(new HttpErrorEncoder[Req].errorEncoder)
-  }
+  def exceptionHandlerFor[Req: ErrorProtocol]: Directive0 =
+    handleExceptions {
+      ExceptionHandler(new HttpErrorEncoder[Req].errorEncoder)
+    }
 
 }

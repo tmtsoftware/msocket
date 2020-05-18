@@ -26,18 +26,19 @@ object Labelled {
 
   implicit def emptyLabelled[T]: Labelled[T] = make(List.empty, _ => Map.empty)
 
-  private def make[T](labelList: List[String], labelsFactory: T => Labels): Labelled[T] = new Labelled[T] {
-    override def labelNames: List[String] = DefaultLabels ++ labelList
+  private def make[T](labelList: List[String], labelsFactory: T => Labels): Labelled[T] =
+    new Labelled[T] {
+      override def labelNames: List[String] = DefaultLabels ++ labelList
 
-    override def labels(req: T, requestMetadata: RequestMetadata): MetricLabels = {
-      val labelMap = labelsFactory(req) ++ Map(
-        MsgLabel         -> createLabel(req),
-        HostAddressLabel -> requestMetadata.address,
-        AppNameLabel     -> requestMetadata.appName
-      )
-      MetricLabels(labelNames, labelMap)
+      override def labels(req: T, requestMetadata: RequestMetadata): MetricLabels = {
+        val labelMap = labelsFactory(req) ++ Map(
+          MsgLabel         -> createLabel(req),
+          HostAddressLabel -> requestMetadata.address,
+          AppNameLabel     -> requestMetadata.appName
+        )
+        MetricLabels(labelNames, labelMap)
+      }
     }
-  }
 
   def createLabel[A](obj: A): String = {
     val name = obj.getClass.getSimpleName

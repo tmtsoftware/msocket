@@ -47,10 +47,11 @@ object Transport {
       new ContraMappedTransport(transport, action)
     }
 
-    def withEffect(action: Req => Unit): Transport[Req] = contraMap { x =>
-      action(x)
-      x
-    }
+    def withEffect(action: Req => Unit): Transport[Req] =
+      contraMap { x =>
+        action(x)
+        x
+      }
 
     def logRequest(action: String => Unit = println): Transport[Req] = {
       withEffect(x => action(s"Request --> ${JsonText.encode(x)}"))

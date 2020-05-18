@@ -18,8 +18,8 @@ import scala.scalajs.js.timers
 import scala.scalajs.js.timers.SetIntervalHandle
 import scala.util.{Failure, Success, Try}
 
-class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: String)(
-    implicit rSocketEncoders: RSocketEncoders[CT],
+class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: String)(implicit
+    rSocketEncoders: RSocketEncoders[CT],
     ec: ExecutionContext,
     streamingDelay: FiniteDuration
 ) extends JsTransport[Req] {
@@ -38,11 +38,12 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: St
     )
   )
 
-  private def subscriber[T](p: Promise[T]): IFutureSubscriber[Try[T]] = IFutureSubscriber[Try[T]](
-    p.tryComplete,
-    e => p.tryFailure(new RuntimeException(e.message)),
-    _ => println("inside onSubscribe")
-  )
+  private def subscriber[T](p: Promise[T]): IFutureSubscriber[Try[T]] =
+    IFutureSubscriber[Try[T]](
+      p.tryComplete,
+      e => p.tryFailure(new RuntimeException(e.message)),
+      _ => println("inside onSubscribe")
+    )
 
   private val socketPromise: Promise[ReactiveSocket[rSocketEncoders.En, Null]] = Promise()
   client.connect().map(Try(_)).subscribe(PartialOf(subscriber(socketPromise)))
@@ -75,11 +76,12 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: St
 
     val subscriber: ISubscriber[Try[Res]] = ISubscriber[Try[Res]](
       () => println("stream completed"),
-      e => onError(new RuntimeException(e.message)), {
+      e => onError(new RuntimeException(e.message)),
+      {
         case Failure(exception) =>
           onError(exception)
           cancelSubscription()
-        case Success(value) => onMessage(value)
+        case Success(value)     => onMessage(value)
       },
       subscriptionPromise.trySuccess
     )

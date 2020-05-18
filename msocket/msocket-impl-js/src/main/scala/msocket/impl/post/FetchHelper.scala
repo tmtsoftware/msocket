@@ -10,8 +10,8 @@ import scala.scalajs.js
 import scala.util.control.NonFatal
 
 object FetchHelper {
-  def postRequest[Req: Encoder: ErrorProtocol](uri: String, req: Req, contentType: ContentType)(
-      implicit ec: ExecutionContext
+  def postRequest[Req: Encoder: ErrorProtocol](uri: String, req: Req, contentType: ContentType)(implicit
+      ec: ExecutionContext
   ): Future[Response] = {
 
     val fetchRequest = new FetchRequest {
@@ -20,9 +20,10 @@ object FetchHelper {
       headers = js.Dictionary("content-type" -> contentType.mimeType)
     }
 
-    def handleError(response: Response): Future[Throwable] = contentType.responseError(response).recover {
-      case NonFatal(ex) => HttpError(response.status, response.statusText, ex.getMessage)
-    }
+    def handleError(response: Response): Future[Throwable] =
+      contentType.responseError(response).recover {
+        case NonFatal(ex) => HttpError(response.status, response.statusText, ex.getMessage)
+      }
 
     Fetch.fetch(uri, fetchRequest).toFuture.flatMap { response =>
       response.status match {

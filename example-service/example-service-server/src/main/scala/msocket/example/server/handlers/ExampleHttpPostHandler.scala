@@ -12,8 +12,9 @@ import msocket.impl.post.{HttpPostHandler, ServerHttpCodecs}
  * These handlers receive POST requests and responds via [[Route]] instance
  */
 class ExampleHttpPostHandler(exampleApi: ExampleApi) extends HttpPostHandler[ExampleRequestResponse] with ServerHttpCodecs {
-  override def handle(request: ExampleRequestResponse): Route = request match {
-    case Hello(name) => complete(exampleApi.hello(name))
-    case RandomBag   => complete(exampleApi.randomBag())
-  }
+  override def handle(request: ExampleRequestResponse): Route =
+    request match {
+      case Hello(name) => complete(exampleApi.hello(name))
+      case RandomBag   => complete(exampleApi.randomBag())
+    }
 }

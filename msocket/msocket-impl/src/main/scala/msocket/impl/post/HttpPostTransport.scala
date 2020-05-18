@@ -15,8 +15,8 @@ import msocket.impl.{HttpUtils, JvmTransport}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class HttpPostTransport[Req: Encoder](uri: String, contentType: ContentType, tokenFactory: () => Option[String])(
-    implicit actorSystem: ActorSystem[_],
+class HttpPostTransport[Req: Encoder](uri: String, contentType: ContentType, tokenFactory: () => Option[String])(implicit
+    actorSystem: ActorSystem[_],
     ep: ErrorProtocol[Req]
 ) extends JvmTransport[Req]
     with ClientHttpCodecs {

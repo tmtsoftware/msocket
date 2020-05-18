@@ -32,9 +32,9 @@ class ServerWiring extends ExampleCodecs {
 
   def requestResponseHandler(contentType: ContentType): ExampleRSocketResponseHandler =
     new ExampleRSocketResponseHandler(exampleImpl, contentType)
-  def requestStreamHandler(contentType: ContentType): ExampleRSocketStreamHandler =
+  def requestStreamHandler(contentType: ContentType): ExampleRSocketStreamHandler     =
     new ExampleRSocketStreamHandler(exampleImpl, contentType)
-  def rSocketFactory(contentType: ContentType): RSocket =
+  def rSocketFactory(contentType: ContentType): RSocket                               =
     new RSocketImpl(requestResponseHandler, requestStreamHandler, contentType)
 
   lazy val applicationRoute: Route = RouteFactory.combine(metricsEnabled = true)(

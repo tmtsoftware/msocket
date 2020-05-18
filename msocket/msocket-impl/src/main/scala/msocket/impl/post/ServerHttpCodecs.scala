@@ -11,7 +11,7 @@ import msocket.api.codecs.BasicCodecs
 import scala.reflect.ClassTag
 
 object ServerHttpCodecs extends ServerHttpCodecs
-trait ServerHttpCodecs extends AkkaHttpCompat with BasicCodecs {
+trait ServerHttpCodecs  extends AkkaHttpCompat with BasicCodecs {
   val jsonStreamingSupport: JsonEntityStreamingSupport = EntityStreamingSupport
     .json(8 * 1024)
     .withFramingRenderer(Flow[ByteString].intersperse(ByteString("\n")))

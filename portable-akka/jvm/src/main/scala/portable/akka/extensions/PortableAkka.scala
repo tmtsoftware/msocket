@@ -17,10 +17,11 @@ object PortableAkka {
     }
   }
 
-  def onMessage[Out, Mat](stream: Source[Out, Mat])(messageHandler: Out => Unit): Source[Out, Mat] = stream.map { x =>
-    messageHandler(x)
-    x
-  }
+  def onMessage[Out, Mat](stream: Source[Out, Mat])(messageHandler: Out => Unit): Source[Out, Mat] =
+    stream.map { x =>
+      messageHandler(x)
+      x
+    }
 
   def onError[Out, Mat](stream: Source[Out, Mat])(errorHandler: Throwable => Unit): Source[Out, Mat] =
     stream.mapError {

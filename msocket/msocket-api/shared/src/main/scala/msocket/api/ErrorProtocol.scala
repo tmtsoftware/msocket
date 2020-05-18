@@ -16,10 +16,11 @@ object ErrorProtocol {
   implicit def enc[T](implicit ep: ErrorProtocol[T]): Encoder[ep.E]       = ep.enc
   implicit def classTag[T](implicit ep: ErrorProtocol[T]): ClassTag[ep.E] = ep.classTag
 
-  def bind[T, Err <: Throwable: Encoder: Decoder: ClassTag]: ErrorProtocol[T] = new ErrorProtocol[T] {
-    override type E = Err
-    override val enc: Encoder[E]       = Encoder[E]
-    override val dec: Decoder[E]       = Decoder[E]
-    override val classTag: ClassTag[E] = scala.reflect.classTag[E]
-  }
+  def bind[T, Err <: Throwable: Encoder: Decoder: ClassTag]: ErrorProtocol[T] =
+    new ErrorProtocol[T] {
+      override type E = Err
+      override val enc: Encoder[E]       = Encoder[E]
+      override val dec: Decoder[E]       = Decoder[E]
+      override val classTag: ClassTag[E] = scala.reflect.classTag[E]
+    }
 }

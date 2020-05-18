@@ -16,8 +16,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class ExampleRSocketResponseHandler(exampleApi: ExampleApi, contentType: ContentType)(implicit ec: ExecutionContext)
     extends RSocketResponseHandler[ExampleRequestResponse](contentType) {
 
-  override def handle(message: ExampleRequestResponse): Future[Payload] = message match {
-    case Hello(name) => future(exampleApi.hello(name))
-    case RandomBag   => future(exampleApi.randomBag())
-  }
+  override def handle(message: ExampleRequestResponse): Future[Payload] =
+    message match {
+      case Hello(name) => future(exampleApi.hello(name))
+      case RandomBag   => future(exampleApi.randomBag())
+    }
 }

@@ -24,9 +24,9 @@ trait ExampleCodecs {
    * This is required so that domain specific errors are correctly
    * serialized without error types being known at compile time
    */
-  implicit lazy val exampleRequestErrorProtocol: ErrorProtocol[ExampleRequest] = ErrorProtocol.bind[ExampleRequest, ExampleError]
+  implicit lazy val exampleRequestErrorProtocol: ErrorProtocol[ExampleRequest]                 = ErrorProtocol.bind[ExampleRequest, ExampleError]
   implicit lazy val exampleRequestResponseErrorProtocol: ErrorProtocol[ExampleRequestResponse] =
     ErrorProtocol.bind[ExampleRequestResponse, ExampleError]
-  implicit lazy val exampleRequestStreamErrorProtocol: ErrorProtocol[ExampleRequestStream] =
+  implicit lazy val exampleRequestStreamErrorProtocol: ErrorProtocol[ExampleRequestStream]     =
     ErrorProtocol.bind[ExampleRequestStream, ExampleError]
 }

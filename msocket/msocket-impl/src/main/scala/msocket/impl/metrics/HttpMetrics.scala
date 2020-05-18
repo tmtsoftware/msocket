@@ -9,10 +9,11 @@ object HttpMetrics extends HttpMetrics
 
 trait HttpMetrics extends Metrics {
 
-  def httpCounter[Req: Labelled]: Counter = counter(
-    metricName = "http_requests_total",
-    help = "Total http requests"
-  )
+  def httpCounter[Req: Labelled]: Counter =
+    counter(
+      metricName = "http_requests_total",
+      help = "Total http requests"
+    )
 
   def withHttpMetrics[Req: Decoder: ErrorProtocol: Labelled](collector: MetricCollector[Req], handle: Req => Route): Route = {
     import collector._

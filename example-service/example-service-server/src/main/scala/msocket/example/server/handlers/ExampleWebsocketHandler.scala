@@ -15,10 +15,11 @@ import msocket.impl.ws.WebsocketHandler
  */
 class ExampleWebsocketHandler(exampleApi: ExampleApi, contentType: ContentType)
     extends WebsocketHandler[ExampleRequestStream](contentType) {
-  override def handle(message: ExampleRequestStream): Source[Message, NotUsed] = message match {
-    case Square(number)          => stream(exampleApi.square(number))
-    case HelloStream(name)       => stream(exampleApi.helloStream(name))
-    case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
-    case RandomBagStream         => stream(exampleApi.randomBagStream())
-  }
+  override def handle(message: ExampleRequestStream): Source[Message, NotUsed] =
+    message match {
+      case Square(number)          => stream(exampleApi.square(number))
+      case HelloStream(name)       => stream(exampleApi.helloStream(name))
+      case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
+      case RandomBagStream         => stream(exampleApi.randomBagStream())
+    }
 }

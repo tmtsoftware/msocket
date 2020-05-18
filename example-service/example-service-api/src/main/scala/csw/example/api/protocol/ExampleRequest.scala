@@ -16,7 +16,7 @@ object ExampleRequest {
   case object RandomBag               extends ExampleRequestResponse
 
   object ExampleRequestResponse {
-    private val testLabel = "test_label"
+    private val testLabel                                   = "test_label"
     implicit val labelled: Labelled[ExampleRequestResponse] =
       Labelled.make(List(testLabel)) { case _ => Map(testLabel -> "test_value") }
   }

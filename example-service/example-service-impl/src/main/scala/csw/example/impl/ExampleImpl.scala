@@ -22,7 +22,7 @@ class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
 
   override def hello(name: String): Future[String] = {
     name match {
-      case "idiot" => Future.failed(HelloError(5)) //domain error
+      case "idiot" => Future.failed(HelloError(5))                                  //domain error
       case "fool"  => Future.failed(new IllegalArgumentException("you are a fool")) //generic error
       case x       => Future.successful(s"Hello $x")
     }

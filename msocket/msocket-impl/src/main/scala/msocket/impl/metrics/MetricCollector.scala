@@ -20,7 +20,7 @@ class MetricCollector[Req: Labelled](
   implicit lazy val ec: ExecutionContext = requestContext.executionContext
 
   private val clientIp: String = clientAddress.toString()
-  private val appName: String =
+  private val appName: String  =
     requestContext.request.headers.find(_.name.equalsIgnoreCase(AppNameHeader)).map(_.value).getOrElse("unknown")
 
   private lazy val labels: Seq[String]            = Labelled[Req].labels(request, RequestMetadata(clientIp, appName)).values

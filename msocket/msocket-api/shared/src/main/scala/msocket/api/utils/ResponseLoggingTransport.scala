@@ -8,8 +8,8 @@ import portable.akka.extensions.PortableAkka
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: String => Unit = println)(
-    implicit ec: ExecutionContext,
+class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: String => Unit = println)(implicit
+    ec: ExecutionContext,
     ep: ErrorProtocol[Req]
 ) extends Transport {
 

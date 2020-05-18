@@ -14,10 +14,11 @@ import msocket.impl.sse.SseHandler
  */
 class ExampleSseHandler(exampleApi: ExampleApi) extends SseHandler[ExampleRequestStream] {
 
-  override def handle(request: ExampleRequestStream): Source[ServerSentEvent, NotUsed] = request match {
-    case Square(number)          => stream(exampleApi.square(number))
-    case HelloStream(name)       => stream(exampleApi.helloStream(name))
-    case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
-    case RandomBagStream         => stream(exampleApi.randomBagStream())
-  }
+  override def handle(request: ExampleRequestStream): Source[ServerSentEvent, NotUsed] =
+    request match {
+      case Square(number)          => stream(exampleApi.square(number))
+      case HelloStream(name)       => stream(exampleApi.helloStream(name))
+      case GetNumbers(divisibleBy) => stream(exampleApi.getNumbers(divisibleBy))
+      case RandomBagStream         => stream(exampleApi.randomBagStream())
+    }
 }

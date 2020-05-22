@@ -73,7 +73,8 @@ lazy val `msocket-impl` = project
     libraryDependencies ++= Seq(
       `akka-http`,
       `borer-compat-akka`,
-      `prometheus-akka-http`
+      `prometheus-akka-http`,
+      `akka-http-spray-json`
     )
   )
 

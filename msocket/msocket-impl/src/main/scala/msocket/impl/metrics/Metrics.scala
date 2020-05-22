@@ -5,15 +5,13 @@ import akka.http.scaladsl.server.Directives.extractClientIP
 import akka.http.scaladsl.server.directives.BasicDirectives.extract
 import akka.http.scaladsl.server.{Directive1, Route}
 import akka.stream.scaladsl.Source
-import com.lonelyplanet.prometheus.PrometheusResponseTimeRecorder
-import com.lonelyplanet.prometheus.api.MetricsEndpoint
-import io.prometheus.client.{Counter, Gauge}
+import io.prometheus.client.{CollectorRegistry, Counter, Gauge}
 import msocket.api.Labelled
 
 object Metrics extends Metrics
 
 trait Metrics {
-  private lazy val prometheusRegistry = PrometheusResponseTimeRecorder.DefaultRegistry
+  private lazy val prometheusRegistry = CollectorRegistry.defaultRegistry
   lazy val metricsRoute: Route        = new MetricsEndpoint(prometheusRegistry).routes
 
   def counter[Req: Labelled](metricName: String, help: String): Counter =
@@ -40,10 +38,7 @@ trait Metrics {
     if (enabled) {
       incGauge()
       source
-        .map { msg =>
-          incCounter()
-          msg
-        }
+        .wireTap { _ => incCounter() }
         .watchTermination() {
           case (mat, completion) =>
             completion.onComplete(_ => decGauge())

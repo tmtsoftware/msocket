@@ -9,7 +9,6 @@ inThisBuild(
     organizationName := "ThoughtWorks",
     resolvers ++= Seq(
       Resolver.jcenterRepo,
-      Resolver.bintrayRepo("lonelyplanet", "maven"),
       Resolver.bintrayRepo("mausamy", "tmtyped")
     ),
     scalafmtOnCompile := true,
@@ -73,8 +72,11 @@ lazy val `msocket-impl` = project
     libraryDependencies ++= Seq(
       `akka-http`,
       `borer-compat-akka`,
-      `prometheus-akka-http`,
-      `akka-http-spray-json`
+      Prometheus.simpleclient,
+      Prometheus.simpleclient_common,
+      scalatest.value            % Test,
+      `akka-actor-testkit-typed` % Test,
+      `akka-http-testkit`        % Test
     )
   )
 
@@ -84,7 +86,7 @@ lazy val `msocket-impl-js` = project
   .dependsOn(`msocket-api`.js)
   .settings(
     libraryDependencies ++= Seq(
-      `eventsource`.value,
+      eventsource.value,
       `rsocket-websocket-client`.value,
       `scalajs-dom`.value
     )
@@ -127,7 +129,7 @@ lazy val `example-service-server` = project
   .settings(
     libraryDependencies ++= Seq(
       `akka-http-cors`,
-      `scalatest`.value     % Test,
+      scalatest.value       % Test,
       `akka-http-testkit`   % Test,
       `akka-stream-testkit` % Test
     )
@@ -138,7 +140,7 @@ lazy val `example-service-app-jvm` = project
   .dependsOn(`example-service-api`.jvm, `msocket-impl`, `msocket-impl-rsocket`)
   .settings(
     libraryDependencies ++= Seq(
-      `scalatest`.value % Test
+      scalatest.value % Test
     ),
     scalacOptions += "-Wunused:-locals"
   )
@@ -154,7 +156,7 @@ lazy val `example-service-app-js` = project
       "rsocket-websocket-client" -> "0.0.19"
     ),
     libraryDependencies ++= Seq(
-      `scalatest`.value % Test
+      scalatest.value % Test
     ),
     scalacOptions += "-Wunused:-locals"
   )
@@ -165,7 +167,7 @@ lazy val `example-service-test` = project
   .settings(
     libraryDependencies ++= Seq(
       `akka-stream-testkit` % Test,
-      `scalatest`.value     % Test
+      scalatest.value       % Test
     )
   )
 

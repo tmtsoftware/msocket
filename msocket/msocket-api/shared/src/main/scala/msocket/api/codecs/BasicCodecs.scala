@@ -16,7 +16,7 @@ trait BasicCodecs {
   implicit def eitherCodec[E: Encoder: Decoder, S: Encoder: Decoder]: Codec[Either[E, S]] =
     Codec.of[Result[S, E]].bimap(Result.fromEither, Result.toEither)
 
-  implicit lazy val doneCodec: Codec[Done] = Codec.bimap[String, Done](_ => "done", _ => Done)
+  implicit lazy val doneCodec: Codec[Done] = Codec.bimap[String, Done](_ => "Done", _ => Done)
 
   implicit lazy val timeoutInSecondsCodec: Codec[Timeout] = {
     @nowarn implicit val durationInSecondsCodec: Codec[FiniteDuration] =

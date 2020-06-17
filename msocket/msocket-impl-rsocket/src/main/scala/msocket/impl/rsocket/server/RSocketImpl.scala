@@ -3,7 +3,7 @@ package msocket.impl.rsocket.server
 import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.Decoder
-import io.rsocket.{AbstractRSocket, Payload}
+import io.rsocket.{Payload, RSocket}
 import msocket.api.ContentType
 import msocket.impl.rsocket.RSocketExtensions._
 import reactor.core.publisher.{Flux, Mono}
@@ -15,7 +15,7 @@ class RSocketImpl[RespReq: Decoder, StreamReq: Decoder](
     requestStreamHandlerF: ContentType => RSocketStreamHandler[StreamReq],
     contentType: ContentType
 )(implicit actorSystem: ActorSystem[_])
-    extends AbstractRSocket {
+    extends RSocket {
 
   import actorSystem.executionContext
 

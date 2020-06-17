@@ -1,8 +1,9 @@
 package msocket.impl.rsocket.server
 
 import akka.actor.typed.ActorSystem
+import io.rsocket.RSocket
+import io.rsocket.core
 import io.rsocket.transport.netty.server.{CloseableChannel, WebsocketServerTransport}
-import io.rsocket.{RSocket, RSocketFactory}
 import msocket.api.ContentType
 import reactor.core.publisher.Mono
 
@@ -19,13 +20,12 @@ class RSocketServer(rSocketF: ContentType => RSocket)(implicit actorSystem: Acto
   def start(interface: String, port: Int): Future[CloseableChannel] = {
     val transport = WebsocketServerTransport.create(interface, port)
 
-    val eventualChannel = RSocketFactory.receive
-      .acceptor { (setupPayload, _) =>
+    val eventualChannel = core.RSocketServer
+      .create { (setupPayload, _) =>
         val contentType = ContentType.fromMimeType(setupPayload.dataMimeType())
         Mono.just(rSocketF(contentType))
       }
-      .transport(transport)
-      .start
+      .bind(transport)
       .toFuture
       .toScala
 

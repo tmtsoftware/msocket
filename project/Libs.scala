@@ -8,15 +8,15 @@ object Libs {
   val `akka-actor-testkit-typed` = "com.typesafe.akka" %% "akka-actor-testkit-typed" % "2.6.6"
   val `akka-stream-testkit`      = "com.typesafe.akka" %% "akka-stream-testkit"      % "2.6.6"
 
-  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.2.0-M1"
-  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.2.0-M1"
+  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.2.0-RC1"
+  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.2.0-RC1"
 
   val `borer-core`        = dep("io.bullet" %%% "borer-core" % "1.6.0")
   val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "1.6.0")
   val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "1.6.0"
 
   val `akka-http-cors` = "ch.megard" %% "akka-http-cors" % "1.0.0"
-  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.1.2")
+  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.0")
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "1.0.0")
 
   val eventsource                = dep("org.scalablytyped" %%% "eventsource" % "1.1.2-3917e7")

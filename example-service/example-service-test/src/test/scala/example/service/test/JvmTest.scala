@@ -19,20 +19,14 @@ import msocket.impl.sse.SseTransport
 import msocket.impl.ws.WebsocketTransport
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationLong
 
-class JvmTest
-    extends AnyWordSpecLike
-    with Matchers
-    with BeforeAndAfterAll
-    with ExampleCodecs
-    with ScalaFutures
-    with TableDrivenPropertyChecks {
+class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with ExampleCodecs with ScalaFutures with TableDrivenPropertyChecks {
 
   val wiring = new ServerWiring()
 
@@ -67,75 +61,83 @@ class JvmTest
     lazy val sseTransport       = new SseTransport[ExampleRequestStream](SseEndpoint)
     lazy val websocketTransport = new WebsocketTransport[ExampleRequestStream](WebsocketEndpoint, contentType)
 
-    List(httpResponseTransport, rSocketResponseTransport).foreach { transport =>
-      s"${transport.getClass.getSimpleName} and ${contentType.toString}" must {
-        s"requestResponse" in {
-          val client = new ExampleClient(transport, null)
-          client.hello("John").futureValue shouldBe "Hello John"
-        }
+    contentType.toString - {
+      "requestResponse" - {
+        List(httpResponseTransport, rSocketResponseTransport).foreach { transport =>
+          transport.getClass.getSimpleName - {
+            "success response" in {
+              val client = new ExampleClient(transport, null)
+              client.hello("John").futureValue shouldBe "Hello John"
+            }
 
-        s"requestResponse with domain error" in {
-          val client = new ExampleClient(transport, null)
-          val caught = intercept[HelloError] {
-            Await.result(client.hello("idiot"), 3.second)
-          }
-          caught shouldBe HelloError(5)
-        }
+            "domain error" in {
+              val client = new ExampleClient(transport, null)
+              val caught = intercept[HelloError] {
+                Await.result(client.hello("idiot"), 3.second)
+              }
+              caught shouldBe HelloError(5)
+            }
 
-        s"requestResponse expect generic error on fool" in {
-          val client = new ExampleClient(transport, null)
-          val caught = intercept[ServiceError] {
-            Await.result(client.hello("fool"), 3.second)
+            "generic error" in {
+              val client = new ExampleClient(transport, null)
+              val caught = intercept[ServiceError] {
+                Await.result(client.hello("fool"), 3.second)
+              }
+              caught shouldBe ServiceError.fromThrowable(new IllegalArgumentException("you are a fool"))
+            }
           }
-          caught shouldBe ServiceError.fromThrowable(new IllegalArgumentException("you are a fool"))
+        }
+      }
+
+      "requestStream" - {
+        val bilingualTransports = List(rSocketStreamTransport, websocketTransport)
+        val jsonOnlyTransports  = List(sseTransport, httpStreamTransport)
+        val transports          = if (contentType == Json) bilingualTransports ++ jsonOnlyTransports else bilingualTransports
+
+        transports.foreach { transport =>
+          transport.getClass.getSimpleName - {
+            s"simple stream" in {
+              val client = new ExampleClient(null, transport)
+              client
+                .getNumbers(12)
+                .runWith(makeProbe)
+                .request(2)
+                .expectNextN(Seq(12, 24))
+            }
+
+            "stream with interval" in {
+              val client = new ExampleClient(null, transport)
+              client
+                .helloStream("John")
+                .runWith(makeProbe)
+                .request(2)
+                .expectNext("hello \n John again 0")
+                .expectNoMessage(100.millis)
+                .expectNext("hello \n John again 1")
+            }
+
+            "domain error " in {
+              val client = new ExampleClient(null, transport)
+              client
+                .getNumbers(-1)
+                .runWith(makeProbe)
+                .request(1)
+                .expectError(GetNumbersError(17))
+            }
+
+            "stream cancellation " in {
+              val client                            = new ExampleClient(null, transport)
+              val source: Source[Int, Subscription] = client.getNumbers(3)
+              val (subscription, countF)            = source.toMat(Sink.fold(0)((acc, _) => acc + 1))(Keep.both).run()
+              subscription.cancel()
+              val count                             = Await.result(countF, 1.seconds)
+              // if stream cancels successfully, count will be finite, in most cases 0
+              count should be < Int.MaxValue
+            }
+          }
         }
       }
     }
 
-    val bilingualTransports = List(rSocketStreamTransport, websocketTransport)
-    val jsonOnlyTransports  = List(sseTransport, httpStreamTransport)
-    val transports          = if (contentType == Json) bilingualTransports ++ jsonOnlyTransports else bilingualTransports
-
-    transports.foreach { transport =>
-      s"${transport.getClass.getSimpleName} and ${contentType.toString}" must {
-        s"requestStream" in {
-          val client = new ExampleClient(null, transport)
-          client
-            .getNumbers(12)
-            .runWith(makeProbe)
-            .request(2)
-            .expectNextN(Seq(12, 24))
-        }
-
-        s"requestStream with interval" in {
-          val client = new ExampleClient(null, transport)
-          client
-            .helloStream("John")
-            .runWith(makeProbe)
-            .request(2)
-            .expectNext("hello \n John again 0")
-            .expectNoMessage(100.millis)
-            .expectNext("hello \n John again 1")
-        }
-
-        s"requestStream with domain error " in {
-          val client = new ExampleClient(null, transport)
-          client
-            .getNumbers(-1)
-            .runWith(makeProbe)
-            .request(1)
-            .expectError(GetNumbersError(17))
-        }
-
-        s"requestStream subscription with cancellation " in {
-          val client                                            = new ExampleClient(null, transport)
-          val source: Source[Int, Subscription]                 = client.getNumbers(3)
-          val (subscription, probe): (Subscription, Probe[Int]) = source.toMat(makeProbe)(Keep.both).run()
-          probe.request(2)
-          subscription.cancel()
-          probe.expectComplete()
-        }
-      }
-    }
   }
 }

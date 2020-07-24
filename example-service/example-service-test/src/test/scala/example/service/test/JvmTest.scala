@@ -33,17 +33,18 @@ class JvmTest
     with ExampleCodecs
     with ScalaFutures
     with TableDrivenPropertyChecks {
+
   val wiring = new ServerWiring()
 
   import wiring._
 
-  Await.result(exampleServer.start("0.0.0.0", 5000), 50.seconds)
-  Await.result(rSocketServer.start("0.0.0.0", 7000), 50.seconds)
+  Await.result(exampleServer.start("0.0.0.0", 5000), 10.seconds)
+  Await.result(rSocketServer.start("0.0.0.0", 7000), 10.seconds)
 
   override protected def afterAll(): Unit = {
-    rSocketServer.stop()
+    Await.result(rSocketServer.stop(), 10.seconds)
     actorSystem.terminate()
-    Await.result(actorSystem.whenTerminated, 5.seconds)
+    Await.result(actorSystem.whenTerminated, 10.seconds)
   }
 
   override implicit def patienceConfig: PatienceConfig = PatienceConfig(timeout = 30.seconds)

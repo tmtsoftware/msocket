@@ -34,7 +34,7 @@ class RSocketServer(rSocketF: ContentType => RSocket)(implicit actorSystem: Acto
     eventualChannel
   }
 
-  def stop(): Unit = {
-    channelF.foreach(_.dispose())
+  def stop(): Future[Unit] = {
+    channelF.map(_.dispose())
   }
 }

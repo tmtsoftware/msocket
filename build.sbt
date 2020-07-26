@@ -18,9 +18,12 @@ inThisBuild(
       "-feature",
       "-unchecked",
       "-deprecation",
+      "-Wconf:any:warning-verbose",
+      "-Wdead-code",
       "-Xlint:_,-missing-interpolator",
-      "-Ywarn-dead-code"
-      //      "-Xprint:typer"
+      "-Xsource:3",
+      "-Xcheckinit",
+      "-Xasync"
     )
   )
 )
@@ -141,8 +144,7 @@ lazy val `example-service-app-jvm` = project
   .settings(
     libraryDependencies ++= Seq(
       scalatest.value % Test
-    ),
-    scalacOptions += "-Wunused:-locals"
+    )
   )
 
 lazy val `example-service-app-js` = project
@@ -157,8 +159,7 @@ lazy val `example-service-app-js` = project
     ),
     libraryDependencies ++= Seq(
       scalatest.value % Test
-    ),
-    scalacOptions += "-Wunused:-locals"
+    )
   )
 
 lazy val `example-service-test` = project

@@ -10,6 +10,7 @@ import msocket.impl.rsocket.RSocketTransportJs
 import msocket.impl.sse.SseTransportJs
 import msocket.impl.ws.WebsocketTransportJs
 
+import scala.annotation.nowarn
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{DurationLong, FiniteDuration}
 
@@ -26,14 +27,14 @@ object ClientMainJs extends ExampleCodecs {
     val WebsocketEndpoint     = "ws://localhost:5000/websocket-endpoint"
     val RSocketEndpoint       = "ws://localhost:7000"
 
-    lazy val httpResponseTransport = new HttpPostTransportJs[ExampleRequestResponse](PostEndpoint, Json)
-    lazy val httpStreamTransport   = new HttpPostTransportJs[ExampleRequestStream](PostStreamingEndpoint, Json)
+    lazy val httpResponseTransport       = new HttpPostTransportJs[ExampleRequestResponse](PostEndpoint, Json)
+    @nowarn lazy val httpStreamTransport = new HttpPostTransportJs[ExampleRequestStream](PostStreamingEndpoint, Json)
 
-    lazy val rSocketResponseTransport = new RSocketTransportJs[ExampleRequestResponse, Cbor.type](RSocketEndpoint)
-    lazy val rSocketStreamTransport   = new RSocketTransportJs[ExampleRequestStream, Cbor.type](RSocketEndpoint)
+    @nowarn lazy val rSocketResponseTransport = new RSocketTransportJs[ExampleRequestResponse, Cbor.type](RSocketEndpoint)
+    @nowarn lazy val rSocketStreamTransport   = new RSocketTransportJs[ExampleRequestStream, Cbor.type](RSocketEndpoint)
 
-    lazy val sseTransport       = new SseTransportJs[ExampleRequestStream](SseEndpoint)
-    lazy val websocketTransport = new WebsocketTransportJs[ExampleRequestStream](WebsocketEndpoint, Json)
+    @nowarn lazy val sseTransport = new SseTransportJs[ExampleRequestStream](SseEndpoint)
+    lazy val websocketTransport   = new WebsocketTransportJs[ExampleRequestStream](WebsocketEndpoint, Json)
 
     val exampleClient = new ExampleClient(httpResponseTransport, websocketTransport)
     new ClientAppJs(exampleClient).testRun()

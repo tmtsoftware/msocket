@@ -11,6 +11,8 @@ import msocket.impl.rsocket.client.RSocketTransportFactory
 import msocket.impl.sse.SseTransport
 import msocket.impl.ws.WebsocketTransport
 
+import scala.annotation.nowarn
+
 /** Client can be wired with the preferred transport protocol */
 object ClientMain extends ExampleCodecs {
 
@@ -27,11 +29,11 @@ object ClientMain extends ExampleCodecs {
     lazy val httpResponseTransport = new HttpPostTransport[ExampleRequestResponse](PostEndpoint, Json, () => None)
     lazy val httpStreamTransport   = new HttpPostTransport[ExampleRequestStream](PostStreamingEndpoint, Json, () => None)
 
-    lazy val rSocketResponseTransport = new RSocketTransportFactory[ExampleRequestResponse].transport(RSocketEndpoint, Json)
-    lazy val rSocketStreamTransport   = new RSocketTransportFactory[ExampleRequestStream].transport(RSocketEndpoint, Json)
+    @nowarn lazy val rSocketResponseTransport = new RSocketTransportFactory[ExampleRequestResponse].transport(RSocketEndpoint, Json)
+    @nowarn lazy val rSocketStreamTransport   = new RSocketTransportFactory[ExampleRequestStream].transport(RSocketEndpoint, Json)
 
-    lazy val sseTransport       = new SseTransport[ExampleRequestStream](SseEndpoint)
-    lazy val websocketTransport = new WebsocketTransport[ExampleRequestStream](WebsocketEndpoint, Json)
+    @nowarn lazy val sseTransport       = new SseTransport[ExampleRequestStream](SseEndpoint)
+    @nowarn lazy val websocketTransport = new WebsocketTransport[ExampleRequestStream](WebsocketEndpoint, Json)
 
     val exampleClient = new ExampleClient(httpResponseTransport, httpStreamTransport)
     new ClientApp(exampleClient).testRun()

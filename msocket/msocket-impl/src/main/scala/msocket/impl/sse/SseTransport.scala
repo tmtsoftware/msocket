@@ -13,17 +13,12 @@ import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType.Json
 import msocket.api.SourceExtension.WithSubscription
-import msocket.api.{ContentType, ErrorProtocol, Subscription}
-import msocket.impl.post.ClientHttpCodecs
+import msocket.api.{ErrorProtocol, Subscription}
 import msocket.impl.{HttpUtils, JvmTransport}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SseTransport[Req: Encoder: ErrorProtocol](uri: String)(implicit actorSystem: ActorSystem[_])
-    extends JvmTransport[Req]
-    with ClientHttpCodecs {
-
-  override def clientContentType: ContentType = Json
+class SseTransport[Req: Encoder: ErrorProtocol](uri: String)(implicit actorSystem: ActorSystem[_]) extends JvmTransport[Req] {
 
   implicit val ec: ExecutionContext               = actorSystem.executionContext
   implicit val system: actor.ActorSystem          = actorSystem.toClassic
@@ -44,7 +39,7 @@ class SseTransport[Req: Encoder: ErrorProtocol](uri: String)(implicit actorSyste
   private def getResponse(request: Req): Future[HttpResponse] = {
     val payloadHeader = QueryHeader(JsonText.encode(request))
     val httpRequest   = HttpRequest(HttpMethods.GET, uri = uri, headers = List(payloadHeader))
-    new HttpUtils[Req](clientContentType).handleRequest(httpRequest)
+    new HttpUtils[Req](Json).handleRequest(httpRequest)
   }
 
 }

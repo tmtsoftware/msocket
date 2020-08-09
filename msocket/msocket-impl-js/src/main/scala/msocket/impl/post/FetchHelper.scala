@@ -3,7 +3,7 @@ package msocket.impl.post
 import io.bullet.borer.Encoder
 import msocket.api.{ContentType, ErrorProtocol}
 import msocket.impl.post.HttpJsExtensions.HttpJsEncoding
-import org.scalajs.dom.experimental.{Fetch, HttpMethod, Response}
+import org.scalajs.dom.experimental.{Fetch, HttpMethod, RequestInit, Response}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
@@ -14,7 +14,7 @@ object FetchHelper {
       ec: ExecutionContext
   ): Future[Response] = {
 
-    val fetchRequest = new FetchRequest {
+    val fetchRequest = new RequestInit {
       method = HttpMethod.POST
       body = contentType.body(req)
       headers = js.Dictionary("content-type" -> contentType.mimeType)

@@ -8,7 +8,7 @@ import akka.stream.testkit.scaladsl.TestSink
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}
-import csw.example.api.protocol.ExampleRequest.{ExampleRequestResponse, ExampleRequestStream}
+import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRequest}
 import msocket.api.ContentType.{Cbor, Json}
 import msocket.api.Subscription
 import msocket.api.models.ServiceError
@@ -52,14 +52,14 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
   val RSocketEndpoint       = "ws://localhost:7000"
 
   List(Json, Cbor).foreach { contentType =>
-    lazy val httpResponseTransport = new HttpPostTransport[ExampleRequestResponse](PostEndpoint, contentType, () => None)
-    lazy val httpStreamTransport   = new HttpPostTransport[ExampleRequestStream](PostStreamingEndpoint, contentType, () => None)
+    lazy val httpResponseTransport = new HttpPostTransport[ExampleRequest](PostEndpoint, contentType, () => None)
+    lazy val httpStreamTransport   = new HttpPostTransport[ExampleStreamRequest](PostStreamingEndpoint, contentType, () => None)
 
-    lazy val rSocketResponseTransport = new RSocketTransportFactory[ExampleRequestResponse].transport(RSocketEndpoint, contentType)
-    lazy val rSocketStreamTransport   = new RSocketTransportFactory[ExampleRequestStream].transport(RSocketEndpoint, contentType)
+    lazy val rSocketResponseTransport = new RSocketTransportFactory[ExampleRequest].transport(RSocketEndpoint, contentType)
+    lazy val rSocketStreamTransport   = new RSocketTransportFactory[ExampleStreamRequest].transport(RSocketEndpoint, contentType)
 
-    lazy val sseTransport       = new SseTransport[ExampleRequestStream](SseEndpoint)
-    lazy val websocketTransport = new WebsocketTransport[ExampleRequestStream](WebsocketEndpoint, contentType)
+    lazy val sseTransport       = new SseTransport[ExampleStreamRequest](SseEndpoint)
+    lazy val websocketTransport = new WebsocketTransport[ExampleStreamRequest](WebsocketEndpoint, contentType)
 
     contentType.toString - {
       "requestResponse" - {

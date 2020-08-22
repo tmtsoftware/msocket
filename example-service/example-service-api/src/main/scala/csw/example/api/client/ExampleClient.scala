@@ -2,7 +2,7 @@ package csw.example.api.client
 
 import akka.stream.scaladsl.Source
 import csw.example.api._
-import csw.example.api.protocol.ExampleRequest._
+import csw.example.api.protocol.ExampleProtocol._
 import csw.example.model.Bag
 import msocket.api.{Subscription, Transport}
 
@@ -14,8 +14,7 @@ import scala.concurrent.duration.DurationLong
  * we can mechanically derive the client for the [[ExampleApi]] by delegating to correct
  * interaction models (e.g., requestResponse or requestStream). See the docs for [[Transport]]
  */
-class ExampleClient(responseTransport: Transport[ExampleRequestResponse], streamTransport: Transport[ExampleRequestStream])
-    extends ExampleApi {
+class ExampleClient(responseTransport: Transport[ExampleRequest], streamTransport: Transport[ExampleStreamRequest]) extends ExampleApi {
 
   override def hello(name: String): Future[String] = responseTransport.requestResponse[String](Hello(name))
   override def randomBag(): Future[Bag]            = responseTransport.requestResponse[Bag](RandomBag)

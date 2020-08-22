@@ -3,11 +3,11 @@ package msocket.impl
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
-import msocket.api.{ErrorProtocol, MessageEncoder, MessageHandler}
+import msocket.api.{ErrorProtocol, MessageEncoder, RequestHandler}
 
 import scala.concurrent.Future
 
-abstract class StreamHandler[Req: ErrorProtocol, M] extends MessageEncoder[Req, M] with MessageHandler[Req, Source[M, NotUsed]] {
+abstract class StreamHandler[Req: ErrorProtocol, M] extends MessageEncoder[Req, M] with RequestHandler[Req, Source[M, NotUsed]] {
   def stream[Res: Encoder, Mat](response: Source[Res, Mat]): Source[M, NotUsed] =
     response.map(encode[Res]).recover(errorEncoder).mapMaterializedValue(_ => NotUsed)
 

@@ -6,17 +6,19 @@ import io.bullet.borer.Encoder
 import scala.concurrent.Future
 
 trait StreamRequestHandler[Req] {
-  def handle(request: Req): StreamResponse
+  def handle(request: Req): Future[StreamResponse]
 
-  protected def future[Res: Encoder](futureElement: Future[Res]): StreamResponse = {
-    stream(Source.future(futureElement))
+  protected def future[Res: Encoder](result: Future[Res]): Future[StreamResponse] = {
+    stream(Source.future(result))
   }
 
-  protected def stream[Res: Encoder](stream: Source[Res, Any]): StreamResponse = {
-    new StreamResponse {
-      override type Response = Res
-      override def responseStream: Source[Response, Any] = stream
-      override def encoder: Encoder[Response]            = Encoder[Res]
+  protected def stream[Res: Encoder](stream: Source[Res, Any]): Future[StreamResponse] = {
+    Future.successful {
+      new StreamResponse {
+        override type Response = Res
+        override def responseStream: Source[Response, Any] = stream
+        override def encoder: Encoder[Response]            = Encoder[Res]
+      }
     }
   }
 

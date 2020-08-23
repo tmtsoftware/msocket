@@ -4,11 +4,13 @@ import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleProtocol._
 import msocket.api.{StreamRequestHandler, StreamResponse}
 
+import scala.concurrent.Future
+
 /**
  * Implements StreamRequestHandler for all requestStream messages in the protocol
  */
 class ExampleStreamHandler(exampleApi: ExampleApi) extends StreamRequestHandler[ExampleStreamRequest] {
-  override def handle(message: ExampleStreamRequest): StreamResponse =
+  override def handle(message: ExampleStreamRequest): Future[StreamResponse] =
     message match {
       case Square(number)          => future(exampleApi.square(number))
       case HelloStream(name)       => stream(exampleApi.helloStream(name))

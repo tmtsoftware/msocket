@@ -4,6 +4,7 @@ import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.server.Route
 import csw.example.api.ExampleApi
+import csw.example.api.handlers.ExampleStreamHandler
 import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRequest}
 import csw.example.impl.ExampleImpl
@@ -25,23 +26,19 @@ class ServerWiring extends ExampleCodecs {
 
   lazy val exampleImpl: ExampleApi = new ExampleImpl
 
-  lazy val postHandler: ExampleHttpPostHandler                            = new ExampleHttpPostHandler(exampleImpl)
-  lazy val postStreamHandler: ExampleHttpStreamHandler                    = new ExampleHttpStreamHandler(exampleImpl)
-  lazy val sseHandler: ExampleSseHandler                                  = new ExampleSseHandler(exampleImpl)
-  def websocketHandler(contentType: ContentType): ExampleWebsocketHandler = new ExampleWebsocketHandler(exampleImpl, contentType)
+  lazy val postHandler: ExampleHttpPostHandler        = new ExampleHttpPostHandler(exampleImpl)
+  lazy val exampleStreamHandler: ExampleStreamHandler = new ExampleStreamHandler(exampleImpl)
 
   def requestResponseHandler(contentType: ContentType): ExampleRSocketResponseHandler =
     new ExampleRSocketResponseHandler(exampleImpl, contentType)
-  def requestStreamHandler(contentType: ContentType): ExampleRSocketStreamHandler     =
-    new ExampleRSocketStreamHandler(exampleImpl, contentType)
   def rSocketFactory(contentType: ContentType): RSocket                               =
-    new RSocketImpl(requestResponseHandler, requestStreamHandler, contentType)
+    new RSocketImpl(requestResponseHandler, exampleStreamHandler, contentType)
 
   lazy val applicationRoute: Route = RouteFactory.combine(metricsEnabled = true)(
     new PostRouteFactory[ExampleRequest]("post-endpoint", postHandler),
-    new PostStreamRouteFactory[ExampleStreamRequest]("post-streaming-endpoint", postStreamHandler),
-    new WebsocketRouteFactory[ExampleStreamRequest]("websocket-endpoint", websocketHandler),
-    new SseRouteFactory[ExampleStreamRequest]("sse-endpoint", sseHandler)
+    new PostStreamRouteFactory[ExampleStreamRequest]("post-streaming-endpoint", exampleStreamHandler),
+    new WebsocketRouteFactory[ExampleStreamRequest]("websocket-endpoint", exampleStreamHandler),
+    new SseRouteFactory[ExampleStreamRequest]("sse-endpoint", exampleStreamHandler)
   )
 
   lazy val exampleServer = new ExampleServer(applicationRoute)(actorSystem)

@@ -4,14 +4,14 @@ import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import io.bullet.borer.Decoder
-import msocket.api.{ContentType, ErrorProtocol, Labelled}
+import msocket.api.{ErrorProtocol, Labelled, StreamRequestHandler}
 import msocket.impl.RouteFactory
 import msocket.impl.metrics.WebsocketMetrics
 import msocket.impl.post.ServerHttpCodecs
 
 class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
     endpoint: String,
-    websocketHandler: ContentType => WebsocketHandler[Req]
+    websocketHandler: StreamRequestHandler[Req]
 )(implicit actorSystem: ActorSystem[_])
     extends RouteFactory[Req]
     with ServerHttpCodecs
@@ -23,8 +23,8 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
 
     get {
       path(endpoint) {
-        withPartialMetricCollector[Req](metricsEnabled, Some(perMsgCounter), Some(gauge)).apply { pmc =>
-          handleWebSocketMessages(new WebsocketServerFlow(websocketHandler, pmc).flow)
+        withPartialMetricCollector[Req](metricsEnabled, Some(perMsgCounter), Some(gauge)).apply { collectorFactory =>
+          handleWebSocketMessages(new WebsocketServerFlow(websocketHandler, collectorFactory).flow)
         }
       }
     }

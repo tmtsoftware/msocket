@@ -2,14 +2,18 @@ package msocket.impl
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
-import io.bullet.borer.Encoder
-import msocket.api.{ErrorProtocol, MessageEncoder, RequestHandler}
+import msocket.api.{ErrorProtocol, MessageEncoder, StreamResponse}
+import msocket.impl.metrics.{MetricCollector, Metrics}
 
-import scala.concurrent.Future
+abstract class StreamHandler[Req: ErrorProtocol, M] extends MessageEncoder[Req, M] {
+  def handle(streamResponse: StreamResponse, collector: MetricCollector[Req]): Source[M, NotUsed] = {
+    val stream = streamResponse.responseStream
+      .map(res => encode(res)(streamResponse.encoder))
+      .recover(errorEncoder)
+      .mapMaterializedValue(_ => NotUsed)
+    withMetrics(stream, collector)
+  }
 
-abstract class StreamHandler[Req: ErrorProtocol, M] extends MessageEncoder[Req, M] with RequestHandler[Req, Source[M, NotUsed]] {
-  def stream[Res: Encoder, Mat](response: Source[Res, Mat]): Source[M, NotUsed] =
-    response.map(encode[Res]).recover(errorEncoder).mapMaterializedValue(_ => NotUsed)
-
-  def stream[Res: Encoder](input: Future[Res]): Source[M, NotUsed] = stream(Source.future(input))
+  def withMetrics[Msg](stream: Source[Msg, NotUsed], collector: MetricCollector[Req]): Source[Msg, NotUsed] =
+    Metrics.withMetrics(stream, collector)
 }

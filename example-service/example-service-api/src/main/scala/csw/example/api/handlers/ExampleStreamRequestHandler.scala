@@ -9,7 +9,7 @@ import scala.concurrent.Future
 /**
  * Implements StreamRequestHandler for all requestStream messages in the protocol
  */
-class ExampleStreamHandler(exampleApi: ExampleApi) extends StreamRequestHandler[ExampleStreamRequest] {
+class ExampleStreamRequestHandler(exampleApi: ExampleApi) extends StreamRequestHandler[ExampleStreamRequest] {
   override def handle(message: ExampleStreamRequest): Future[StreamResponse] =
     message match {
       case Square(number)          => future(exampleApi.square(number))

@@ -7,7 +7,6 @@ import org.scalajs.dom.experimental.{Fetch, HttpMethod, RequestInit, Response}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
-import scala.util.control.NonFatal
 
 object FetchHelper {
   def postRequest[Req: Encoder: ErrorProtocol](uri: String, req: Req, contentType: ContentType)(implicit
@@ -20,15 +19,11 @@ object FetchHelper {
       headers = js.Dictionary("content-type" -> contentType.mimeType)
     }
 
-    def handleError(response: Response): Future[Throwable] =
-      contentType.responseError(response).recover {
-        case NonFatal(ex) => HttpError(response.status, response.statusText, ex.getMessage)
-      }
-
     Fetch.fetch(uri, fetchRequest).toFuture.flatMap { response =>
       response.status match {
         case 200 => Future.successful(response)
-        case _   => handleError(response).map(throw _)
+        case 500 => contentType.responseError(response).map(throw _)
+        case _   => response.text().toFuture.map(body => throw HttpError(response.status, response.statusText, body))
       }
     }
   }

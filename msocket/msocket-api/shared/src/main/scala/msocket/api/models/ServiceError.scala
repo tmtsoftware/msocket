@@ -7,11 +7,18 @@ import io.bullet.borer.derivation.CompactMapBasedCodecs
  * There might be cases when the request encounters runtime error during executions.
  * In such cases Service error is returned since no domain specific error can be mapped to such exceptions.
  * Service error is returned as response in these scenarios.
+ * _ in field names is intentional to make it harder for this to get deserialized as a domain model with same fields
  */
-case class ServiceError(generic_error: GenericError) extends RuntimeException(generic_error.toString)
+case class ServiceError(error_name: String, error_message: String)
+    extends RuntimeException(
+      s"""
+      |error_name:     $error_name:
+      |error_message:  $error_message
+      |""".stripMargin
+    )
 
 object ServiceError {
   implicit lazy val serviceErrorCodec: Codec[ServiceError] = CompactMapBasedCodecs.deriveCodec
 
-  def fromThrowable(ex: Throwable): ServiceError = ServiceError(GenericError(ex.getClass.getSimpleName, ex.getMessage))
+  def fromThrowable(ex: Throwable): ServiceError = ServiceError(ex.getClass.getSimpleName, ex.getMessage)
 }

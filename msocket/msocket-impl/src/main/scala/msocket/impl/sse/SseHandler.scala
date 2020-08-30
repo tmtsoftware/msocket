@@ -22,9 +22,5 @@ class SseHandler[Req: ErrorProtocol] extends StreamHandler[Req, ServerSentEvent]
     super.handle(streamResponseF, collector).keepAlive(30.seconds, () => ServerSentEvent.heartbeat)
   }
 
-  override def encode[Res: Encoder](response: Res, headers: Headers): ServerSentEvent =
-    ServerSentEvent(
-      JsonText.encode(response),
-      headers.errorType.map(_.name)
-    )
+  override def encode[Res: Encoder](response: Res, headers: Headers): ServerSentEvent = ServerSentEvent(JsonText.encode(response))
 }

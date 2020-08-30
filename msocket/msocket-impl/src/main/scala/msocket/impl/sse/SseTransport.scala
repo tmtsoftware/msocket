@@ -13,7 +13,6 @@ import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType.Json
 import msocket.api.SourceExtension.WithSubscription
-import msocket.api.models.ErrorType
 import msocket.api.{ErrorProtocol, Subscription}
 import msocket.impl.{HttpUtils, JvmTransport}
 
@@ -33,10 +32,7 @@ class SseTransport[Req: Encoder: ErrorProtocol](uri: String)(implicit actorSyste
     val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[ServerSentEvent, NotUsed]])
     Source
       .futureSource(futureSource)
-      .map { event =>
-        val maybeErrorType = event.eventType.map(ErrorType.from)
-        JsonText.decodeFull(event.data, maybeErrorType)
-      }
+      .map(event => JsonText.decodeWithError[Res, Req](event.data))
       .withSubscription()
   }
 

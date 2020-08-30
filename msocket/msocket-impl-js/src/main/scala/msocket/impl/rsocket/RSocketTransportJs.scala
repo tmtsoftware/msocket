@@ -2,11 +2,12 @@ package msocket.impl.rsocket
 
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.models.Headers
-import msocket.api.{ContentType, ErrorProtocol, Subscription}
+import msocket.api.{ContentEncoding, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import typings.rsocketCore.AnonDataMimeType
 import typings.rsocketCore.mod.RSocketClient
 import typings.rsocketCore.rsocketclientMod.ClientConfig
+import typings.rsocketCore.rsocketencodingMod.Encoders
 import typings.rsocketFlowable.singleMod.IFutureSubscriber
 import typings.rsocketTypes.reactiveSocketTypesMod.{Payload, ReactiveSocket}
 import typings.rsocketTypes.reactiveStreamTypesMod.{ISubscriber, ISubscription}
@@ -19,15 +20,13 @@ import scala.scalajs.js.timers
 import scala.scalajs.js.timers.SetIntervalHandle
 import scala.util.{Failure, Success, Try}
 
-class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: String)(implicit
-    rSocketEncoders: RSocketEncoders[CT],
+class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEncoding: ContentEncoding[En], encoders: Encoders[En])(
+    implicit
     ec: ExecutionContext,
     streamingDelay: FiniteDuration
 ) extends JsTransport[Req] {
 
-  import rSocketEncoders._
-
-  private val client: RSocketClient[rSocketEncoders.En, rSocketEncoders.En] = new RSocketClient(
+  private val client: RSocketClient[En, En] = new RSocketClient(
     ClientConfig(
       setup = AnonDataMimeType(
         dataMimeType = contentEncoding.contentType.mimeType,
@@ -46,7 +45,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: St
       _ => println("inside onSubscribe")
     )
 
-  private val socketPromise: Promise[ReactiveSocket[rSocketEncoders.En, rSocketEncoders.En]] = Promise()
+  private val socketPromise: Promise[ReactiveSocket[En, En]] = Promise()
   client.connect().map(Try(_)).subscribe(PartialOf(subscriber(socketPromise)))
 
   override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {

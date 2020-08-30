@@ -6,7 +6,7 @@ import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRequest}
 import msocket.api.ContentType.{Cbor, Json}
 import msocket.impl.post.HttpPostTransportJs
-import msocket.impl.rsocket.RSocketTransportJs
+import msocket.impl.rsocket.RSocketTransportFactoryJs
 import msocket.impl.sse.SseTransportJs
 import msocket.impl.ws.WebsocketTransportJs
 
@@ -30,8 +30,8 @@ object ClientMainJs extends ExampleCodecs {
     lazy val httpResponseTransport       = new HttpPostTransportJs[ExampleRequest](PostEndpoint, Json)
     @nowarn lazy val httpStreamTransport = new HttpPostTransportJs[ExampleStreamRequest](PostStreamingEndpoint, Json)
 
-    @nowarn lazy val rSocketResponseTransport = new RSocketTransportJs[ExampleRequest, Cbor.type](RSocketEndpoint)
-    @nowarn lazy val rSocketStreamTransport   = new RSocketTransportJs[ExampleStreamRequest, Cbor.type](RSocketEndpoint)
+    @nowarn lazy val rSocketResponseTransport = new RSocketTransportFactoryJs[ExampleRequest].connect(RSocketEndpoint, Cbor)
+    @nowarn lazy val rSocketStreamTransport   = new RSocketTransportFactoryJs[ExampleStreamRequest].connect(RSocketEndpoint, Json)
 
     @nowarn lazy val sseTransport = new SseTransportJs[ExampleStreamRequest](SseEndpoint)
     lazy val websocketTransport   = new WebsocketTransportJs[ExampleStreamRequest](WebsocketEndpoint, Json)

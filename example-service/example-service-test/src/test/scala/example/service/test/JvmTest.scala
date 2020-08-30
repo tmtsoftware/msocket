@@ -55,8 +55,8 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
     lazy val httpResponseTransport = new HttpPostTransport[ExampleRequest](PostEndpoint, contentType, () => None)
     lazy val httpStreamTransport   = new HttpPostTransport[ExampleStreamRequest](PostStreamingEndpoint, contentType, () => None)
 
-    lazy val rSocketResponseTransport = new RSocketTransportFactory[ExampleRequest].transport(RSocketEndpoint, contentType)
-    lazy val rSocketStreamTransport   = new RSocketTransportFactory[ExampleStreamRequest].transport(RSocketEndpoint, contentType)
+    lazy val rSocketResponseTransport = new RSocketTransportFactory[ExampleRequest].connect(RSocketEndpoint, contentType)
+    lazy val rSocketStreamTransport   = new RSocketTransportFactory[ExampleStreamRequest].connect(RSocketEndpoint, contentType)
 
     lazy val sseTransport       = new SseTransport[ExampleStreamRequest](SseEndpoint)
     lazy val websocketTransport = new WebsocketTransport[ExampleStreamRequest](WebsocketEndpoint, contentType)

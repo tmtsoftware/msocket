@@ -8,10 +8,10 @@ import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRequest}
 import msocket.api.ContentType.{Cbor, Json}
-import msocket.api.{ContentType, Subscription}
+import msocket.api.Subscription
 import msocket.api.models.ServiceError
 import msocket.impl.post.HttpPostTransportJs
-import msocket.impl.rsocket.RSocketTransportJs
+import msocket.impl.rsocket.RSocketTransportFactoryJs
 import msocket.impl.sse.SseTransportJs
 import msocket.impl.ws.WebsocketTransportJs
 import org.scalatest.freespec.AsyncFreeSpec
@@ -20,7 +20,7 @@ import org.scalatest.matchers.should.Matchers
 import scala.annotation.nowarn
 import scala.async.Async._
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.concurrent.{ExecutionContext, Promise}
 import scala.util.control.NonFatal
 
 class JsTest extends AsyncFreeSpec with Matchers with ExampleCodecs with TestPolyfills {
@@ -40,20 +40,8 @@ class JsTest extends AsyncFreeSpec with Matchers with ExampleCodecs with TestPol
       lazy val httpResponseTransport       = new HttpPostTransportJs[ExampleRequest](PostEndpoint, contentType)
       @nowarn lazy val httpStreamTransport = new HttpPostTransportJs[ExampleStreamRequest](PostStreamingEndpoint, contentType)
 
-      val (
-        rSocketResponseTransport: RSocketTransportJs[ExampleRequest, _],
-        rSocketStreamTransport: RSocketTransportJs[ExampleStreamRequest, _]
-      ) =
-        if (contentType == Json)
-          (
-            new RSocketTransportJs[ExampleRequest, Json.type](RSocketEndpoint),
-            new RSocketTransportJs[ExampleStreamRequest, Json.type](RSocketEndpoint)
-          )
-        else
-          (
-            new RSocketTransportJs[ExampleRequest, Cbor.type](RSocketEndpoint),
-            new RSocketTransportJs[ExampleStreamRequest, Cbor.type](RSocketEndpoint)
-          )
+      lazy val rSocketResponseTransport = new RSocketTransportFactoryJs[ExampleRequest].connect(RSocketEndpoint, contentType)
+      lazy val rSocketStreamTransport   = new RSocketTransportFactoryJs[ExampleStreamRequest].connect(RSocketEndpoint, Json)
 
       @nowarn lazy val sseTransport = new SseTransportJs[ExampleStreamRequest](SseEndpoint)
       lazy val websocketTransport   = new WebsocketTransportJs[ExampleStreamRequest](WebsocketEndpoint, contentType)

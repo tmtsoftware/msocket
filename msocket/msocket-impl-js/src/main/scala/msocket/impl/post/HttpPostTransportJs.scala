@@ -3,6 +3,7 @@ package msocket.impl.post
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType.Json
+import msocket.api.models.ErrorType
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import msocket.impl.post.HttpJsExtensions.HttpJsEncoding
@@ -28,9 +29,11 @@ class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType:
       def read(): Unit = {
         reader.read().toFuture.foreach { chunk =>
           if (!chunk.done) {
-            val jsonString = FetchEventJs(chunk.value).data
+            val fetchEventJs = FetchEventJs(chunk.value)
+            val jsonString   = fetchEventJs.data
             if (jsonString != "") {
-              try onMessage(JsonText.decodeWithError(jsonString))
+              val maybeErrorType = fetchEventJs.errorType.toOption.map(ErrorType.from)
+              try onMessage(JsonText.decodeFull(jsonString, maybeErrorType))
               catch {
                 case NonFatal(ex) => onError(ex); reader.cancel(ex.getMessage)
               }

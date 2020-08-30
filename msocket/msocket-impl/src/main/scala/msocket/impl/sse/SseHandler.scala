@@ -5,6 +5,7 @@ import akka.http.scaladsl.model.sse.ServerSentEvent
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
 import msocket.api.ContentEncoding.JsonText
+import msocket.api.models.Headers
 import msocket.api.{ErrorProtocol, StreamResponse}
 import msocket.impl.StreamHandler
 import msocket.impl.metrics.MetricCollector
@@ -21,5 +22,9 @@ class SseHandler[Req: ErrorProtocol] extends StreamHandler[Req, ServerSentEvent]
     super.handle(streamResponseF, collector).keepAlive(30.seconds, () => ServerSentEvent.heartbeat)
   }
 
-  override def encode[Res: Encoder](response: Res): ServerSentEvent = ServerSentEvent(JsonText.encode(response))
+  override def encode[Res: Encoder](response: Res, headers: Headers): ServerSentEvent =
+    ServerSentEvent(
+      JsonText.encode(response),
+      headers.errorType.map(_.name)
+    )
 }

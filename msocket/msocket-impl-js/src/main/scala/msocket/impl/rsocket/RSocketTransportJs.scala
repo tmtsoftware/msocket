@@ -1,6 +1,7 @@
 package msocket.impl.rsocket
 
 import io.bullet.borer.{Decoder, Encoder}
+import msocket.api.models.Headers
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import typings.rsocketCore.AnonDataMimeType
@@ -26,7 +27,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: St
 
   import rSocketEncoders._
 
-  private val client: RSocketClient[rSocketEncoders.En, Null] = new RSocketClient(
+  private val client: RSocketClient[rSocketEncoders.En, rSocketEncoders.En] = new RSocketClient(
     ClientConfig(
       setup = AnonDataMimeType(
         dataMimeType = contentEncoding.contentType.mimeType,
@@ -45,15 +46,18 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: St
       _ => println("inside onSubscribe")
     )
 
-  private val socketPromise: Promise[ReactiveSocket[rSocketEncoders.En, Null]] = Promise()
+  private val socketPromise: Promise[ReactiveSocket[rSocketEncoders.En, rSocketEncoders.En]] = Promise()
   client.connect().map(Try(_)).subscribe(PartialOf(subscriber(socketPromise)))
 
   override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {
     val responsePromise: Promise[Res] = Promise()
     socketPromise.future.foreach { socket =>
       socket
-        .requestResponse(Payload(contentEncoding.encode(req)))
-        .map(payload => Try(contentEncoding.decodeWithError(payload.data.get)))
+        .requestResponse(Payload(contentEncoding.encode(req), contentEncoding.encode(Headers())))
+        .map { payload =>
+          val headers = contentEncoding.decode[Headers](payload.metadata.get)
+          Try(contentEncoding.decodeFull(payload.data.get, headers.errorType))
+        }
         .subscribe(PartialOf(subscriber(responsePromise)))
     }
 
@@ -88,8 +92,11 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, CT <: ContentType](uri: St
 
     socketPromise.future.foreach { socket =>
       socket
-        .requestStream(Payload(contentEncoding.encode(request)))
-        .map(payload => Try(contentEncoding.decodeWithError(payload.data.get)))
+        .requestStream(Payload(contentEncoding.encode(request), contentEncoding.encode(Headers())))
+        .map { payload =>
+          val headers = contentEncoding.decode[Headers](payload.metadata.get)
+          Try(contentEncoding.decodeFull(payload.data.get, headers.errorType))
+        }
         .subscribe(PartialOf(subscriber))
     }
 

@@ -5,22 +5,28 @@ import io.rsocket.Payload
 import io.rsocket.util.DefaultPayload
 import msocket.api.ContentEncoding.{CborByteBuffer, JsonText}
 import msocket.api.ContentType.{Cbor, Json}
+import msocket.api.models.Headers
 import msocket.api.{ContentType, ErrorProtocol}
 
 object RSocketExtensions {
 
   implicit class RSocketEncoding(contentType: ContentType) {
-    def payload[T: Encoder](input: T): Payload =
+    def payload[T: Encoder](input: T, headers: Headers): Payload =
       contentType match {
-        case Json => DefaultPayload.create(JsonText.encode(input))
-        case Cbor => DefaultPayload.create(CborByteBuffer.encode(input))
+        case Json => DefaultPayload.create(JsonText.encode(input), JsonText.encode(headers))
+        case Cbor => DefaultPayload.create(CborByteBuffer.encode(input), CborByteBuffer.encode(headers))
       }
 
-    def response[Res: Decoder, Req: ErrorProtocol](payload: Payload): Res =
+    def response[Res: Decoder, Req: ErrorProtocol](payload: Payload): Res = {
       contentType match {
-        case Json => JsonText.decodeWithError[Res, Req](payload.getDataUtf8)
-        case Cbor => CborByteBuffer.decodeWithError[Res, Req](payload.getData)
+        case Json =>
+          val headers = JsonText.decode[Headers](payload.getMetadataUtf8)
+          JsonText.decodeFull(payload.getDataUtf8, headers.errorType)
+        case Cbor =>
+          val headers = CborByteBuffer.decode[Headers](payload.getMetadata)
+          CborByteBuffer.decodeFull(payload.getData, headers.errorType)
       }
+    }
 
     def request[Req: Decoder](payload: Payload): Req =
       contentType match {

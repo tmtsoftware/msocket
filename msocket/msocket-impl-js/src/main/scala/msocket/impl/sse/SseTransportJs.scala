@@ -2,6 +2,7 @@ package msocket.impl.sse
 
 import io.bullet.borer.{Decoder, Encoder, Json}
 import msocket.api.ContentEncoding.JsonText
+import msocket.api.models.ErrorType
 import msocket.api.{ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import typings.eventsource.MessageEvent
@@ -9,6 +10,7 @@ import typings.eventsource.mod.{EventSourceInitDict, ^ => Sse}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
+import scala.scalajs.js.UndefOr
 import scala.util.control.NonFatal
 
 class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext) extends JsTransport[Req] {
@@ -26,8 +28,11 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
       override def onmessage(evt: MessageEvent): js.Any = {
         val jsonString = evt.data.asInstanceOf[String]
         if (jsonString != "") {
-          try onMessage(JsonText.decodeWithError(jsonString))
-          catch {
+          try {
+            val value: UndefOr[String] = evt.`type`
+            val maybeErrorType         = value.toOption.map(ErrorType.from)
+            onMessage(JsonText.decodeFull(jsonString, maybeErrorType))
+          } catch {
             case NonFatal(ex) => onError(ex); close()
           }
         }
@@ -42,6 +47,6 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
   }
 
   private def queryHeader(req: Req): js.Object = {
-    js.Dynamic.literal("query" -> Json.encode(req).toUtf8String)
+    js.Dynamic.literal("Query" -> Json.encode(req).toUtf8String)
   }
 }

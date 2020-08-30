@@ -2,6 +2,7 @@ package msocket.api.utils
 
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
+import msocket.api.models.Headers
 import msocket.api.{ErrorProtocol, LoggingMessageEncoder, Subscription, Transport}
 import portable.akka.extensions.PortableAkka
 
@@ -22,14 +23,17 @@ class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: 
     transport.requestResponse(request, timeout).map(x => logMessage(x)).recover(logError)
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] =
-    PortableAkka.withEffects(transport.requestStream(request))(loggingEncoder.encode, loggingEncoder.errorEncoder)
+    PortableAkka.withEffects(transport.requestStream(request))(
+      out => loggingEncoder.encode(out, Headers()),
+      loggingEncoder.errorEncoder
+    )
 
   override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
     transport.requestStream(request, (x: Res) => onMessage(logMessage(x)), logError andThen onError)
   }
 
   private def logMessage[Res: Encoder](response: Res): Res = {
-    loggingEncoder.encode(response)
+    loggingEncoder.encode(response, Headers())
     response
   }
 

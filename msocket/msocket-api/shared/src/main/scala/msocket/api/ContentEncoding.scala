@@ -3,7 +3,7 @@ package msocket.api
 import java.nio.ByteBuffer
 
 import io.bullet.borer._
-import msocket.api.models.ServiceError
+import msocket.api.models.{ErrorType, ServiceError}
 import msocket.api.utils.ByteBufferExtensions.RichByteBuffer
 
 import scala.util.Try
@@ -12,6 +12,13 @@ abstract class ContentEncoding[E](val contentType: ContentType) {
   def encode[T: Encoder](payload: T): E
   def decode[T: Decoder](input: E): T
 
+  def decodeFull[Res: Decoder, Req](input: E, errorType: Option[ErrorType])(implicit ep: ErrorProtocol[Req]): Res = {
+    errorType match {
+      case None                         => decode(input)
+      case Some(ErrorType.DomainError)  => throw decode[ep.E](input)
+      case Some(ErrorType.GenericError) => throw decode[ServiceError](input)
+    }
+  }
   def decodeWithError[T: Decoder, S](input: E)(implicit ep: ErrorProtocol[S]): T = Try(decode[T](input)).getOrElse(throw decodeError(input))
   def decodeError[S](input: E)(implicit ep: ErrorProtocol[S]): Throwable         = Try(decode[ep.E](input)).getOrElse(decode[ServiceError](input))
 }

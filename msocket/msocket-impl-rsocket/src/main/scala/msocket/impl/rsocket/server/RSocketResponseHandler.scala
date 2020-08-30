@@ -3,7 +3,7 @@ package msocket.impl.rsocket.server
 import io.bullet.borer.Dom.Element
 import io.bullet.borer.Encoder
 import io.rsocket.Payload
-import msocket.api.models.ServiceError
+import msocket.api.models.{Headers, ServiceError}
 import msocket.api.{ContentType, ErrorProtocol, MessageEncoder, RequestHandler}
 import msocket.impl.rsocket.RSocketExtensions._
 
@@ -16,11 +16,12 @@ import scala.concurrent.{ExecutionContext, Future}
 abstract class RSocketResponseHandler[Req: ErrorProtocol](contentType: ContentType)
     extends MessageEncoder[Req, Payload]
     with RequestHandler[Req, Future[Payload]] {
+
   def future[Res: Encoder](response: Future[Res])(implicit ec: ExecutionContext): Future[Payload] = {
-    response.map(response => contentType.payload(response))
+    response.map(response => contentType.payload(response, Headers())).recover(errorEncoder)
   }
 
-  override def encode[Res: Encoder](response: Res): Payload = contentType.payload(response)
+  override def encode[Res: Encoder](response: Res, headers: Headers): Payload = contentType.payload(response, headers)
 }
 
 /**

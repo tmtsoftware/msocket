@@ -10,6 +10,7 @@ import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.SourceExtension.WithSubscription
+import msocket.api.models.ErrorType
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.{HttpUtils, JvmTransport}
 
@@ -34,7 +35,10 @@ class HttpPostTransport[Req: Encoder](uri: String, contentType: ContentType, tok
     Source
       .futureSource(futureSource)
       .filter(_ != FetchEvent.Heartbeat)
-      .map(event => JsonText.decodeWithError[Res, Req](event.data))
+      .map { event =>
+        val maybeErrorType = event.errorType.map(ErrorType.from)
+        JsonText.decodeFull(event.data, maybeErrorType)
+      }
       .withSubscription()
   }
 

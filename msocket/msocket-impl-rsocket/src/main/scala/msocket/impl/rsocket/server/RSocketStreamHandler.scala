@@ -5,7 +5,7 @@ import akka.stream.scaladsl.Source
 import io.bullet.borer.Dom.Element
 import io.bullet.borer.Encoder
 import io.rsocket.Payload
-import msocket.api.models.ServiceError
+import msocket.api.models.{Headers, ServiceError}
 import msocket.api.{ContentType, ErrorProtocol, StreamResponse}
 import msocket.impl.StreamHandler
 import msocket.impl.metrics.MetricCollector
@@ -18,7 +18,7 @@ import scala.concurrent.Future
  * RSocketStreamHandler takes a request type which will be bound to Domain specific error using ErrorProtocol.
  */
 class RSocketStreamHandler[Req: ErrorProtocol](contentType: ContentType) extends StreamHandler[Req, Payload] {
-  override def encode[Res: Encoder](response: Res): Payload                                                          = contentType.payload(response)
+  override def encode[Res: Encoder](response: Res, headers: Headers): Payload                                        = contentType.payload(response, headers)
   override def withMetrics[Msg](stream: Source[Msg, NotUsed], collector: MetricCollector[Req]): Source[Msg, NotUsed] = stream
 }
 

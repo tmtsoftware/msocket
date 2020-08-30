@@ -5,6 +5,7 @@ import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import io.rsocket.RSocket
 import msocket.api.SourceExtension.WithSubscription
+import msocket.api.models.Headers
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.JvmTransport
 import msocket.impl.rsocket.RSocketExtensions._
@@ -19,7 +20,7 @@ class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket, contentTyp
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
-    rSocket.requestResponse(contentType.payload(request)).toFuture.asScala.map { payload =>
+    rSocket.requestResponse(contentType.payload(request, Headers())).toFuture.asScala.map { payload =>
       contentType.response[Res, Req](payload)
     }
   }
@@ -29,7 +30,7 @@ class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket, contentTyp
   }
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] = {
-    val value = rSocket.requestStream(contentType.payload(request))
+    val value = rSocket.requestStream(contentType.payload(request, Headers()))
     Source
       .fromPublisher(value)
       .map(payload => contentType.response[Res, Req](payload))

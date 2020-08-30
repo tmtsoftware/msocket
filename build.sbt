@@ -22,8 +22,8 @@ inThisBuild(
       "-Wdead-code",
       "-Xlint:_,-missing-interpolator",
       "-Xsource:3",
-      "-Xcheckinit",
-      "-Xasync"
+      "-Xcheckinit"
+//      "-Xasync" does not work with Scala.js js yet
     )
   )
 )
@@ -157,8 +157,12 @@ lazy val `example-service-app-js` = project
       "can-ndjson-stream"        -> "1.0.2",
       "rsocket-websocket-client" -> "0.0.19"
     ),
+    npmDependencies in Test ++= Seq(
+      "whatwg-fetch" -> "3.4.0"
+    ),
     libraryDependencies ++= Seq(
-      scalatest.value % Test
+      scalatest.value % Test,
+      `scala-async`
     )
   )
 
@@ -185,6 +189,8 @@ lazy val baseJsSettings: Project => Project =
 lazy val bundlerSettings: Project => Project =
   _.enablePlugins(ScalaJSBundlerPlugin)
     .settings(
+      requireJsDomEnv in Test := true,
+      version in installJsdom := "16.4.0",
       startWebpackDevServer / version := "3.8.0",
       webpack / version := "4.39.3",
       Compile / fastOptJS / webpackExtraArgs += "--mode=development",

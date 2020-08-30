@@ -5,10 +5,12 @@ import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType
 import msocket.api.ContentType.{Cbor, Json}
 import msocket.impl.CborArrayBuffer
-import org.scalajs.dom.crypto.BufferSource
 import org.scalajs.dom.experimental.{BodyInit, Response}
+import org.scalajs.dom.raw.Blob
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.scalajs.js
+import scala.scalajs.js.typedarray.{ArrayBuffer, Uint8Array}
 
 object HttpJsExtensions {
 
@@ -17,7 +19,9 @@ object HttpJsExtensions {
     def body[T: Encoder](input: T): BodyInit =
       contentType match {
         case Json => JsonText.encode(input)
-        case Cbor => CborArrayBuffer.encode(input): BufferSource
+        case Cbor =>
+          val buffer: ArrayBuffer = CborArrayBuffer.encode(input)
+          new Blob(js.Array(new Uint8Array(buffer)))
       }
 
     def response[Res: Decoder, Req](response: Response)(implicit ec: ExecutionContext): Future[Res] =

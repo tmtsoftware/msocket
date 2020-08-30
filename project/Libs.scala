@@ -3,6 +3,9 @@ import sbt.Def.{setting => dep}
 import sbt._
 
 object Libs {
+  // 1.0.0-M1 does not work with Scala.js js yet
+  val `scala-async` = "org.scala-lang.modules" %% "scala-async" % "0.10.0"
+
   val `akka-stream`              = "com.typesafe.akka" %% "akka-stream"              % "2.6.8"
   val `akka-actor-typed`         = "com.typesafe.akka" %% "akka-actor-typed"         % "2.6.8"
   val `akka-actor-testkit-typed` = "com.typesafe.akka" %% "akka-actor-testkit-typed" % "2.6.8"

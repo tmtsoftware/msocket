@@ -4,10 +4,10 @@ import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.utils.{ContraMappedTransport, ResponseLoggingTransport}
+import msocket.portable.Observer
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 /**
  * Transport API abstracts 2 main interaction models: requestResponse and requestStream with their variants
@@ -38,7 +38,7 @@ abstract class Transport[Req: Encoder: ErrorProtocol] {
    * invoke onError callback on receiving an error which will terminate the stream
    * The given [[Source]] will materialize to a [[Subscription]] that can be used for cancellation
    */
-  def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Try[Option[Res]] => Unit): Subscription
+  def requestStream[Res: Decoder: Encoder](request: Req, observer: Observer[Res]): Subscription
 }
 
 object Transport {

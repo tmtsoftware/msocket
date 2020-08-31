@@ -4,7 +4,7 @@ import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.models.Headers
 import msocket.api.{ErrorProtocol, LoggingMessageEncoder, Subscription, Transport}
-import portable.akka.extensions.PortableAkka
+import msocket.portable.{Observer, PortableAkka}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,8 +29,8 @@ class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: 
       loggingEncoder.errorEncoder
     )
 
-  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Try[Option[Res]] => Unit): Subscription = {
-    transport.requestStream(request, logMessage[Res] _ andThen onMessage)
+  override def requestStream[Res: Decoder: Encoder](request: Req, observer: Observer[Res]): Subscription = {
+    transport.requestStream(request, Observer.from(logMessage[Res] _ andThen observer.on))
   }
 
   def logMessage[Res: Encoder](msg: Try[Option[Res]]): Try[Option[Res]] = {

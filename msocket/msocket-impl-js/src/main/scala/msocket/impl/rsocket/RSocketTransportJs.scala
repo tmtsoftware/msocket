@@ -4,6 +4,7 @@ import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.models.Headers
 import msocket.api.{ContentEncoding, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
+import msocket.portable.Observer
 import typings.rsocketCore.AnonDataMimeType
 import typings.rsocketCore.mod.RSocketClient
 import typings.rsocketCore.rsocketclientMod.ClientConfig
@@ -63,7 +64,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
     responsePromise.future
   }
 
-  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Try[Option[Res]] => Unit): Subscription = {
+  override def requestStream[Res: Decoder: Encoder](request: Req, observer: Observer[Res]): Subscription = {
     val subscriptionPromise: Promise[ISubscription] = Promise()
 
     val pullStreamHandle: Future[SetIntervalHandle] = subscriptionPromise.future.map { subscription =>
@@ -78,11 +79,11 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
     }
 
     val subscriber: ISubscriber[Try[Res]] = ISubscriber[Try[Res]](
-      onComplete = () => onMessage(Success(None)),
-      onError = e => onMessage(Failure(new RuntimeException(e.message))),
+      onComplete = () => observer.onCompleted(),
+      onError = e => observer.onError(new RuntimeException(e.message)),
       onNext = {
-        case Failure(exception) => onMessage(Failure(exception)); cancelSubscription()
-        case Success(value)     => onMessage(Success(Some(value)))
+        case Failure(exception) => observer.onError(exception); cancelSubscription()
+        case Success(value)     => observer.onNext(value)
       },
       onSubscribe = subscriptionPromise.trySuccess
     )

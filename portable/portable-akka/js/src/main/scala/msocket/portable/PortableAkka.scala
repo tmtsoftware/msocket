@@ -1,4 +1,4 @@
-package portable.akka.extensions
+package msocket.portable
 
 import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.Source

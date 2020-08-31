@@ -4,21 +4,22 @@ import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.Sink
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.{ErrorProtocol, Subscription, Transport}
+import msocket.portable.Observer
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Success}
 
 abstract class JvmTransport[Req: Encoder: ErrorProtocol](implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
   import actorSystem.executionContext
 
-  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Try[Option[Res]] => Unit): Subscription = {
+  override def requestStream[Res: Decoder: Encoder](request: Req, observer: Observer[Res]): Subscription = {
     requestStream(request)
-      .map(x => onMessage(Success(Some(x))))
+      .map(x => observer.onNext(x))
       .watchTermination() { (subscription, completionF) =>
         completionF.onComplete {
-          case Failure(exception) => onMessage(Failure(exception))
-          case Success(_)         => onMessage(Success(None))
+          case Failure(exception) => observer.onError(exception)
+          case Success(_)         => observer.onCompleted()
         }
         subscription
       }

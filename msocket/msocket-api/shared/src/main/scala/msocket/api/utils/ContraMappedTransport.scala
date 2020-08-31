@@ -3,10 +3,10 @@ package msocket.api.utils
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.{ErrorProtocol, Subscription, Transport}
+import msocket.portable.Observer
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
-import scala.util.Try
 
 class ContraMappedTransport[A, B: Encoder: ErrorProtocol](transport: Transport[A], contraF: B => A) extends Transport[B] {
   override def requestResponse[Res: Decoder: Encoder](request: B): Future[Res] = {
@@ -21,7 +21,7 @@ class ContraMappedTransport[A, B: Encoder: ErrorProtocol](transport: Transport[A
     transport.requestStream(contraF(request))
   }
 
-  override def requestStream[Res: Decoder: Encoder](request: B, onMessage: Try[Option[Res]] => Unit): Subscription = {
-    transport.requestStream(contraF(request), onMessage)
+  override def requestStream[Res: Decoder: Encoder](request: B, observer: Observer[Res]): Subscription = {
+    transport.requestStream(contraF(request), observer)
   }
 }

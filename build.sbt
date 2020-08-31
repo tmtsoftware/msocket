@@ -31,16 +31,28 @@ inThisBuild(
 lazy val `msocket-root` = project
   .in(file("."))
   .aggregate(
-    `portable-akka`.jvm,
-    `portable-akka`.js,
+    `portable`,
     `msocket`,
     `example-service`
   )
 
-//************* akka-api *****************************************************
+//************* portable-api *****************************************************
+
+lazy val portable = project.aggregate(
+  `portable-observer`.jvm,
+  `portable-observer`.js,
+  `portable-akka`.jvm,
+  `portable-akka`.js
+)
+
+lazy val `portable-observer` = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("portable/portable-observer"))
 
 lazy val `portable-akka` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Dummy)
+  .in(file("portable/portable-akka"))
+  .dependsOn(`portable-observer`)
   .jvmSettings(
     libraryDependencies ++= Seq(
       `akka-stream`,
@@ -50,7 +62,7 @@ lazy val `portable-akka` = crossProject(JSPlatform, JVMPlatform)
 
 //************* msocket *****************************************************
 
-lazy val `msocket` = project.aggregate(
+lazy val msocket = project.aggregate(
   `msocket-api`.jvm,
   `msocket-api`.js,
   `msocket-impl`,

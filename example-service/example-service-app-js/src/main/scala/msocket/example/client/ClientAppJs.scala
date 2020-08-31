@@ -4,7 +4,8 @@ import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.Source
 import csw.example.api.client.ExampleClient
 import msocket.api.Subscription
-import portable.akka.extensions.PortableAkka
+import msocket.portable.PortableAkka
+
 import scala.concurrent.duration.DurationLong
 
 /** ScalaJS based client application that will send requests to the server */

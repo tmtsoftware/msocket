@@ -1,7 +1,7 @@
-package portable.akka.extensions
+package msocket.portable
 
 import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.adapter._
+import akka.actor.typed.scaladsl.adapter.TypedSchedulerOps
 import akka.stream.scaladsl.Source
 
 import scala.concurrent.Future

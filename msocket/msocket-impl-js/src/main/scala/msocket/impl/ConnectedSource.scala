@@ -3,13 +3,13 @@ package msocket.impl
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.{Subscription, Transport}
+import msocket.portable.Observer
 
 import scala.util.Try
 
 class ConnectedSource[Req, Res: Decoder: Encoder](req: Req, transport: Transport[Req]) extends Source[Res, Subscription] {
-  private var messageHandlers: Seq[Try[Option[Res]] => Unit] = Nil
-  private def handleMessage(x: Try[Option[Res]]): Unit       = messageHandlers.foreach(f => f(x))
-
-  override val subscription: Subscription                         = transport.requestStream(req, handleMessage)
-  override def onMessage(handler: Try[Option[Res]] => Unit): Unit = messageHandlers :+= handler
+  private var observers: Seq[Observer[Res]]                = Nil
+  private def handleMessage(input: Try[Option[Res]]): Unit = observers.foreach(obs => obs.on(input))
+  override val subscription: Subscription                  = transport.requestStream(req, Observer.from(handleMessage))
+  override def onMessage(observer: Observer[Res]): Unit    = observers :+= observer
 }

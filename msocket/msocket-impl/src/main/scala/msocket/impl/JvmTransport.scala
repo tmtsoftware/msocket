@@ -7,14 +7,23 @@ import msocket.api.{ErrorProtocol, Subscription, Transport}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
-import scala.util.control.NonFatal
+import scala.util.{Failure, Success, Try}
 
 abstract class JvmTransport[Req: Encoder: ErrorProtocol](implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
-  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
-    val stream = requestStream(request).map(onMessage).recover {
-      case NonFatal(ex) => onError(ex)
-    }
-    stream.to(Sink.ignore).run()
+  import actorSystem.executionContext
+
+  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Try[Option[Res]] => Unit): Subscription = {
+    requestStream(request)
+      .map(x => onMessage(Success(Some(x))))
+      .watchTermination() { (subscription, completionF) =>
+        completionF.onComplete {
+          case Failure(exception) => onMessage(Failure(exception))
+          case Success(_)         => onMessage(Success(None))
+        }
+        subscription
+      }
+      .to(Sink.ignore)
+      .run()
   }
 
   override def requestResponse[Res: Decoder: Encoder](request: Req, timeout: FiniteDuration): Future[Res] = {

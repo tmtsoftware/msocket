@@ -17,7 +17,7 @@ object PortableAkka {
     }
   }
 
-  def onMessage[Out, Mat](stream: Source[Out, Mat])(messageHandler: Out => Unit): Source[Out, Mat] =
+  def onNext[Out, Mat](stream: Source[Out, Mat])(messageHandler: Out => Unit): Source[Out, Mat] =
     stream.map { x =>
       messageHandler(x)
       x
@@ -31,5 +31,5 @@ object PortableAkka {
     }
 
   def withEffects[Out, Mat](stream: Source[Out, Mat])(messageHandler: Out => Unit, errorHandler: Throwable => Unit): Source[Out, Mat] =
-    onError(onMessage(stream)(messageHandler))(errorHandler)
+    onError(onNext(stream)(messageHandler))(errorHandler)
 }

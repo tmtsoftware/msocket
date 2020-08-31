@@ -7,6 +7,7 @@ import msocket.impl.ws.WebsocketJsExtensions.WebsocketJsEncoding
 import org.scalajs.dom.raw.WebSocket
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
 
 class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType: ContentType)(implicit ec: ExecutionContext)
@@ -16,28 +17,29 @@ class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType
     Future.failed(new RuntimeException("requestResponse protocol without timeout is not supported for this transport"))
   }
 
-  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
+  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Try[Option[Res]] => Unit): Subscription = {
     val webSocket = new WebSocket(uri) {
 
       binaryType = "arraybuffer"
 
       onopen = { _ =>
         contentType.send(this, request)
-        println("connection open")
+        println("websocket connection open")
       }
 
       onmessage = { event =>
-        try onMessage(contentType.response(event))
+        try onMessage(Success(Some(contentType.response(event))))
         catch {
-          case NonFatal(ex) => onError(ex); close()
+          case NonFatal(ex) => onMessage(Failure(ex)); close()
         }
       }
 
-      onclose = { _ =>
-        println("connection closed")
+      onclose = { x =>
+        onMessage(Success(None))
       }
 
       onerror = { e =>
+        onMessage(Failure(new RuntimeException(s"websocket connection error=$e")))
         println(e)
       }
     }

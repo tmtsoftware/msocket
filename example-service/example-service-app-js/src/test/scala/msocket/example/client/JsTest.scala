@@ -33,7 +33,7 @@ class JsTest extends AsyncFreeSpec with Matchers with ExampleCodecs with TestPol
   implicit val actorSystem: ActorSystem[Any]               = new ActorSystem
   override implicit def executionContext: ExecutionContext = actorSystem.executionContext
 
-  List(Json, Cbor).foreach { contentType =>
+  List(Cbor, Json).foreach { contentType =>
     lazy val httpResponseTransport = new HttpPostTransportJs[ExampleRequest](PostEndpoint, contentType)
     lazy val httpStreamTransport   = new HttpPostTransportJs[ExampleStreamRequest](PostStreamingEndpoint, contentType)
 
@@ -86,10 +86,10 @@ class JsTest extends AsyncFreeSpec with Matchers with ExampleCodecs with TestPol
             s"simple stream" in async {
               val client                            = new ExampleClient(null, transport)
               val stream: Source[Int, Subscription] = client.getNumbers(12)
-              val subscription                      = stream.materializedValue
+              val subscription                      = stream.subscription
               val p                                 = Promise[Done]()
               var list                              = Seq.empty[Int]
-              stream.onMessage { x =>
+              stream.onNext { x =>
                 list :+= x
                 if (list.length == 2) {
                   p.success(Done)
@@ -104,7 +104,7 @@ class JsTest extends AsyncFreeSpec with Matchers with ExampleCodecs with TestPol
             "domain error " in async {
               val client                            = new ExampleClient(null, transport)
               val stream: Source[Int, Subscription] = client.getNumbers(-1)
-              val subscription                      = stream.materializedValue
+              val subscription                      = stream.subscription
               val p                                 = Promise[Done]()
 
               stream.onError { err =>
@@ -119,7 +119,7 @@ class JsTest extends AsyncFreeSpec with Matchers with ExampleCodecs with TestPol
             "generic error " in async {
               val client                            = new ExampleClient(null, transport)
               val stream: Source[Int, Subscription] = client.getNumbers(0)
-              val subscription                      = stream.materializedValue
+              val subscription                      = stream.subscription
               val p                                 = Promise[Done]()
 
               stream.onError { err =>

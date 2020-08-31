@@ -7,6 +7,7 @@ import msocket.api.utils.{ContraMappedTransport, ResponseLoggingTransport}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 /**
  * Transport API abstracts 2 main interaction models: requestResponse and requestStream with their variants
@@ -37,7 +38,7 @@ abstract class Transport[Req: Encoder: ErrorProtocol] {
    * invoke onError callback on receiving an error which will terminate the stream
    * The given [[Source]] will materialize to a [[Subscription]] that can be used for cancellation
    */
-  def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription
+  def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Try[Option[Res]] => Unit): Subscription
 }
 
 object Transport {

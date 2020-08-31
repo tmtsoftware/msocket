@@ -18,9 +18,9 @@ class ClientAppJs(client: ExampleClient)(implicit actorSystem: ActorSystem[_]) {
 
     def stream(x: Int): Subscription = {
       val numberStream: Source[Int, Subscription] = client.getNumbers(x)
-      numberStream.onMessage(println)
+      numberStream.onNext(println)
       numberStream.onError(println)
-      numberStream.materializedValue
+      numberStream.subscription
     }
 
     stream(3)

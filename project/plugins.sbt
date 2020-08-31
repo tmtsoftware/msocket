@@ -6,7 +6,8 @@ addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "1.1.1")
 addSbtPlugin("ch.epfl.scala"      % "sbt-scalajs-bundler"      % "0.18.0")
 addSbtPlugin("io.spray"           % "sbt-revolver"             % "0.9.1")
 
-libraryDependencies += "com.sun.activation" % "javax.activation" % "1.2.0"
+libraryDependencies += "com.sun.activation" % "javax.activation"     % "1.2.0"
+libraryDependencies += "org.scala-js"      %% "scalajs-env-selenium" % "1.0.0"
 
 scalacOptions ++= Seq(
   "-encoding",

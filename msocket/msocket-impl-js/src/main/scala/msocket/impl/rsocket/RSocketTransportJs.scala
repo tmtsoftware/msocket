@@ -63,7 +63,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
     responsePromise.future
   }
 
-  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
+  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Try[Option[Res]] => Unit): Subscription = {
     val subscriptionPromise: Promise[ISubscription] = Promise()
 
     val pullStreamHandle: Future[SetIntervalHandle] = subscriptionPromise.future.map { subscription =>
@@ -78,15 +78,13 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
     }
 
     val subscriber: ISubscriber[Try[Res]] = ISubscriber[Try[Res]](
-      () => println("stream completed"),
-      e => onError(new RuntimeException(e.message)),
-      {
-        case Failure(exception) =>
-          onError(exception)
-          cancelSubscription()
-        case Success(value)     => onMessage(value)
+      onComplete = () => onMessage(Success(None)),
+      onError = e => onMessage(Failure(new RuntimeException(e.message))),
+      onNext = {
+        case Failure(exception) => onMessage(Failure(exception)); cancelSubscription()
+        case Success(value)     => onMessage(Success(Some(value)))
       },
-      subscriptionPromise.trySuccess
+      onSubscribe = subscriptionPromise.trySuccess
     )
 
     socketPromise.future.foreach { socket =>

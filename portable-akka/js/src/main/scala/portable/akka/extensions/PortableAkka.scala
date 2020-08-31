@@ -14,7 +14,7 @@ object PortableAkka {
   }
 
   def onMessage[Out, Mat](stream: Source[Out, Mat])(f: Out => Unit): Source[Out, Mat] = {
-    stream.onMessage(f)
+    stream.onNext(f)
     stream
   }
 

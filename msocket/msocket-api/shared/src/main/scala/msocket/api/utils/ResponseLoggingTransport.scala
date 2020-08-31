@@ -8,6 +8,7 @@ import portable.akka.extensions.PortableAkka
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: String => Unit = println)(implicit
     ec: ExecutionContext,
@@ -17,10 +18,10 @@ class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: 
   private val loggingEncoder = new LoggingMessageEncoder[Req](action)
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] =
-    transport.requestResponse(request).map(x => logMessage(x)).recover(logError)
+    transport.requestResponse(request).transform(logResponseTry[Res])
 
   override def requestResponse[Res: Decoder: Encoder](request: Req, timeout: FiniteDuration): Future[Res] =
-    transport.requestResponse(request, timeout).map(x => logMessage(x)).recover(logError)
+    transport.requestResponse(request, timeout).transform(logResponseTry[Res])
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] =
     PortableAkka.withEffects(transport.requestStream(request))(
@@ -28,16 +29,27 @@ class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: 
       loggingEncoder.errorEncoder
     )
 
-  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Res => Unit, onError: Throwable => Unit): Subscription = {
-    transport.requestStream(request, (x: Res) => onMessage(logMessage(x)), logError andThen onError)
+  override def requestStream[Res: Decoder: Encoder](request: Req, onMessage: Try[Option[Res]] => Unit): Subscription = {
+    transport.requestStream(request, logMessage[Res] _ andThen onMessage)
   }
 
-  private def logMessage[Res: Encoder](response: Res): Res = {
+  def logMessage[Res: Encoder](msg: Try[Option[Res]]): Try[Option[Res]] = {
+    msg match {
+      case Failure(exception)   => Failure(logError(exception))
+      case Success(Some(value)) => Success(Some(logResponse(value)))
+      case Success(None)        => Success({ action("stream completed"); None })
+    }
+  }
+
+  private def logResponseTry[Res: Encoder](response: Try[Res]): Try[Res] = logMessage(response.map(Some(_))).map(_.get)
+
+  private def logResponse[Res: Encoder](response: Res): Res = {
     loggingEncoder.encode(response, Headers())
     response
   }
 
-  private def logError[Res]: PartialFunction[Throwable, Res] = {
-    case ex => loggingEncoder.errorEncoder(ex); throw ex
+  private def logError[Res](ex: Throwable): Throwable = {
+    loggingEncoder.errorEncoder(ex)
+    ex
   }
 }

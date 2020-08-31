@@ -5,12 +5,8 @@ import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.{Subscription, Transport}
 import msocket.portable.Observer
 
-import scala.util.Try
-
 class ConnectedSource[Req, Res: Decoder: Encoder](req: Req, transport: Transport[Req]) extends Source[Res, Subscription] {
-  private var observers: Seq[Observer[Res]]                = Nil
-  private def handleMessage(input: Try[Option[Res]]): Unit = observers.foreach(obs => obs.run(input))
-
-  override val subscription: Subscription               = transport.requestStream(req, Observer.from(handleMessage))
+  private var observers: Seq[Observer[Res]]             = Nil
+  override val subscription: Subscription               = transport.requestStream(req, Observer.combine(() => observers))
   override def onMessage(observer: Observer[Res]): Unit = observers :+= observer
 }

@@ -43,5 +43,6 @@ object Observer {
     }
   }
 
-  def fromPromise[T](promise: Promise[T]): Observer[T] = fromTry(promise.tryComplete)
+  def fromPromise[T](promise: Promise[T]): Observer[T]           = fromTry(promise.tryComplete)
+  def combine[T](observers: () => Seq[Observer[T]]): Observer[T] = from(x => observers().foreach(_.run(x)))
 }

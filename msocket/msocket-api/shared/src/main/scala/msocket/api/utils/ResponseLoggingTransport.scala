@@ -33,10 +33,7 @@ class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: 
   }
 
   override def requestStream[Res: Decoder: Encoder](request: Req, observer: Observer[Res]): Subscription = {
-    val combinedObserver = Observer.from[Res] { x =>
-      loggingObserver[Res].run(x)
-      observer.run(x)
-    }
+    val combinedObserver = Observer.combine[Res](() => List(loggingObserver, observer))
     transport.requestStream(request, combinedObserver)
   }
 

@@ -17,18 +17,21 @@ object PortableAkka {
     }
   }
 
-  def viaObserver[Out, Mat](stream: Source[Out, Mat], observer: Observer[Out])(implicit ec: ExecutionContext): Source[Out, Mat] = {
-    stream
-      .map { x =>
-        observer.onNext(x)
-        x
-      }
-      .watchTermination() { (mat, doneF) =>
-        doneF.onComplete {
-          case Failure(exception) => observer.onError(exception);
-          case Success(_)         => observer.onCompleted()
+  implicit class SourceOps[Out, Mat](private val target: Source[Out, Mat]) extends AnyVal {
+    def viaObserver(observer: Observer[Out])(implicit ec: ExecutionContext): Source[Out, Mat] = {
+      target
+        .map { x =>
+          observer.onNext(x)
+          x
         }
-        mat
-      }
+        .watchTermination() { (mat, doneF) =>
+          doneF.onComplete {
+            case Failure(exception) => observer.onError(exception);
+            case Success(_)         => observer.onCompleted()
+          }
+          mat
+        }
+    }
   }
+
 }

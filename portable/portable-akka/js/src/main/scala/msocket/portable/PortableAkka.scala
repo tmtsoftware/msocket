@@ -14,8 +14,10 @@ object PortableAkka {
     timers.setTimeout(duration)(body)
   }
 
-  def viaObserver[Out, Mat](stream: Source[Out, Mat], observer: Observer[Out])(implicit @nowarn ec: ExecutionContext): Source[Out, Mat] = {
-    stream.onMessage(observer)
-    stream
+  implicit class SourceOps[Out, Mat](private val target: Source[Out, Mat]) extends AnyVal {
+    def viaObserver(observer: Observer[Out])(implicit @nowarn ec: ExecutionContext): Source[Out, Mat] = {
+      target.onMessage(observer)
+      target
+    }
   }
 }

@@ -8,7 +8,7 @@ import msocket.portable.{Observer, PortableAkka}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: String => Unit = println)(implicit
     ec: ExecutionContext,
@@ -18,38 +18,33 @@ class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: 
   private val loggingEncoder = new LoggingMessageEncoder[Req](action)
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] =
-    transport.requestResponse(request).transform(logResponseTry[Res])
+    transport.requestResponse(request).transform(logMessage[Res])
 
   override def requestResponse[Res: Decoder: Encoder](request: Req, timeout: FiniteDuration): Future[Res] =
-    transport.requestResponse(request, timeout).transform(logResponseTry[Res])
+    transport.requestResponse(request, timeout).transform(logMessage[Res])
 
-  override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] =
-    PortableAkka.withEffects(transport.requestStream(request))(
-      out => loggingEncoder.encode(out, Headers()),
-      loggingEncoder.errorEncoder
-    )
+  override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] = {
+    val observer = Observer.create[Res](out => loggingEncoder.encode(out, Headers()), loggingEncoder.errorEncoder)
+    PortableAkka.viaObserver(transport.requestStream(request), observer)
+  }
 
   override def requestStream[Res: Decoder: Encoder](request: Req, observer: Observer[Res]): Subscription = {
-    transport.requestStream(request, Observer.from(logMessage[Res] _ andThen observer.on))
-  }
-
-  def logMessage[Res: Encoder](msg: Try[Option[Res]]): Try[Option[Res]] = {
-    msg match {
-      case Failure(exception)   => Failure(logError(exception))
-      case Success(Some(value)) => Success(Some(logResponse(value)))
-      case Success(None)        => Success({ action("stream completed"); None })
+    val combinedObserver = Observer.from[Res] { x =>
+      loggingObserver[Res].run(x)
+      observer.run(x)
     }
+    transport.requestStream(request, combinedObserver)
   }
 
-  private def logResponseTry[Res: Encoder](response: Try[Res]): Try[Res] = logMessage(response.map(Some(_))).map(_.get)
+  def loggingObserver[Res: Encoder]: Observer[Res] =
+    new Observer[Res] {
+      override def onNext(elm: Res): Unit       = loggingEncoder.encode(elm, Headers())
+      override def onError(ex: Throwable): Unit = loggingEncoder.errorEncoder(ex)
+      override def onCompleted(): Unit          = action("stream completed")
+    }
 
-  private def logResponse[Res: Encoder](response: Res): Res = {
-    loggingEncoder.encode(response, Headers())
+  private def logMessage[Res: Encoder](response: Try[Res]): Try[Res] = {
+    loggingObserver[Res].run(response.map(Some(_)))
     response
-  }
-
-  private def logError[Res](ex: Throwable): Throwable = {
-    loggingEncoder.errorEncoder(ex)
-    ex
   }
 }

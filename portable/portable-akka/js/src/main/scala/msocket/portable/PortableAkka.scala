@@ -4,6 +4,7 @@ import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.Source
 
 import scala.annotation.nowarn
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 import scala.scalajs.js.timers
 
@@ -13,16 +14,8 @@ object PortableAkka {
     timers.setTimeout(duration)(body)
   }
 
-  def onMessage[Out, Mat](stream: Source[Out, Mat])(f: Out => Unit): Source[Out, Mat] = {
-    stream.onNext(f)
+  def viaObserver[Out, Mat](stream: Source[Out, Mat], observer: Observer[Out])(implicit @nowarn ec: ExecutionContext): Source[Out, Mat] = {
+    stream.onMessage(observer)
     stream
   }
-
-  def onError[Out, Mat](stream: Source[Out, Mat])(errorHandler: Throwable => Unit): Source[Out, Mat] = {
-    stream.onError(errorHandler)
-    stream
-  }
-
-  def withEffects[Out, Mat](stream: Source[Out, Mat])(messageHandler: Out => Unit, errorHandler: Throwable => Unit): Source[Out, Mat] =
-    onError(onMessage(stream)(messageHandler))(errorHandler)
 }

@@ -19,8 +19,8 @@ object Source {
   def future[T](futureElement: Future[T]): Source[T, NotUsed] =
     new Source[T, NotUsed] {
       override val subscription: NotUsed = NotUsed
-      override def onMessage(handler: Observer[T]): Unit = {
-        futureElement.onComplete(x => handler.on(x.map(Some(_))))
+      override def onMessage(observer: Observer[T]): Unit = {
+        futureElement.onComplete(x => observer.run(x.map(Some(_))))
       }
     }
 }

@@ -7,7 +7,7 @@ trait Observer[-T] {
   def onError(ex: Throwable): Unit
   def onCompleted(): Unit
 
-  def on(input: Try[Option[T]]): Unit =
+  def run(input: Try[Option[T]]): Unit =
     input match {
       case Failure(exception)   => onError(exception)
       case Success(Some(value)) => onNext(value)

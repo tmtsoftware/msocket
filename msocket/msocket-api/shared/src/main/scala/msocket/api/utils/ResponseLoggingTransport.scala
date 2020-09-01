@@ -45,7 +45,7 @@ class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: 
     }
 
   private def logMessage[Res: Encoder](response: Try[Res]): Try[Res] = {
-    loggingObserver[Res].run(response.map(Some(_)))
+    loggingObserver[Res].runTry(response)
     response
   }
 }

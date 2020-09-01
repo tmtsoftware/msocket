@@ -30,8 +30,8 @@ object ClientMainJs extends ExampleCodecs {
     lazy val httpResponseTransport       = new HttpPostTransportJs[ExampleRequest](PostEndpoint, Json)
     @nowarn lazy val httpStreamTransport = new HttpPostTransportJs[ExampleStreamRequest](PostStreamingEndpoint, Json)
 
-    @nowarn lazy val rSocketResponseTransport = new RSocketTransportFactoryJs[ExampleRequest].connect(RSocketEndpoint, Cbor)
-    @nowarn lazy val rSocketStreamTransport   = new RSocketTransportFactoryJs[ExampleStreamRequest].connect(RSocketEndpoint, Json)
+    lazy val (rSocketResponseTransport, _) = RSocketTransportFactoryJs.connect[ExampleRequest](RSocketEndpoint, Cbor)
+    lazy val (rSocketStreamTransport, _)   = RSocketTransportFactoryJs.connect[ExampleStreamRequest](RSocketEndpoint, Json)
 
     @nowarn lazy val sseTransport = new SseTransportJs[ExampleStreamRequest](SseEndpoint)
     lazy val websocketTransport   = new WebsocketTransportJs[ExampleStreamRequest](WebsocketEndpoint, Json)

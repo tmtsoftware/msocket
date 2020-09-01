@@ -34,8 +34,10 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
 
   Await.result(exampleServer.start("0.0.0.0", 5000), 10.seconds)
   Await.result(rSocketServer.start("0.0.0.0", 7000), 10.seconds)
+  var connections: List[Subscription] = Nil
 
   override protected def afterAll(): Unit = {
+    connections.foreach(_.cancel())
     Await.result(rSocketServer.stop(), 10.seconds)
     actorSystem.terminate()
     Await.result(actorSystem.whenTerminated, 10.seconds)
@@ -55,8 +57,10 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
     lazy val httpResponseTransport = new HttpPostTransport[ExampleRequest](PostEndpoint, contentType, () => None)
     lazy val httpStreamTransport   = new HttpPostTransport[ExampleStreamRequest](PostStreamingEndpoint, contentType, () => None)
 
-    lazy val rSocketResponseTransport = new RSocketTransportFactory[ExampleRequest].connect(RSocketEndpoint, contentType)
-    lazy val rSocketStreamTransport   = new RSocketTransportFactory[ExampleStreamRequest].connect(RSocketEndpoint, contentType)
+    lazy val (rSocketResponseTransport, connection1) = RSocketTransportFactory.connect[ExampleRequest](RSocketEndpoint, contentType)
+    lazy val (rSocketStreamTransport, connection2)   = RSocketTransportFactory.connect[ExampleStreamRequest](RSocketEndpoint, contentType)
+
+    connections :::= List(connection1, connection2)
 
     lazy val sseTransport       = new SseTransport[ExampleStreamRequest](SseEndpoint)
     lazy val websocketTransport = new WebsocketTransport[ExampleStreamRequest](WebsocketEndpoint, contentType)
@@ -138,6 +142,5 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
         }
       }
     }
-
   }
 }

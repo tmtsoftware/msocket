@@ -36,4 +36,6 @@ class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket, contentTyp
       .map(payload => contentType.response[Res, Req](payload))
       .withSubscription()
   }
+
+  def subscription(): Subscription = () => rSocket.dispose()
 }

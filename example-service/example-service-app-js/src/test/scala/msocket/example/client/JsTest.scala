@@ -14,6 +14,7 @@ import msocket.impl.post.HttpPostTransportJs
 import msocket.impl.rsocket.RSocketTransportFactoryJs
 import msocket.impl.sse.SseTransportJs
 import msocket.impl.ws.WebsocketTransportJs
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -21,7 +22,7 @@ import scala.async.Async._
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Promise}
 
-class JsTest extends AsyncFreeSpec with Matchers with ExampleCodecs with TestPolyfills {
+class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with ExampleCodecs with TestPolyfills {
 
   val PostEndpoint          = "http://localhost:5000/post-endpoint"
   val PostStreamingEndpoint = "http://localhost:5000/post-streaming-endpoint"
@@ -33,12 +34,20 @@ class JsTest extends AsyncFreeSpec with Matchers with ExampleCodecs with TestPol
   implicit val actorSystem: ActorSystem[Any]               = new ActorSystem
   override implicit def executionContext: ExecutionContext = actorSystem.executionContext
 
+  var connections: List[Subscription] = Nil
+
+  override protected def afterAll(): Unit = {
+    connections.foreach(_.cancel())
+  }
+
   List(Cbor, Json).foreach { contentType =>
     lazy val httpResponseTransport = new HttpPostTransportJs[ExampleRequest](PostEndpoint, contentType)
     lazy val httpStreamTransport   = new HttpPostTransportJs[ExampleStreamRequest](PostStreamingEndpoint, contentType)
 
-    lazy val rSocketResponseTransport = new RSocketTransportFactoryJs[ExampleRequest].connect(RSocketEndpoint, contentType)
-    lazy val rSocketStreamTransport   = new RSocketTransportFactoryJs[ExampleStreamRequest].connect(RSocketEndpoint, Json)
+    lazy val (rSocketResponseTransport, connection1) = RSocketTransportFactoryJs.connect[ExampleRequest](RSocketEndpoint, contentType)
+    lazy val (rSocketStreamTransport, connection2)   = RSocketTransportFactoryJs.connect[ExampleStreamRequest](RSocketEndpoint, Json)
+
+    connections :::= List(connection1, connection2)
 
     lazy val sseTransport       = new SseTransportJs[ExampleStreamRequest](SseEndpoint)
     lazy val websocketTransport = new WebsocketTransportJs[ExampleStreamRequest](WebsocketEndpoint, contentType)

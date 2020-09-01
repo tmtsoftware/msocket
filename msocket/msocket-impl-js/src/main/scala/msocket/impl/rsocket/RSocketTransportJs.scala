@@ -101,5 +101,5 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
     () => cancelSubscription()
   }
 
-  def shutdown(): Unit = client.close()
+  def subscription(): Subscription = () => client.close()
 }

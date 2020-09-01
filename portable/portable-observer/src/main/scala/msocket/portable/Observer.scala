@@ -14,6 +14,8 @@ trait Observer[-T] {
       case Success(Some(value)) => onNext(value)
       case Success(None)        => onCompleted()
     }
+
+  def runTry(input: Try[T]): Unit = run(input.map(Some(_)))
 }
 
 object Observer {

@@ -8,29 +8,29 @@ trait Observer[-T] {
   def onError(ex: Throwable): Unit
   def onCompleted(): Unit
 
-  def run(input: Try[Option[T]]): Unit =
+  def onTry(input: Try[T]): Unit = onTryOption(input.map(Some(_)))
+
+  def onTryOption(input: Try[Option[T]]): Unit =
     input match {
       case Failure(exception)   => onError(exception)
       case Success(Some(value)) => onNext(value)
       case Success(None)        => onCompleted()
     }
-
-  def runTry(input: Try[T]): Unit = run(input.map(Some(_)))
 }
 
 object Observer {
   def create[T](
-      nextF: T => Unit = (x: T) => (),
-      errorF: Throwable => Unit = x => (),
-      doneF: () => Unit = () => ()
+      eventHandler: T => Unit = (x: T) => (),
+      errorHandler: Throwable => Unit = x => (),
+      completionHandler: () => Unit = () => ()
   ): Observer[T] =
     new Observer[T] {
-      override def onNext(elm: T): Unit         = nextF(elm)
-      override def onError(ex: Throwable): Unit = errorF(ex)
-      override def onCompleted(): Unit          = doneF()
+      override def onNext(elm: T): Unit         = eventHandler(elm)
+      override def onError(ex: Throwable): Unit = errorHandler(ex)
+      override def onCompleted(): Unit          = completionHandler()
     }
 
-  def from[T](handler: Try[Option[T]] => Unit): Observer[T] =
+  def fromTryOption[T](handler: Try[Option[T]] => Unit): Observer[T] =
     new Observer[T] {
       override def onNext(elm: T): Unit         = handler(Success(Some(elm)))
       override def onError(ex: Throwable): Unit = handler(Failure(ex))
@@ -46,5 +46,5 @@ object Observer {
   }
 
   def fromPromise[T](promise: Promise[T]): Observer[T]           = fromTry(promise.tryComplete)
-  def combine[T](observers: () => Seq[Observer[T]]): Observer[T] = from(x => observers().foreach(_.run(x)))
+  def combine[T](observers: () => Seq[Observer[T]]): Observer[T] = fromTryOption(x => observers().foreach(_.onTryOption(x)))
 }

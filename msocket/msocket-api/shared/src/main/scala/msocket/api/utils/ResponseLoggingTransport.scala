@@ -26,8 +26,8 @@ class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: 
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] = {
     val observer = Observer.create[Res](
-      nextF = out => loggingEncoder.encode(out, Headers()),
-      errorF = loggingEncoder.errorEncoder
+      eventHandler = out => loggingEncoder.encode(out, Headers()),
+      errorHandler = loggingEncoder.errorEncoder
     )
     transport.requestStream(request).viaObserver(observer)
   }
@@ -45,7 +45,7 @@ class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: 
     }
 
   private def logMessage[Res: Encoder](response: Try[Res]): Try[Res] = {
-    loggingObserver[Res].runTry(response)
+    loggingObserver[Res].onTry(response)
     response
   }
 }

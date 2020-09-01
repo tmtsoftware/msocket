@@ -7,6 +7,7 @@ import msocket.api.{ErrorProtocol, Labelled}
 import msocket.impl.RouteFactory
 import msocket.impl.metrics.HttpMetrics
 import msocket.impl.post.PostDirectives.withAcceptHeader
+import msocket.impl.post.headers.AppNameHeader
 
 class PostRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, postHandler: HttpPostHandler[Req])
     extends RouteFactory[Req]
@@ -20,11 +21,13 @@ class PostRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, 
 
     post {
       path(endpoint) {
-        withAcceptHeader {
-          withExceptionHandler {
-            entity(as[Req]) { req =>
-              withMetricCollector(metricsEnabled, req, counter = Some(counter)).apply { collector =>
-                withHttpMetrics(collector, postHandler.handle)
+        optionalHeaderValueByName(AppNameHeader.name) { appName =>
+          withAcceptHeader {
+            withExceptionHandler {
+              entity(as[Req]) { req =>
+                withMetricCollector(metricsEnabled, req, appName, counter = Some(counter)).apply { collector =>
+                  withHttpMetrics(collector, postHandler.handle)
+                }
               }
             }
           }

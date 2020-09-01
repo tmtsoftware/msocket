@@ -8,6 +8,7 @@ import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ErrorProtocol, Labelled, StreamRequestHandler}
 import msocket.impl.RouteFactory
 import msocket.impl.metrics.SseMetrics
+import msocket.impl.post.headers.AppNameHeader
 
 class SseRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, streamRequestHandler: StreamRequestHandler[Req])
     extends RouteFactory[Req]
@@ -25,9 +26,11 @@ class SseRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, s
 
     get {
       path(endpoint) {
-        extractPayloadFromHeader { req =>
-          withMetricCollector(metricsEnabled, req, counter = Some(perMsgCounter), gauge = Some(gauge)).apply { collector =>
-            complete(sseHandler.handle(streamRequestHandler.handle(req), collector))
+        parameters(AppNameHeader.name.optional) { appName: Option[String] =>
+          extractPayloadFromHeader { req =>
+            withMetricCollector(metricsEnabled, req, appName, counter = Some(perMsgCounter), gauge = Some(gauge)).apply { collector =>
+              complete(sseHandler.handle(streamRequestHandler.handle(req), collector))
+            }
           }
         }
       }

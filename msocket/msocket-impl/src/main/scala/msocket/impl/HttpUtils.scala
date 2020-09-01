@@ -6,7 +6,8 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import msocket.api.models.{ErrorType, ServiceError}
 import msocket.api.{ContentType, ErrorProtocol}
-import msocket.impl.post.{ClientHttpCodecs, ErrorTypeHeader}
+import msocket.impl.post.ClientHttpCodecs
+import msocket.impl.post.headers.ErrorTypeHeader
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong

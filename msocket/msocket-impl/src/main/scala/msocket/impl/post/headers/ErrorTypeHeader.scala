@@ -1,4 +1,4 @@
-package msocket.impl.post
+package msocket.impl.post.headers
 
 import akka.http.scaladsl.model.headers.{ModeledCustomHeader, ModeledCustomHeaderCompanion}
 

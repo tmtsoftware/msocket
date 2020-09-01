@@ -8,6 +8,7 @@ import msocket.api.{ErrorProtocol, Labelled, StreamRequestHandler}
 import msocket.impl.RouteFactory
 import msocket.impl.metrics.WebsocketMetrics
 import msocket.impl.post.ServerHttpCodecs
+import msocket.impl.post.headers.AppNameHeader
 
 class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
     endpoint: String,
@@ -23,8 +24,10 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
 
     get {
       path(endpoint) {
-        withPartialMetricCollector[Req](metricsEnabled, Some(perMsgCounter), Some(gauge)).apply { collectorFactory =>
-          handleWebSocketMessages(new WebsocketServerFlow(websocketHandler, collectorFactory).flow)
+        parameters(AppNameHeader.name.optional) { appName: Option[String] =>
+          withPartialMetricCollector[Req](metricsEnabled, appName, Some(perMsgCounter), Some(gauge)).apply { collectorFactory =>
+            handleWebSocketMessages(new WebsocketServerFlow(websocketHandler, collectorFactory).flow)
+          }
         }
       }
     }

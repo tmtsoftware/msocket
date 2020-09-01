@@ -50,18 +50,23 @@ trait Metrics {
   def withMetricCollector[Req: Labelled](
       enabled: Boolean,
       req: Req,
+      appName: Option[String],
       counter: => Option[Counter] = None,
       gauge: => Option[Gauge] = None
   ): Directive1[MetricCollector[Req]] =
-    withPartialMetricCollector[Req](enabled, counter, gauge).map(_.apply(req))
+    withPartialMetricCollector[Req](enabled, appName, counter, gauge).map(_.apply(req))
 
   def withPartialMetricCollector[Req: Labelled](
       enabled: Boolean,
+      appName: Option[String],
       counter: => Option[Counter] = None,
       gauge: => Option[Gauge] = None
   ): Directive1[Req => MetricCollector[Req]] =
     extractClientIP.flatMap { clientIp =>
-      extract(ctx => new MetricCollector(enabled, _, counter, gauge, clientIp, ctx))
+      extract { ctx =>
+        import ctx.executionContext
+        new MetricCollector(enabled, _, appName, counter, gauge, clientIp)
+      }
     }
 
 }

@@ -12,11 +12,17 @@ import msocket.api.ContentEncoding.JsonText
 import msocket.api.SourceExtension.WithSubscription
 import msocket.api.models.ErrorType
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
+import msocket.impl.post.headers.AppNameHeader
 import msocket.impl.{HttpUtils, JvmTransport}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class HttpPostTransport[Req: Encoder](uri: String, contentType: ContentType, tokenFactory: () => Option[String])(implicit
+class HttpPostTransport[Req: Encoder](
+    uri: String,
+    contentType: ContentType,
+    tokenFactory: () => Option[String],
+    appName: Option[String] = None
+)(implicit
     actorSystem: ActorSystem[_],
     ep: ErrorProtocol[Req]
 ) extends JvmTransport[Req]
@@ -43,15 +49,14 @@ class HttpPostTransport[Req: Encoder](uri: String, contentType: ContentType, tok
   }
 
   private def getResponse(request: Req): Future[HttpResponse] = {
+    val authHeader    = tokenFactory().map(t => Authorization(OAuth2BearerToken(t)))
+    val appNameHeader = appName.map(name => AppNameHeader(name))
     Marshal(request).to[RequestEntity].flatMap { requestEntity =>
       val httpRequest = HttpRequest(
         HttpMethods.POST,
         uri = uri,
         entity = requestEntity,
-        headers = tokenFactory() match {
-          case Some(token) => Seq(Authorization(OAuth2BearerToken(token)))
-          case None        => Nil
-        }
+        headers = authHeader.toList ++ appNameHeader
       )
       new HttpUtils[Req](contentType).handleRequest(httpRequest)
     }

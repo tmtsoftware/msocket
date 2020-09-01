@@ -1,24 +1,32 @@
 package msocket.impl.ws
 
 import akka.actor.typed.ActorSystem
+import akka.http.scaladsl.model.Uri
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.SourceExtension.WithSubscription
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
+import msocket.impl.post.headers.AppNameHeader
 import msocket.impl.ws.WebsocketExtensions.WebsocketEncoding
 import msocket.impl.{CborByteString, JvmTransport}
 
 import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
 
-class WebsocketTransport[Req: Encoder: ErrorProtocol](uri: String, contentType: ContentType)(implicit actorSystem: ActorSystem[_])
+class WebsocketTransport[Req: Encoder: ErrorProtocol](
+    uri: String,
+    contentType: ContentType,
+    appName: Option[String] = None
+)(implicit actorSystem: ActorSystem[_])
     extends JvmTransport[Req] {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
-  private val setup = new WebsocketTransportSetup(WebSocketRequest(uri))
+  private val params: Map[String, String] = appName.map(name => AppNameHeader.name -> name).view.toMap
+  private val uriWithParams               = Uri(uri).withQuery(Uri.Query(params))
+  private val setup                       = new WebsocketTransportSetup(WebSocketRequest(uriWithParams))
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
     Future.failed(new RuntimeException("requestResponse protocol without timeout is not supported for this transport"))

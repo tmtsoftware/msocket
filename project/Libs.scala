@@ -22,8 +22,8 @@ object Libs {
   val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.1")
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "1.1.0")
 
-  val eventsource                = dep("org.scalablytyped" %%% "eventsource" % "1.1.2-3917e7")
-  val `rsocket-websocket-client` = dep("org.scalablytyped" %%% "rsocket-websocket-client" % "0.0.3-6ed313")
+  val eventsource                = dep("org.scalablytyped" %%% "eventsource" % "1.1.4-5269e8")
+  val `rsocket-websocket-client` = dep("org.scalablytyped" %%% "rsocket-websocket-client" % "0.0.3-280a1e")
 
   val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % "1.0.1"
   val `rsocket-transport-netty` = "io.rsocket" % "rsocket-transport-netty" % "1.0.1"

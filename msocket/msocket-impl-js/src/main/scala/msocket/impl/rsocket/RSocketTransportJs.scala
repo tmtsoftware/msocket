@@ -5,11 +5,11 @@ import msocket.api.models.Headers
 import msocket.api.{ContentEncoding, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import msocket.portable.Observer
-import typings.rsocketCore.AnonDataMimeType
+import typings.rsocketCore.anon.DataMimeType
 import typings.rsocketCore.mod.RSocketClient
 import typings.rsocketCore.rsocketclientMod.ClientConfig
 import typings.rsocketCore.rsocketencodingMod.Encoders
-import typings.rsocketFlowable.singleMod.IFutureSubscriber
+import typings.rsocketFlowable.singleMod.{CancelCallback, IFutureSubscriber}
 import typings.rsocketTypes.reactiveSocketTypesMod.{Payload, ReactiveSocket}
 import typings.rsocketTypes.reactiveStreamTypesMod.{ISubscriber, ISubscription}
 import typings.rsocketWebsocketClient.mod.{default => RSocketWebSocketClient}
@@ -17,6 +17,7 @@ import typings.rsocketWebsocketClient.rsocketwebsocketclientMod.ClientOptions
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.scalajs.js
 import scala.scalajs.js.timers
 import scala.scalajs.js.timers.SetIntervalHandle
 import scala.util.{Failure, Success, Try}
@@ -29,7 +30,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
 
   private val client: RSocketClient[En, En] = new RSocketClient(
     ClientConfig(
-      setup = AnonDataMimeType(
+      setup = DataMimeType(
         dataMimeType = contentEncoding.contentType.mimeType,
         keepAlive = 60000,
         lifetime = 1800000,
@@ -39,21 +40,23 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
     )
   )
 
-  private def subscriber[T](p: Promise[T]): IFutureSubscriber[Try[T]] =
-    IFutureSubscriber[Try[T]](
-      p.tryComplete,
-      e => p.tryFailure(new RuntimeException(e.message)),
-      _ => println("inside onSubscribe")
-    )
+  private def subscriber[T](p: Promise[T]): IFutureSubscriber[Try[T]] = {
+    new IFutureSubscriber[Try[T]] {
+      override def onComplete(value: Try[T]): Unit           = p.tryComplete(value)
+      override def onError(error: js.Error): Unit            = p.tryFailure(new RuntimeException(error.message))
+      override def onSubscribe(cancel: CancelCallback): Unit = println("inside onSubscribe")
+    }
+  }
 
   private val socketPromise: Promise[ReactiveSocket[En, En]] = Promise()
   client.connect().map(Try(_)).subscribe(PartialOf(subscriber(socketPromise)))
 
-  override def requestResponse[Res: Decoder: Encoder](req: Req): Future[Res] = {
+  override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
     val responsePromise: Promise[Res] = Promise()
     socketPromise.future.foreach { socket =>
+      val payload = Payload[En, En]().setData(contentEncoding.encode(request)).setMetadata(contentEncoding.encode(Headers()))
       socket
-        .requestResponse(Payload(contentEncoding.encode(req), contentEncoding.encode(Headers())))
+        .requestResponse(payload)
         .map { payload =>
           val headers = contentEncoding.decode[Headers](payload.metadata.get)
           Try(contentEncoding.decodeFull(payload.data.get, headers.errorType))
@@ -78,19 +81,22 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
       pullStreamHandle.foreach(timers.clearInterval)
     }
 
-    val subscriber: ISubscriber[Try[Res]] = ISubscriber[Try[Res]](
-      onComplete = () => observer.onCompleted(),
-      onError = e => observer.onError(new RuntimeException(e.message)),
-      onNext = {
-        case Failure(exception) => observer.onError(exception); cancelSubscription()
-        case Success(value)     => observer.onNext(value)
-      },
-      onSubscribe = subscriptionPromise.trySuccess
-    )
+    val subscriber: ISubscriber[Try[Res]] = {
+      new ISubscriber[Try[Res]] {
+        override def onComplete(): Unit                             = observer.onCompleted()
+        override def onError(error: js.Error): Unit                 = observer.onError(new RuntimeException(error.message))
+        override def onSubscribe(subscription: ISubscription): Unit = subscriptionPromise.trySuccess(subscription)
+        override def onNext(value: Try[Res]): Unit                  =
+          value match {
+            case Failure(exception) => observer.onError(exception); cancelSubscription()
+            case Success(value)     => observer.onNext(value)
+          }
+      }
+    }
 
     socketPromise.future.foreach { socket =>
       socket
-        .requestStream(Payload(contentEncoding.encode(request), contentEncoding.encode(Headers())))
+        .requestStream(Payload[En, En]().setData(contentEncoding.encode(request)).setMetadata(contentEncoding.encode(Headers())))
         .map { payload =>
           val headers = contentEncoding.decode[Headers](payload.metadata.get)
           Try(contentEncoding.decodeFull(payload.data.get, headers.errorType))

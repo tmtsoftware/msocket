@@ -19,12 +19,14 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
   }
 
   override def requestStream[Res: Decoder: Encoder](request: Req, observer: Observer[Res]): Subscription = {
-    val sse = new Sse(uri, EventSourceInitDict(queryHeader(request))) {
-      override def onopen(evt: MessageEvent): js.Any = {
+
+    val sse = new Sse(uri, EventSourceInitDict().setHeaders(queryHeader(request))) {
+
+      override def onopen(evt: MessageEvent[_]): js.Any = {
         println("sse connection open")
       }
 
-      override def onmessage(evt: MessageEvent): js.Any = {
+      override def onmessage(evt: MessageEvent[_]): js.Any = {
         val jsonString = evt.data.asInstanceOf[String]
         if (jsonString != "") {
           try observer.onNext(JsonText.decodeWithError(jsonString))
@@ -34,7 +36,7 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
         }
       }
 
-      override def onerror(evt: MessageEvent): js.Any = {
+      override def onerror(evt: MessageEvent[_]): js.Any = {
         observer.onError(new RuntimeException(s"sse connection error=$evt"))
       }
     }

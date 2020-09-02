@@ -1,5 +1,6 @@
 package msocket.impl.post
 
+import akka.Done
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType.Json
@@ -8,14 +9,13 @@ import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import msocket.impl.post.HttpJsExtensions.HttpJsEncoding
 import msocket.portable.Observer
-import org.scalajs.dom.experimental.ReadableStreamReader
+import org.scalajs.dom.experimental.WriteableStream
+import typings.std.global.{JSON, TextDecoderStream, TransformStream, WritableStream}
+import typings.std.{Transformer, UnderlyingSink}
 
 import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.{ExecutionContext, Future}
-import scala.scalajs.js
-import scala.scalajs.js.timers
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.control.NonFatal
-import scala.util.{Failure, Success}
 
 class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType: ContentType)(implicit
     ec: ExecutionContext,
@@ -26,38 +26,43 @@ class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType:
     FetchHelper.postRequest(uri, req, contentType).flatMap(response => contentType.response(response))
 
   override def requestStream[Res: Decoder: Encoder](request: Req, observer: Observer[Res]): Subscription = {
-    val readerF: Future[ReadableStreamReader[js.Object]] = FetchHelper.postRequest[Req](uri, request, Json).map { response =>
-      val reader = new CanNdJsonStream(response.body).getReader()
-      def read(): Unit = {
-        reader.read().toFuture.onComplete {
-          case Success(chunk)     =>
-            if (!chunk.done) {
-              val fetchEventJs = FetchEventJs(chunk.value)
-              val jsonString   = fetchEventJs.data
-              if (jsonString != "") {
-                val maybeErrorType = fetchEventJs.errorType.toOption.map(ErrorType.from)
-                try {
-                  observer.onNext(JsonText.decodeFull(jsonString, maybeErrorType))
-                  timers.setTimeout(streamingDelay) {
-                    read()
-                  }
-                } catch {
-                  case NonFatal(ex) => observer.onError(ex); reader.cancel(ex.getMessage)
-                }
-              }
-            } else {
-              observer.onCompleted()
-            }
-          case Failure(exception) => observer.onError(exception); reader.cancel(exception.getMessage)
-        }
-      }
-
-      read()
-
-      reader
+    val promise = Promise[Done]()
+    FetchHelper.postRequest[Req](uri, request, Json).map { response =>
+      response.body
+        .pipeThrough[String](new TextDecoderStream())
+        .pipeThrough[FetchEventJs](parseJson(promise))
+        .pipeTo(sinkOf(observer))
     }
+    () => promise.trySuccess(Done): Unit
+  }
 
-    () => readerF.foreach(_.cancel("cancelled"))
+  def parseJson[Res: Decoder: Encoder](promise: Promise[Done]): TransformStream[String, FetchEventJs] = {
+    new TransformStream(
+      Transformer[String, FetchEventJs]()
+        .setTransform { (chunk, controller) =>
+          controller.enqueue(FetchEventJs(JSON.parse(chunk)))
+          promise.future.foreach(_ => controller.terminate())
+        }
+    )
+  }
+
+  def sinkOf[Res: Decoder: Encoder](observer: Observer[Res]): WriteableStream[FetchEventJs] = {
+    new WritableStream[FetchEventJs](
+      UnderlyingSink[FetchEventJs]()
+        .setWrite { (fetchEventJs, controller) =>
+          val jsonString = fetchEventJs.data
+          if (jsonString != "") {
+            try {
+              val maybeErrorType = fetchEventJs.errorType.toOption.map(ErrorType.from)
+              observer.onNext(JsonText.decodeFull(jsonString, maybeErrorType))
+            } catch {
+              case NonFatal(ex) =>
+                observer.onError(ex)
+                controller.error()
+            }
+          }
+        }
+    ).asInstanceOf[WriteableStream[FetchEventJs]]
   }
 
 }

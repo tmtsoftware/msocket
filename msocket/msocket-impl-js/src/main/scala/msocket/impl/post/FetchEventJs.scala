@@ -9,5 +9,5 @@ trait FetchEventJs extends js.Object {
 }
 
 object FetchEventJs {
-  def apply(obj: js.Object): FetchEventJs = obj.asInstanceOf[FetchEventJs]
+  def apply(obj: js.Any): FetchEventJs = obj.asInstanceOf[FetchEventJs]
 }

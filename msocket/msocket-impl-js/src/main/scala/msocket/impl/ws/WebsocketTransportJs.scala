@@ -30,7 +30,9 @@ class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType
       onmessage = { event =>
         try observer.onNext(contentType.response(event))
         catch {
-          case NonFatal(ex) => observer.onError(ex); close()
+          case NonFatal(ex) =>
+            observer.onError(ex)
+            close()
         }
       }
 
@@ -40,11 +42,14 @@ class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType
 
       onerror = { e =>
         observer.onError(new RuntimeException(s"websocket connection error=$e"))
-        println(e)
+        close()
       }
     }
 
-    () => webSocket.close()
+    () => {
+      webSocket.close()
+      observer.onCompleted()
+    }
   }
 
 }

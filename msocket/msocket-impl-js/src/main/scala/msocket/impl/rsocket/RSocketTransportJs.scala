@@ -104,7 +104,9 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
         .subscribe(PartialOf(subscriber))
     }
 
-    () => cancelSubscription()
+    () =>
+      cancelSubscription()
+      observer.onCompleted()
   }
 
   def subscription(): Subscription = () => client.close()

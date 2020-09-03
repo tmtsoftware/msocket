@@ -19,8 +19,8 @@ import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.async.Async._
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
-import scala.concurrent.{ExecutionContext, Promise}
 
 class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with ExampleCodecs with TestPolyfills {
 
@@ -96,17 +96,15 @@ class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with Exa
               val client                            = new ExampleClient(null, transport)
               val stream: Source[Int, Subscription] = client.getNumbers(12)
               val subscription                      = stream.subscription
-              val p                                 = Promise[Done]()
               var list                              = Seq.empty[Int]
               stream.onNext { x =>
                 list :+= x
                 if (list.length == 2) {
-                  p.success(Done)
                   subscription.cancel()
                 }
               }
 
-              await(p.future) shouldBe Done
+              await(subscription.cancellation) shouldBe Done
               list shouldBe List(12, 24)
             }
 
@@ -114,30 +112,26 @@ class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with Exa
               val client                            = new ExampleClient(null, transport)
               val stream: Source[Int, Subscription] = client.getNumbers(-1)
               val subscription                      = stream.subscription
-              val p                                 = Promise[Done]()
 
               stream.onError { err =>
                 err shouldBe GetNumbersError(17)
-                p.success(Done)
                 subscription.cancel()
               }
 
-              await(p.future) shouldBe Done
+              await(subscription.cancellation) shouldBe Done
             }
 
             "generic error " in async {
               val client                            = new ExampleClient(null, transport)
               val stream: Source[Int, Subscription] = client.getNumbers(0)
               val subscription                      = stream.subscription
-              val p                                 = Promise[Done]()
 
               stream.onError { err =>
                 err shouldBe ServiceError.fromThrowable(new ArithmeticException("/ by zero"))
-                p.success(Done)
                 subscription.cancel()
               }
 
-              await(p.future) shouldBe Done
+              await(subscription.cancellation) shouldBe Done
             }
           }
 

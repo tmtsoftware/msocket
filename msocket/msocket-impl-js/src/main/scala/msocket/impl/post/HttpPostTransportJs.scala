@@ -33,15 +33,21 @@ class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType:
         .pipeThrough[FetchEventJs](parseJson(promise))
         .pipeTo(sinkOf(observer))
     }
-    () => promise.trySuccess(Done): Unit
+    () => {
+      promise.trySuccess(Done)
+      observer.onCompleted()
+    }
   }
 
   def parseJson[Res: Decoder: Encoder](promise: Promise[Done]): TransformStream[String, FetchEventJs] = {
     new TransformStream(
       Transformer[String, FetchEventJs]()
         .setTransform { (chunk, controller) =>
-          controller.enqueue(FetchEventJs(JSON.parse(chunk)))
-          promise.future.foreach(_ => controller.terminate())
+          if (chunk.nonEmpty && chunk != "\n") {
+            val fetchEventJs = FetchEventJs(JSON.parse(chunk))
+            controller.enqueue(fetchEventJs)
+            promise.future.foreach(_ => controller.terminate())
+          }
         }
     )
   }
@@ -51,15 +57,13 @@ class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType:
       UnderlyingSink[FetchEventJs]()
         .setWrite { (fetchEventJs, controller) =>
           val jsonString = fetchEventJs.data
-          if (jsonString != "") {
-            try {
-              val maybeErrorType = fetchEventJs.errorType.toOption.map(ErrorType.from)
-              observer.onNext(JsonText.decodeFull(jsonString, maybeErrorType))
-            } catch {
-              case NonFatal(ex) =>
-                observer.onError(ex)
-                controller.error()
-            }
+          try {
+            val maybeErrorType = fetchEventJs.errorType.toOption.map(ErrorType.from)
+            observer.onNext(JsonText.decodeFull(jsonString, maybeErrorType))
+          } catch {
+            case NonFatal(ex) =>
+              observer.onError(ex)
+              controller.error()
           }
         }
     ).asInstanceOf[WriteableStream[FetchEventJs]]

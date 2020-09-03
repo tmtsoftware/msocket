@@ -31,13 +31,16 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
         if (jsonString != "") {
           try observer.onNext(JsonText.decodeWithError(jsonString))
           catch {
-            case NonFatal(ex) => observer.onError(ex); close(); observer.onCompleted()
+            case NonFatal(ex) =>
+              observer.onError(ex)
+              close()
           }
         }
       }
 
       override def onerror(evt: MessageEvent[_]): js.Any = {
         observer.onError(new RuntimeException(s"sse connection error=$evt"))
+        close()
       }
     }
 

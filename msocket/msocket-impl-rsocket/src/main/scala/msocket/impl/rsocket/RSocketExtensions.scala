@@ -5,13 +5,13 @@ import io.rsocket.Payload
 import io.rsocket.util.DefaultPayload
 import msocket.api.ContentEncoding.{CborByteBuffer, JsonText}
 import msocket.api.ContentType.{Cbor, Json}
-import msocket.api.models.Headers
+import msocket.api.models.ResponseHeaders
 import msocket.api.{ContentType, ErrorProtocol}
 
 object RSocketExtensions {
 
   implicit class RSocketEncoding(contentType: ContentType) {
-    def payload[T: Encoder](input: T, headers: Headers): Payload =
+    def payload[T: Encoder](input: T, headers: ResponseHeaders): Payload =
       contentType match {
         case Json => DefaultPayload.create(JsonText.encode(input), JsonText.encode(headers))
         case Cbor => DefaultPayload.create(CborByteBuffer.encode(input), CborByteBuffer.encode(headers))
@@ -20,10 +20,10 @@ object RSocketExtensions {
     def response[Res: Decoder, Req: ErrorProtocol](payload: Payload): Res = {
       contentType match {
         case Json =>
-          val headers = JsonText.decode[Headers](payload.getMetadataUtf8)
+          val headers = JsonText.decode[ResponseHeaders](payload.getMetadataUtf8)
           JsonText.decodeFull(payload.getDataUtf8, headers.errorType)
         case Cbor =>
-          val headers = CborByteBuffer.decode[Headers](payload.getMetadata)
+          val headers = CborByteBuffer.decode[ResponseHeaders](payload.getMetadata)
           CborByteBuffer.decodeFull(payload.getData, headers.errorType)
       }
     }

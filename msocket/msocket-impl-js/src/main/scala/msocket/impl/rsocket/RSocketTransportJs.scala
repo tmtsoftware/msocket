@@ -1,7 +1,7 @@
 package msocket.impl.rsocket
 
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.models.Headers
+import msocket.api.models.ResponseHeaders
 import msocket.api.{ContentEncoding, ErrorProtocol, Subscription}
 import msocket.impl.JsTransport
 import msocket.portable.Observer
@@ -54,11 +54,11 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
     val responsePromise: Promise[Res] = Promise()
     socketPromise.future.foreach { socket =>
-      val payload = Payload[En, En]().setData(contentEncoding.encode(request)).setMetadata(contentEncoding.encode(Headers()))
+      val payload = Payload[En, En]().setData(contentEncoding.encode(request)).setMetadata(contentEncoding.encode(ResponseHeaders()))
       socket
         .requestResponse(payload)
         .map { payload =>
-          val headers = contentEncoding.decode[Headers](payload.metadata.get)
+          val headers = contentEncoding.decode[ResponseHeaders](payload.metadata.get)
           Try(contentEncoding.decodeFull(payload.data.get, headers.errorType))
         }
         .subscribe(PartialOf(subscriber(responsePromise)))
@@ -96,9 +96,9 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
 
     socketPromise.future.foreach { socket =>
       socket
-        .requestStream(Payload[En, En]().setData(contentEncoding.encode(request)).setMetadata(contentEncoding.encode(Headers())))
+        .requestStream(Payload[En, En]().setData(contentEncoding.encode(request)).setMetadata(contentEncoding.encode(ResponseHeaders())))
         .map { payload =>
-          val headers = contentEncoding.decode[Headers](payload.metadata.get)
+          val headers = contentEncoding.decode[ResponseHeaders](payload.metadata.get)
           Try(contentEncoding.decodeFull(payload.data.get, headers.errorType))
         }
         .subscribe(PartialOf(subscriber))

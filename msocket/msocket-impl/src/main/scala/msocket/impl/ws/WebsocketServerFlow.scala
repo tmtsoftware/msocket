@@ -31,7 +31,7 @@ class WebsocketServerFlow[Req: Decoder: ErrorProtocol: Labelled](
   }
 
   private def handle[Elm](element: Elm, contentEncoding: ContentEncoding[Elm]): Source[Message, NotUsed] = {
-    val wsHandler = new WebsocketHandler[Req](contentEncoding.contentType)
+    val wsHandler = new WebsocketStreamHandler[Req](contentEncoding.contentType)
     Source
       .lazySingle(() => contentEncoding.decode[Req](element))
       .flatMapConcat(req => wsHandler.handle(streamRequestHandler.handle(req), collectorFactory(req)))

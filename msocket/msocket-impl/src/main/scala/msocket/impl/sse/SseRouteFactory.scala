@@ -14,7 +14,7 @@ class SseRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, s
     extends RouteFactory[Req]
     with SseMetrics {
 
-  private val sseHandler = new SseHandler[Req]
+  private val sseHandler = new SseStreamHandler[Req]
 
   private val extractPayloadFromHeader: Directive1[Req] = headerValuePF {
     case QueryHeader(query) => JsonText.decode(query)

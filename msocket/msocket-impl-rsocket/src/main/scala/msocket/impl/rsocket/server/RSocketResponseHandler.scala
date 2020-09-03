@@ -3,8 +3,8 @@ package msocket.impl.rsocket.server
 import io.bullet.borer.Dom.Element
 import io.bullet.borer.Encoder
 import io.rsocket.Payload
-import msocket.api.models.{Headers, ServiceError}
-import msocket.api.{ContentType, ErrorProtocol, MessageEncoder, RequestHandler}
+import msocket.api.models.{ResponseHeaders, ServiceError}
+import msocket.api.{ContentType, ErrorProtocol, ResponseEncoder, RequestHandler}
 import msocket.impl.rsocket.RSocketExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,14 +14,14 @@ import scala.concurrent.{ExecutionContext, Future}
  * RSocketResponseHandler takes a request type which will be bound to Domain specific error using ErrorProtocol.
  */
 abstract class RSocketResponseHandler[Req: ErrorProtocol](contentType: ContentType)
-    extends MessageEncoder[Req, Payload]
+    extends ResponseEncoder[Req, Payload]
     with RequestHandler[Req, Future[Payload]] {
 
   def future[Res: Encoder](response: Future[Res])(implicit ec: ExecutionContext): Future[Payload] = {
-    response.map(response => contentType.payload(response, Headers())).recover(errorEncoder)
+    response.map(response => contentType.payload(response, ResponseHeaders())).recover(errorEncoder)
   }
 
-  override def encode[Res: Encoder](response: Res, headers: Headers): Payload = contentType.payload(response, headers)
+  override def encode[Res: Encoder](response: Res, headers: ResponseHeaders): Payload = contentType.payload(response, headers)
 }
 
 /**

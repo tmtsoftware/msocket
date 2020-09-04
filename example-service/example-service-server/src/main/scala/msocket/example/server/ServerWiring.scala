@@ -10,6 +10,7 @@ import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRe
 import csw.example.impl.ExampleImpl
 import io.rsocket.RSocket
 import msocket.api.ContentType
+import msocket.api.security.{AccessControllerFactory, TokenValidator}
 import msocket.example.server.handlers._
 import msocket.impl.RouteFactory
 import msocket.impl.post.{PostRouteFactory, PostStreamRouteFactory}
@@ -32,13 +33,17 @@ class ServerWiring extends ExampleCodecs {
   def requestResponseHandler(contentType: ContentType): ExampleRSocketResponseHandler =
     new ExampleRSocketResponseHandler(exampleImpl, contentType)
   def rSocketFactory(contentType: ContentType): RSocket                               =
-    new RSocketImpl(requestResponseHandler, exampleStreamHandler, contentType)
+    new RSocketImpl(requestResponseHandler, exampleStreamHandler, contentType, accessControllerFactory)
+
+  lazy val tokenValidator: TokenValidator = _ => None
+  lazy val isSecurityEnabled: Boolean     = false
+  lazy val accessControllerFactory        = new AccessControllerFactory(tokenValidator, isSecurityEnabled)
 
   lazy val applicationRoute: Route = RouteFactory.combine(metricsEnabled = true)(
     new PostRouteFactory[ExampleRequest]("post-endpoint", postHandler),
-    new PostStreamRouteFactory[ExampleStreamRequest]("post-streaming-endpoint", exampleStreamHandler),
-    new WebsocketRouteFactory[ExampleStreamRequest]("websocket-endpoint", exampleStreamHandler),
-    new SseRouteFactory[ExampleStreamRequest]("sse-endpoint", exampleStreamHandler)
+    new PostStreamRouteFactory[ExampleStreamRequest]("post-streaming-endpoint", exampleStreamHandler, accessControllerFactory),
+    new WebsocketRouteFactory[ExampleStreamRequest]("websocket-endpoint", exampleStreamHandler, accessControllerFactory),
+    new SseRouteFactory[ExampleStreamRequest]("sse-endpoint", exampleStreamHandler, accessControllerFactory)
   )
 
   lazy val exampleServer = new ExampleServer(applicationRoute)(actorSystem)

@@ -4,6 +4,7 @@ import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.Decoder
 import io.rsocket.{Payload, RSocket}
+import msocket.api.security.AccessControllerFactory
 import msocket.api.{ContentType, ErrorProtocol, StreamRequestHandler}
 import msocket.impl.rsocket.RSocketExtensions._
 import reactor.core.publisher.{Flux, Mono}
@@ -13,14 +14,15 @@ import scala.compat.java8.FutureConverters.FutureOps
 class RSocketImpl[RespReq: Decoder, StreamReq: Decoder: ErrorProtocol](
     requestResponseHandlerF: ContentType => RSocketResponseHandler[RespReq],
     streamRequestHandler: StreamRequestHandler[StreamReq],
-    contentType: ContentType
+    contentType: ContentType,
+    accessControllerFactory: AccessControllerFactory
 )(implicit actorSystem: ActorSystem[_])
     extends RSocket {
 
   import actorSystem.executionContext
 
   private lazy val requestResponseHandler = requestResponseHandlerF(contentType)
-  private lazy val rSocketStreamHandler   = new RSocketStreamHandler[StreamReq](contentType)
+  private lazy val rSocketStreamHandler   = new RSocketStreamResponseEncoder[StreamReq](contentType, accessControllerFactory.make(None))
 
   override def requestResponse(payload: Payload): Mono[Payload] = {
     val payloadF = requestResponseHandler

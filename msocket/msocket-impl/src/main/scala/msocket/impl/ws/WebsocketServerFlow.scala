@@ -6,6 +6,7 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import akka.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
+import msocket.api.security.AccessController
 import msocket.api.{ContentEncoding, ErrorProtocol, Labelled, StreamRequestHandler}
 import msocket.impl.CborByteString
 import msocket.impl.metrics.MetricCollector
@@ -14,7 +15,8 @@ import scala.concurrent.duration.DurationLong
 
 class WebsocketServerFlow[Req: Decoder: ErrorProtocol: Labelled](
     streamRequestHandler: StreamRequestHandler[Req],
-    collectorFactory: Req => MetricCollector[Req]
+    collectorFactory: Req => MetricCollector[Req],
+    accessController: AccessController
 )(implicit actorSystem: ActorSystem[_]) {
 
   val flow: Flow[Message, Message, NotUsed] = {
@@ -31,7 +33,7 @@ class WebsocketServerFlow[Req: Decoder: ErrorProtocol: Labelled](
   }
 
   private def handle[Elm](element: Elm, contentEncoding: ContentEncoding[Elm]): Source[Message, NotUsed] = {
-    val wsHandler = new WebsocketStreamHandler[Req](contentEncoding.contentType)
+    val wsHandler = new WebsocketStreamResponseEncoder[Req](contentEncoding.contentType, accessController)
     Source
       .lazySingle(() => contentEncoding.decode[Req](element))
       .flatMapConcat(req => wsHandler.handle(streamRequestHandler.handle(req), collectorFactory(req)))

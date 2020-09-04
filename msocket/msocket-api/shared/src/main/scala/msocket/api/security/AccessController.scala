@@ -1,6 +1,7 @@
 package msocket.api.security
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 class AccessController(tokenValidator: TokenValidator, securityStatus: SecurityStatus)(implicit ec: ExecutionContext) {
 
@@ -10,14 +11,14 @@ class AccessController(tokenValidator: TokenValidator, securityStatus: SecurityS
       case authorizationPolicy             =>
         securityStatus match {
           case SecurityStatus.Disabled            => Future.successful(AccessStatus.Authorized)
-          case SecurityStatus.TokenMissing        => Future.successful(AccessStatus.AuthenticationFailed)
+          case SecurityStatus.TokenMissing        => Future.successful(AccessStatus.AuthenticationFailed("access-token is missing"))
           case SecurityStatus.TokenPresent(token) =>
-            tokenValidator.validate(token) match {
-              case None              => Future.successful(AccessStatus.AuthenticationFailed)
-              case Some(accessToken) =>
-                authorizationPolicy.asyncAuthorize(accessToken).map { isAuthorized =>
-                  if (isAuthorized) AccessStatus.Authorized else AccessStatus.AuthorizationFailed
-                }
+            tokenValidator.validate(token).flatMap { accessToken =>
+              authorizationPolicy.asyncAuthorize(accessToken).map { isAuthorized =>
+                if (isAuthorized) AccessStatus.Authorized else AccessStatus.AuthorizationFailed("not enough access rights")
+              }
+            } recover {
+              case NonFatal(ex) => AccessStatus.AuthenticationFailed(ex.getMessage)
             }
         }
     }

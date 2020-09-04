@@ -63,16 +63,28 @@ lazy val `portable-akka` = crossProject(JSPlatform, JVMPlatform)
 //************* msocket *****************************************************
 
 lazy val msocket = project.aggregate(
+  `msocket-security-api`.jvm,
+  `msocket-security-api`.js,
   `msocket-api`.jvm,
   `msocket-api`.js,
   `msocket-impl`,
   `msocket-impl-js`
 )
 
+lazy val `msocket-security-api` = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("msocket/msocket-security-api"))
+  .settings(
+    libraryDependencies ++= Seq(
+      `borer-core`.value,
+      `borer-derivation`.value
+    )
+  )
+
 lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Full)
   .in(file("msocket/msocket-api"))
-  .dependsOn(`portable-akka`)
+  .dependsOn(`portable-akka`, `msocket-security-api`)
   .settings(
     libraryDependencies ++= Seq(
       `borer-core`.value,

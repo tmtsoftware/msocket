@@ -10,7 +10,7 @@ import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRe
 import csw.example.impl.ExampleImpl
 import io.rsocket.RSocket
 import msocket.api.ContentType
-import msocket.api.security.{AccessControllerFactory, TokenValidator}
+import msocket.api.security.{AccessControllerFactory, AccessToken, TokenValidator}
 import msocket.example.server.handlers._
 import msocket.impl.RouteFactory
 import msocket.impl.post.{PostRouteFactory, PostStreamRouteFactory}
@@ -18,7 +18,7 @@ import msocket.impl.rsocket.server.{RSocketImpl, RSocketServer}
 import msocket.impl.sse.SseRouteFactory
 import msocket.impl.ws.WebsocketRouteFactory
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 /** This is where the supported handlers are wired with the server */
 class ServerWiring extends ExampleCodecs {
@@ -35,7 +35,7 @@ class ServerWiring extends ExampleCodecs {
   def rSocketFactory(contentType: ContentType): RSocket                               =
     new RSocketImpl(requestResponseHandler, exampleStreamHandler, contentType, accessControllerFactory)
 
-  lazy val tokenValidator: TokenValidator = _ => None
+  lazy val tokenValidator: TokenValidator = _ => Future.successful(AccessToken())
   lazy val isSecurityEnabled: Boolean     = false
   lazy val accessControllerFactory        = new AccessControllerFactory(tokenValidator, isSecurityEnabled)
 

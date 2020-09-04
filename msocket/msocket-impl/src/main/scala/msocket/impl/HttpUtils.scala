@@ -27,9 +27,9 @@ class HttpUtils[Req](val clientContentType: ContentType)(implicit actorSystem: A
           }
           val entityF        = response.entity.toStrict(1.seconds)
           val errorF         = maybeErrorType match {
-            case Some(ErrorType.DomainError)  => entityF.flatMap(x => Unmarshal(x).to[ep.E])
-            case Some(ErrorType.GenericError) => entityF.flatMap(x => Unmarshal(x).to[ServiceError])
-            case None                         => transportError(entityF, response.status)
+            case Some(ErrorType.DomainError) => entityF.flatMap(x => Unmarshal(x).to[ep.E])
+            case Some(_)                     => entityF.flatMap(x => Unmarshal(x).to[ServiceError])
+            case None                        => transportError(entityF, response.status)
           }
           errorF.map(throw _)
         case _                               => transportError(response.entity.toStrict(1.seconds), response.status).map(throw _)

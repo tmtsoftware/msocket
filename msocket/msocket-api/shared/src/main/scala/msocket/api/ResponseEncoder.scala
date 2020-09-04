@@ -3,7 +3,7 @@ package msocket.api
 import io.bullet.borer.Encoder
 import msocket.api.models.ErrorType.{AuthenticationError, AuthorizationError, DomainError, GenericError}
 import msocket.api.models.{ResponseHeaders, ServiceError}
-import msocket.api.security.AccessStatus.AuthorizationFailed
+import msocket.security.api.AccessStatus.AuthorizationFailed
 
 import scala.util.control.NonFatal
 

@@ -3,9 +3,10 @@ package msocket.impl
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import msocket.api.models.ResponseHeaders
-import msocket.api.security.{AccessController, AccessStatus}
+import msocket.security.api.AccessStatus
 import msocket.api.{ErrorProtocol, ResponseEncoder, StreamResponse}
 import msocket.impl.metrics.{MetricCollector, Metrics}
+import msocket.security.api.AccessController
 
 import scala.concurrent.Future
 

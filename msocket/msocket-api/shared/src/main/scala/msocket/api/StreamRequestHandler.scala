@@ -2,7 +2,8 @@ package msocket.api
 
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
-import msocket.api.security.{AsyncAuthorizationPolicy, AuthorizationPolicy}
+import msocket.security.api.AuthorizationPolicy
+import msocket.security.api.AsyncAuthorizationPolicy
 
 import scala.concurrent.Future
 

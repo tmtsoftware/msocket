@@ -5,12 +5,12 @@ import akka.http.scaladsl.model.headers.Authorization
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import io.bullet.borer.Decoder
-import msocket.api.security.AccessControllerFactory
 import msocket.api.{ErrorProtocol, Labelled, StreamRequestHandler}
 import msocket.impl.RouteFactory
 import msocket.impl.metrics.WebsocketMetrics
 import msocket.impl.post.ServerHttpCodecs
 import msocket.impl.post.headers.AppNameHeader
+import msocket.security.api.AccessControllerFactory
 
 class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
     endpoint: String,

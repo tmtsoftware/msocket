@@ -6,10 +6,10 @@ import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.models.ResponseHeaders
-import msocket.api.security.AccessController
 import msocket.api.{ErrorProtocol, StreamResponse}
 import msocket.impl.StreamResponseEncoder
 import msocket.impl.metrics.MetricCollector
+import msocket.security.api.AccessController
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong

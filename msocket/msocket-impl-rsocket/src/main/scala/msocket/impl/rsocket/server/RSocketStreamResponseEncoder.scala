@@ -6,11 +6,11 @@ import io.bullet.borer.Dom.Element
 import io.bullet.borer.Encoder
 import io.rsocket.Payload
 import msocket.api.models.{ResponseHeaders, ServiceError}
-import msocket.api.security.AccessController
 import msocket.api.{ContentType, ErrorProtocol, StreamResponse}
 import msocket.impl.StreamResponseEncoder
 import msocket.impl.metrics.MetricCollector
 import msocket.impl.rsocket.RSocketExtensions._
+import msocket.security.api.AccessController
 
 import scala.concurrent.Future
 

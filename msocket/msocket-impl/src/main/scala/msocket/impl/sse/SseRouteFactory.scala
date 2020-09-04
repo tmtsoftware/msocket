@@ -5,11 +5,11 @@ import akka.http.scaladsl.server.Directives.{complete, _}
 import akka.http.scaladsl.server.{Directive1, Route}
 import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
-import msocket.api.security.AccessControllerFactory
 import msocket.api.{ErrorProtocol, Labelled, StreamRequestHandler}
 import msocket.impl.RouteFactory
 import msocket.impl.metrics.SseMetrics
 import msocket.impl.post.headers.AppNameHeader
+import msocket.security.api.AccessControllerFactory
 
 class SseRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
     endpoint: String,

@@ -10,13 +10,13 @@ import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRe
 import csw.example.impl.ExampleImpl
 import io.rsocket.RSocket
 import msocket.api.ContentType
-import msocket.api.security.{AccessControllerFactory, AccessToken, TokenValidator}
 import msocket.example.server.handlers._
 import msocket.impl.RouteFactory
 import msocket.impl.post.{PostRouteFactory, PostStreamRouteFactory}
 import msocket.impl.rsocket.server.{RSocketImpl, RSocketServer}
 import msocket.impl.sse.SseRouteFactory
 import msocket.impl.ws.WebsocketRouteFactory
+import msocket.security.api.{AccessControllerFactory, AccessToken, TokenValidator}
 
 import scala.concurrent.{ExecutionContext, Future}
 

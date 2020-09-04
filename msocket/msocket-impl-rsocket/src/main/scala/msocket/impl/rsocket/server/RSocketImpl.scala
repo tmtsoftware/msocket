@@ -4,9 +4,9 @@ import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.Decoder
 import io.rsocket.{Payload, RSocket}
-import msocket.api.security.AccessControllerFactory
 import msocket.api.{ContentType, ErrorProtocol, StreamRequestHandler}
 import msocket.impl.rsocket.RSocketExtensions._
+import msocket.security.api.AccessControllerFactory
 import reactor.core.publisher.{Flux, Mono}
 
 import scala.compat.java8.FutureConverters.FutureOps

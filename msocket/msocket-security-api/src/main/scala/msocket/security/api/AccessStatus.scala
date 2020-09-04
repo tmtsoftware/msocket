@@ -1,4 +1,4 @@
-package msocket.api.security
+package msocket.security.api
 
 sealed trait AccessStatus
 

@@ -15,9 +15,18 @@ trait AuthorizationPolicy extends AsyncAuthorizationPolicy {
 }
 
 object AuthorizationPolicy {
-  case object NotRequired extends AuthorizationPolicy {
+  case object PassThroughPolicy extends AuthorizationPolicy {
     override def authorize(accessToken: AccessToken): Boolean = {
-      throw new RuntimeException(s"authorization should not be checked for $NotRequired policy")
+      throw new RuntimeException(s"authorization should not be checked for $PassThroughPolicy policy")
     }
   }
+
+  case object AuthenticatedPolicy extends AuthorizationPolicy {
+    override protected def authorize(accessToken: AccessToken): Boolean = true
+  }
+
+  case class AuthorizedPolicy(role: String) extends AuthorizationPolicy {
+    override protected def authorize(accessToken: AccessToken): Boolean = accessToken.hasRealmRole(role)
+  }
+
 }

@@ -12,14 +12,14 @@ trait StreamRequestHandler[Req] {
 
   protected def future[Res: Encoder](
       result: => Future[Res],
-      policy: AsyncAuthorizationPolicy = AuthorizationPolicy.NotRequired
+      policy: AsyncAuthorizationPolicy = AuthorizationPolicy.PassThroughPolicy
   ): Future[StreamResponse] = {
     stream(Source.future(result), policy)
   }
 
   protected def stream[Res: Encoder](
       stream: => Source[Res, Any],
-      policy: AsyncAuthorizationPolicy = AuthorizationPolicy.NotRequired
+      policy: AsyncAuthorizationPolicy = AuthorizationPolicy.PassThroughPolicy
   ): Future[StreamResponse] = {
     Future.successful {
       new StreamResponse {

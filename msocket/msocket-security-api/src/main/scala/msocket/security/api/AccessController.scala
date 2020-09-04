@@ -7,8 +7,8 @@ class AccessController(tokenValidator: TokenValidator, securityStatus: SecurityS
 
   def check(authorizationPolicy: AsyncAuthorizationPolicy): Future[AccessStatus] = {
     authorizationPolicy match {
-      case AuthorizationPolicy.NotRequired => Future.successful(AccessStatus.Authorized)
-      case authorizationPolicy             =>
+      case AuthorizationPolicy.PassThroughPolicy => Future.successful(AccessStatus.Authorized)
+      case authorizationPolicy                   =>
         securityStatus match {
           case SecurityStatus.Disabled            => Future.successful(AccessStatus.Authorized)
           case SecurityStatus.TokenMissing        => Future.successful(AccessStatus.AuthenticationFailed("access-token is missing"))
@@ -23,8 +23,4 @@ class AccessController(tokenValidator: TokenValidator, securityStatus: SecurityS
         }
     }
   }
-}
-
-class AccessControllerFactory(tokenValidator: TokenValidator, securityEnabled: Boolean)(implicit ec: ExecutionContext) {
-  def make(token: Option[String]) = new AccessController(tokenValidator, SecurityStatus.from(token, securityEnabled))
 }

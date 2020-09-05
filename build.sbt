@@ -95,6 +95,12 @@ lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
 lazy val `msocket-service` = project
   .in(file("msocket/msocket-service"))
   .dependsOn(`msocket-api`.jvm, `msocket-security`)
+  .settings(
+    libraryDependencies ++= Seq(
+      Prometheus.simpleclient,
+      Prometheus.simpleclient_common
+    )
+  )
 
 lazy val `msocket-http` = project
   .in(file("msocket/msocket-http"))
@@ -103,8 +109,6 @@ lazy val `msocket-http` = project
     libraryDependencies ++= Seq(
       `akka-http`,
       `borer-compat-akka`,
-      Prometheus.simpleclient,
-      Prometheus.simpleclient_common,
       scalatest.value            % Test,
       `akka-actor-testkit-typed` % Test,
       `akka-http-testkit`        % Test

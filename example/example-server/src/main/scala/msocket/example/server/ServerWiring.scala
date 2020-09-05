@@ -17,7 +17,7 @@ import msocket.impl.rsocket.server.{RSocketImpl, RSocketServer}
 import msocket.impl.sse.SseRouteFactory
 import msocket.impl.ws.WebsocketRouteFactory
 import msocket.security.api.{AccessControllerFactory, AccessToken, TokenValidator}
-import msocket.service.Labelled
+import msocket.service.metrics.Labelled
 
 import scala.concurrent.{ExecutionContext, Future}
 

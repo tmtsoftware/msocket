@@ -5,13 +5,15 @@ import akka.http.scaladsl.server.{Directive0, Route}
 import io.bullet.borer.Decoder
 import msocket.api.ErrorProtocol
 import msocket.impl.RouteFactory
-import msocket.impl.metrics.HttpMetrics
 import msocket.impl.post.PostDirectives.withAcceptHeader
 import msocket.impl.post.headers.AppNameHeader
-import msocket.service.Labelled
+import msocket.service.metrics.{Labelled, MetricCollector}
 
-class PostRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, postHandler: HttpPostHandler[Req])
-    extends RouteFactory[Req]
+import scala.concurrent.ExecutionContext
+
+class PostRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, postHandler: HttpPostHandler[Req])(implicit
+    ec: ExecutionContext
+) extends RouteFactory[Req]
     with ServerHttpCodecs
     with HttpMetrics {
 
@@ -26,7 +28,8 @@ class PostRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, 
           withAcceptHeader {
             withExceptionHandler {
               entity(as[Req]) { req =>
-                withMetricCollector(metricsEnabled, req, appName, counter = Some(counter)).apply { collector =>
+                extractClientIP { clientIp =>
+                  val collector = new MetricCollector(metricsEnabled, req, appName, Some(counter), None, clientIp.toString())
                   withHttpMetrics(collector, postHandler.handle)
                 }
               }
@@ -36,5 +39,4 @@ class PostRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, 
       }
     }
   }
-
 }

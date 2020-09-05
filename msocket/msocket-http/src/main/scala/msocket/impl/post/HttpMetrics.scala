@@ -1,10 +1,10 @@
-package msocket.impl.metrics
+package msocket.impl.post
 
 import akka.http.scaladsl.server.Route
 import io.bullet.borer.Decoder
 import io.prometheus.client.Counter
 import msocket.api.ErrorProtocol
-import msocket.service.Labelled
+import msocket.service.metrics.{Labelled, MetricCollector, Metrics}
 
 object HttpMetrics extends HttpMetrics
 

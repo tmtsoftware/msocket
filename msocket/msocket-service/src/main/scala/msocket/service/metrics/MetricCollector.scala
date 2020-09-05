@@ -1,8 +1,6 @@
-package msocket.impl.metrics
+package msocket.service.metrics
 
-import akka.http.scaladsl.model.RemoteAddress
 import io.prometheus.client.{Counter, Gauge}
-import msocket.service.{Labelled, RequestMetadata}
 
 import scala.concurrent.ExecutionContext
 
@@ -12,9 +10,8 @@ class MetricCollector[Req: Labelled](
     _appName: Option[String],
     _counter: => Option[Counter],
     _gauge: => Option[Gauge],
-    private val clientAddress: RemoteAddress
+    val clientIp: String
 )(implicit val ec: ExecutionContext) {
-  private val clientIp: String                    = clientAddress.toString()
   private val appName: String                     = _appName.getOrElse("unknown")
   private lazy val labels: Seq[String]            = Labelled[Req].labels(request, RequestMetadata(clientIp, appName)).values
   private lazy val counter: Option[Counter.Child] = _counter.map(_.labels(labels: _*))

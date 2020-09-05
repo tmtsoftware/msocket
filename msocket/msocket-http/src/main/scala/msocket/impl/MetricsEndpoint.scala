@@ -1,4 +1,4 @@
-package msocket.impl.metrics
+package msocket.impl
 
 import java.io.{StringWriter, Writer}
 import java.util

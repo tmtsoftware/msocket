@@ -7,16 +7,19 @@ import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.ErrorProtocol
 import msocket.impl.RouteFactory
-import msocket.impl.metrics.SseMetrics
 import msocket.impl.post.headers.AppNameHeader
 import msocket.security.api.AccessControllerFactory
-import msocket.service.{Labelled, StreamRequestHandler}
+import msocket.service.StreamRequestHandler
+import msocket.service.metrics.{Labelled, MetricCollector}
+
+import scala.concurrent.ExecutionContext
 
 class SseRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
     endpoint: String,
     streamRequestHandler: StreamRequestHandler[Req],
     accessControllerFactory: AccessControllerFactory
-) extends RouteFactory[Req]
+)(implicit ec: ExecutionContext)
+    extends RouteFactory[Req]
     with SseMetrics {
 
   private val sseHandler = new SseStreamResponseEncoder[Req](accessControllerFactory.make(None))
@@ -33,7 +36,8 @@ class SseRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
       path(endpoint) {
         parameters(AppNameHeader.name.optional) { appName: Option[String] =>
           extractPayloadFromHeader { req =>
-            withMetricCollector(metricsEnabled, req, appName, counter = Some(perMsgCounter), gauge = Some(gauge)).apply { collector =>
+            extractClientIP { clientIp =>
+              val collector = new MetricCollector(metricsEnabled, req, appName, Some(perMsgCounter), Some(gauge), clientIp.toString())
               complete(sseHandler.handle(streamRequestHandler.handle(req), collector))
             }
           }

@@ -6,6 +6,7 @@ import akka.http.scaladsl.model.HttpCharsets
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.{CollectorRegistry, Histogram}
+import msocket.impl.MetricsEndpoint
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

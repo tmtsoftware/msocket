@@ -1,7 +1,7 @@
-package msocket.impl.metrics
+package msocket.impl.ws
 
 import io.prometheus.client.{Counter, Gauge}
-import msocket.service.Labelled
+import msocket.service.metrics.{Labelled, Metrics}
 
 object WebsocketMetrics extends WebsocketMetrics
 

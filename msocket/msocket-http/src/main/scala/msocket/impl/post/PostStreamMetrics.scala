@@ -1,7 +1,7 @@
-package msocket.impl.metrics
+package msocket.impl.post
 
 import io.prometheus.client.{Counter, Gauge}
-import msocket.service.Labelled
+import msocket.service.metrics.{Labelled, Metrics}
 
 trait PostStreamMetrics extends Metrics {
 

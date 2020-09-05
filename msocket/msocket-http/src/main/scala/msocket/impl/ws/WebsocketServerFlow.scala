@@ -8,9 +8,9 @@ import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentEncoding, ErrorProtocol}
 import msocket.impl.CborByteString
-import msocket.impl.metrics.MetricCollector
 import msocket.security.api.AccessController
-import msocket.service.{Labelled, StreamRequestHandler}
+import msocket.service.StreamRequestHandler
+import msocket.service.metrics.{Labelled, MetricCollector}
 
 import scala.concurrent.duration.DurationLong
 

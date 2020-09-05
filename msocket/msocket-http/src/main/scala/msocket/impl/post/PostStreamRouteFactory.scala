@@ -5,17 +5,20 @@ import akka.http.scaladsl.server.{Directive0, Route}
 import io.bullet.borer.Decoder
 import msocket.api.ErrorProtocol
 import msocket.impl.RouteFactory
-import msocket.impl.metrics.PostStreamMetrics
 import msocket.impl.post.PostDirectives.withAcceptHeader
 import msocket.impl.post.headers.AppNameHeader
 import msocket.security.api.AccessControllerFactory
-import msocket.service.{Labelled, StreamRequestHandler}
+import msocket.service.StreamRequestHandler
+import msocket.service.metrics.{Labelled, MetricCollector}
+
+import scala.concurrent.ExecutionContext
 
 class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
     endpoint: String,
     streamRequestHandler: StreamRequestHandler[Req],
     accessControllerFactory: AccessControllerFactory
-) extends RouteFactory[Req]
+)(implicit ec: ExecutionContext)
+    extends RouteFactory[Req]
     with ServerHttpCodecs
     with PostStreamMetrics {
 
@@ -32,7 +35,8 @@ class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
           withAcceptHeader {
             withExceptionHandler {
               entity(as[Req]) { req =>
-                withMetricCollector(metricsEnabled, req, appName, counter = Some(perMsgCounter), gauge = Some(gauge)).apply { collector =>
+                extractClientIP { clientIp =>
+                  val collector = new MetricCollector(metricsEnabled, req, appName, Some(perMsgCounter), Some(gauge), clientIp.toString())
                   complete(httpStreamHandler.handle(streamRequestHandler.handle(req), collector))
                 }
               }

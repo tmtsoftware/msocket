@@ -8,10 +8,10 @@ import io.rsocket.Payload
 import msocket.api.models.{ResponseHeaders, ServiceError}
 import msocket.api.{ContentType, ErrorProtocol}
 import msocket.impl.StreamResponseEncoder
-import msocket.impl.metrics.MetricCollector
 import msocket.impl.rsocket.RSocketExtensions._
 import msocket.security.api.AccessController
 import msocket.service.StreamResponse
+import msocket.service.metrics.MetricCollector
 
 import scala.concurrent.Future
 

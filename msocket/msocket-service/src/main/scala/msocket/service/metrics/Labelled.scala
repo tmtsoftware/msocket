@@ -1,6 +1,6 @@
-package msocket.service
+package msocket.service.metrics
 
-import msocket.service.RequestMetadata._
+import msocket.service.metrics.RequestMetadata._
 
 case class RequestMetadata(address: String, appName: String)
 object RequestMetadata {

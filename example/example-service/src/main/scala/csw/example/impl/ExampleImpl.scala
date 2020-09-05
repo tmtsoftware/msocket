@@ -7,7 +7,7 @@ import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}
 import csw.example.model.Bag
-import msocket.service.SourceExtension.WithSubscription
+import msocket.jvm.SourceExtension.WithSubscription
 import msocket.api.Subscription
 
 import scala.concurrent.Future

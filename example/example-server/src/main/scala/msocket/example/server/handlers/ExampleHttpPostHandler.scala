@@ -5,7 +5,7 @@ import akka.http.scaladsl.server.Route
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleCodecs._
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, Hello, RandomBag}
-import msocket.impl.post.{HttpPostHandler, ServerHttpCodecs}
+import msocket.http.post.{HttpPostHandler, ServerHttpCodecs}
 
 /**
  * Implements HttpPostHandler for all requestResponse messages in the protocol

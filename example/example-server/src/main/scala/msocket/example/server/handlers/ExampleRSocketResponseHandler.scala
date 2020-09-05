@@ -4,8 +4,8 @@ import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, Hello, RandomBag}
 import io.rsocket.Payload
 import msocket.api.ContentType
-import msocket.impl.rsocket.server.RSocketResponseHandler
 import csw.example.api.protocol.ExampleCodecs._
+import msocket.rsocket.server.RSocketResponseHandler
 
 import scala.concurrent.{ExecutionContext, Future}
 

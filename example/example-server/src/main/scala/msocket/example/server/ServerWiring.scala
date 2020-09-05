@@ -11,16 +11,16 @@ import csw.example.impl.ExampleImpl
 import io.rsocket.RSocket
 import msocket.api.ContentType
 import msocket.example.server.handlers._
-import msocket.impl.RouteFactory
-import msocket.impl.post.PostRouteFactory
-import msocket.impl.post.streaming.PostStreamRouteFactory
-import msocket.impl.rsocket.server.{RSocketImpl, RSocketServer}
-import msocket.impl.sse.SseRouteFactory
-import msocket.impl.ws.WebsocketRouteFactory
+import msocket.http.RouteFactory
+import msocket.http.post.PostRouteFactory
+import msocket.http.post.streaming.PostStreamRouteFactory
+import msocket.http.sse.SseRouteFactory
+import msocket.http.ws.WebsocketRouteFactory
+import msocket.rsocket.server.{RSocketImpl, RSocketServer}
 import msocket.security.AccessControllerFactory
 import msocket.security.api.TokenValidator
 import msocket.security.models.AccessToken
-import msocket.service.metrics.Labelled
+import msocket.jvm.metrics.Labelled
 
 import scala.concurrent.{ExecutionContext, Future}
 

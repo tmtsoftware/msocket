@@ -13,10 +13,10 @@ import msocket.api.ContentType.{Cbor, Json}
 import msocket.api.Subscription
 import msocket.api.models.ServiceError
 import msocket.example.server.ServerWiring
-import msocket.impl.post.HttpPostTransport
-import msocket.impl.rsocket.client.RSocketTransportFactory
-import msocket.impl.sse.SseTransport
-import msocket.impl.ws.WebsocketTransport
+import msocket.http.post.HttpPostTransport
+import msocket.http.sse.SseTransport
+import msocket.http.ws.WebsocketTransport
+import msocket.rsocket.client.RSocketTransportFactory
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.freespec.AnyFreeSpec

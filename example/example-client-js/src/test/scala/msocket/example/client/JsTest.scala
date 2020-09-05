@@ -10,10 +10,10 @@ import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRe
 import msocket.api.ContentType.{Cbor, Json}
 import msocket.api.Subscription
 import msocket.api.models.ServiceError
-import msocket.impl.post.HttpPostTransportJs
-import msocket.impl.rsocket.RSocketTransportFactoryJs
-import msocket.impl.sse.SseTransportJs
-import msocket.impl.ws.WebsocketTransportJs
+import msocket.js.post.HttpPostTransportJs
+import msocket.js.rsocket.RSocketTransportFactoryJs
+import msocket.js.sse.SseTransportJs
+import msocket.js.ws.WebsocketTransportJs
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.should.Matchers

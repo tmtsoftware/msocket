@@ -5,10 +5,10 @@ import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRequest}
 import msocket.api.ContentType.{Cbor, Json}
-import msocket.impl.post.HttpPostTransportJs
-import msocket.impl.rsocket.RSocketTransportFactoryJs
-import msocket.impl.sse.SseTransportJs
-import msocket.impl.ws.WebsocketTransportJs
+import msocket.js.post.HttpPostTransportJs
+import msocket.js.rsocket.RSocketTransportFactoryJs
+import msocket.js.sse.SseTransportJs
+import msocket.js.ws.WebsocketTransportJs
 
 import scala.annotation.nowarn
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -6,10 +6,10 @@ import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRequest}
 import msocket.api.ContentType.Json
-import msocket.impl.post.HttpPostTransport
-import msocket.impl.rsocket.client.RSocketTransportFactory
-import msocket.impl.sse.SseTransport
-import msocket.impl.ws.WebsocketTransport
+import msocket.http.post.HttpPostTransport
+import msocket.http.sse.SseTransport
+import msocket.http.ws.WebsocketTransport
+import msocket.rsocket.client.RSocketTransportFactory
 
 import scala.annotation.nowarn
 

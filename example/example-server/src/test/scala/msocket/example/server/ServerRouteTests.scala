@@ -11,9 +11,9 @@ import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleProtocol._
 import msocket.api.ContentType
 import msocket.api.ContentType.Json
-import msocket.impl.post.ClientHttpCodecs
-import msocket.impl.post.streaming.FetchEvent
-import msocket.impl.ws.WebsocketExtensions.WebsocketEncoding
+import msocket.http.post.ClientHttpCodecs
+import msocket.http.post.streaming.FetchEvent
+import msocket.http.ws.WebsocketExtensions.WebsocketEncoding
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers

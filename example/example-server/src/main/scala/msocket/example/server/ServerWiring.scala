@@ -7,7 +7,7 @@ import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRequest}
 import csw.example.impl.ExampleImpl
-import csw.example.impl.handlers.ExampleStreamRequestHandler
+import csw.example.impl.handlers.{ExampleMonoRequestHandler, ExampleStreamRequestHandler}
 import io.rsocket.RSocket
 import msocket.api.ContentType
 import msocket.example.server.handlers._
@@ -29,12 +29,11 @@ class ServerWiring extends ExampleCodecs {
 
   lazy val exampleImpl: ExampleApi = new ExampleImpl
 
-  lazy val postHandler: ExampleHttpPostHandler               = new ExampleHttpPostHandler(exampleImpl)
-  lazy val exampleStreamHandler: ExampleStreamRequestHandler = new ExampleStreamRequestHandler(exampleImpl)
+  lazy val postHandler: ExampleHttpPostHandler                = new ExampleHttpPostHandler(exampleImpl)
+  lazy val exampleStreamHandler: ExampleStreamRequestHandler  = new ExampleStreamRequestHandler(exampleImpl)
+  lazy val requestResponseHandler: ExampleMonoRequestHandler = new ExampleMonoRequestHandler(exampleImpl)
 
-  def requestResponseHandler(contentType: ContentType): ExampleRSocketResponseHandler =
-    new ExampleRSocketResponseHandler(exampleImpl, contentType)
-  def rSocketFactory(contentType: ContentType): RSocket                               =
+  def rSocketFactory(contentType: ContentType): RSocket =
     new RSocketImpl(requestResponseHandler, exampleStreamHandler, contentType, AccessControllerFactory.noOp)
 
   private val testLabel                           = "test_label"

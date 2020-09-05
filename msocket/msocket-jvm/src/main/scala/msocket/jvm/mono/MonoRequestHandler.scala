@@ -1,40 +1,31 @@
-package msocket.jvm
+package msocket.jvm.mono
 
-import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
 import msocket.security.api.{AsyncAuthorizationPolicy, AuthorizationPolicy}
 
 import scala.concurrent.Future
 
-trait StreamRequestHandler[Req] {
-  def handle(request: Req): Future[StreamResponse]
+trait MonoRequestHandler[Req] {
+  def handle(request: Req): Future[MonoResponse]
 
   protected def future[Res: Encoder](
       result: => Future[Res],
       policy: AsyncAuthorizationPolicy = AuthorizationPolicy.PassThroughPolicy
-  ): Future[StreamResponse] = {
-    stream(Source.future(result), policy)
-  }
-
-  protected def stream[Res: Encoder](
-      stream: => Source[Res, Any],
-      policy: AsyncAuthorizationPolicy = AuthorizationPolicy.PassThroughPolicy
-  ): Future[StreamResponse] = {
+  ): Future[MonoResponse] = {
     Future.successful {
-      new StreamResponse {
+      new MonoResponse {
         override type Response = Res
-        override def responseStream: Source[Response, Any]         = stream
+        override def response: Future[Res]                         = result
         override def encoder: Encoder[Response]                    = Encoder[Res]
         override def authorizationPolicy: AsyncAuthorizationPolicy = policy
       }
     }
   }
-
 }
 
-trait StreamResponse {
+trait MonoResponse {
   type Response
-  def responseStream: Source[Response, Any]
+  def response: Future[Response]
   def encoder: Encoder[Response]
   def authorizationPolicy: AsyncAuthorizationPolicy
 }

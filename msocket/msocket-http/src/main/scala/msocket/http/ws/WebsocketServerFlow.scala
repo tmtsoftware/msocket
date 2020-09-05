@@ -8,9 +8,9 @@ import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentEncoding, ErrorProtocol}
 import msocket.http.CborByteString
-import msocket.security.AccessController
-import msocket.jvm.StreamRequestHandler
 import msocket.jvm.metrics.{Labelled, MetricCollector}
+import msocket.jvm.stream.StreamRequestHandler
+import msocket.security.AccessController
 
 import scala.concurrent.duration.DurationLong
 
@@ -34,11 +34,11 @@ class WebsocketServerFlow[Req: Decoder: ErrorProtocol: Labelled](
   }
 
   private def handle[Elm](element: Elm, contentEncoding: ContentEncoding[Elm]): Source[Message, NotUsed] = {
-    val wsHandler = new WebsocketStreamResponseEncoder[Req](contentEncoding.contentType, accessController)
+    val wsResponseEncoder = new WebsocketStreamResponseEncoder[Req](contentEncoding.contentType, accessController)
     Source
       .lazySingle(() => contentEncoding.decode[Req](element))
-      .flatMapConcat(req => wsHandler.handle(streamRequestHandler.handle(req), collectorFactory(req)))
-      .recover(wsHandler.errorEncoder)
+      .flatMapConcat(req => wsResponseEncoder.encodeStream(streamRequestHandler.handle(req), collectorFactory(req)))
+      .recover(wsResponseEncoder.errorEncoder)
   }
 
 }

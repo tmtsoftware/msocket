@@ -1,19 +1,20 @@
-package msocket.jvm
+package msocket.jvm.stream
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import msocket.api.ErrorProtocol
 import msocket.api.models.ResponseHeaders
+import msocket.jvm.ResponseEncoder
+import msocket.jvm.metrics.{MetricCollector, Metrics}
 import msocket.security.AccessController
 import msocket.security.models.AccessStatus
-import msocket.jvm.metrics.{MetricCollector, Metrics}
 
 import scala.concurrent.Future
 
 abstract class StreamResponseEncoder[Req: ErrorProtocol, M] extends ResponseEncoder[Req, M] {
   def accessController: AccessController
 
-  def handle(streamResponseF: Future[StreamResponse], collector: MetricCollector[Req]): Source[M, NotUsed] = {
+  def encodeStream(streamResponseF: Future[StreamResponse], collector: MetricCollector[Req]): Source[M, NotUsed] = {
     val stream = Source.future(streamResponseF).flatMapConcat { streamResponse =>
       Source.future(accessController.check(streamResponse.authorizationPolicy)).flatMapConcat {
         case AccessStatus.Authorized                             =>
@@ -26,9 +27,6 @@ abstract class StreamResponseEncoder[Req: ErrorProtocol, M] extends ResponseEnco
       }
     }
 
-    withMetrics(stream, collector)
-  }
-
-  def withMetrics[Msg](stream: Source[Msg, NotUsed], collector: MetricCollector[Req]): Source[Msg, NotUsed] =
     Metrics.withMetrics(stream, collector)
+  }
 }

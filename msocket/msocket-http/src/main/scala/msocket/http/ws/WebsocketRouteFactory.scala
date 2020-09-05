@@ -10,8 +10,8 @@ import msocket.http.RouteFactory
 import msocket.http.post.ServerHttpCodecs
 import msocket.http.post.headers.AppNameHeader
 import msocket.security.AccessControllerFactory
-import msocket.jvm.StreamRequestHandler
 import msocket.jvm.metrics.{Labelled, MetricCollector}
+import msocket.jvm.stream.StreamRequestHandler
 
 class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
     endpoint: String,

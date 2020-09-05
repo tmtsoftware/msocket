@@ -5,8 +5,8 @@ import io.bullet.borer.Encoder
 import msocket.api.models.ResponseHeaders
 import msocket.api.{ContentType, ErrorProtocol}
 import WebsocketExtensions.WebsocketEncoding
+import msocket.jvm.stream.StreamResponseEncoder
 import msocket.security.AccessController
-import msocket.jvm.StreamResponseEncoder
 
 /**
  * This helper class can be extended to define custom  websocket handler in the server which returns [[Source]] of [[Message]].

@@ -41,4 +41,10 @@ trait Metrics {
         }
     } else source
   }
+
+  def record[Req](collector: MetricCollector[Req]): Unit = {
+    import collector._
+    if (enabled) incCounter()
+  }
+
 }

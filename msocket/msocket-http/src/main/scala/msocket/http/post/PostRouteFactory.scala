@@ -7,7 +7,7 @@ import msocket.api.ErrorProtocol
 import msocket.http.post.headers.AppNameHeader
 import PostDirectives.withAcceptHeader
 import msocket.http.RouteFactory
-import msocket.jvm.metrics.{Labelled, MetricCollector}
+import msocket.jvm.metrics.{Labelled, MetricCollector, Metrics}
 
 import scala.concurrent.ExecutionContext
 
@@ -30,7 +30,8 @@ class PostRouteFactory[Req: Decoder: ErrorProtocol: Labelled](endpoint: String, 
               entity(as[Req]) { req =>
                 extractClientIP { clientIp =>
                   val collector = new MetricCollector(metricsEnabled, req, appName, Some(counter), None, clientIp.toString())
-                  withHttpMetrics(collector, postHandler.handle)
+                  Metrics.record(collector)
+                  postHandler.handle(req)
                 }
               }
             }

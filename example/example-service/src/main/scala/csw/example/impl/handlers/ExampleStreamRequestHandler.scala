@@ -3,7 +3,7 @@ package csw.example.impl.handlers
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleProtocol._
 import msocket.security.api.AuthorizationPolicy.AuthorizedPolicy
-import msocket.jvm.{StreamRequestHandler, StreamResponse}
+import msocket.jvm.stream.{StreamRequestHandler, StreamResponse}
 
 import scala.concurrent.Future
 

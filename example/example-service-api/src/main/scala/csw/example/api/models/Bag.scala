@@ -1,4 +1,4 @@
-package csw.example.model
+package csw.example.api.models
 
 import io.bullet.borer.Codec
 import io.bullet.borer.derivation.MapBasedCodecs

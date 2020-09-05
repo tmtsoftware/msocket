@@ -3,7 +3,7 @@ package csw.example.api.client
 import akka.stream.scaladsl.Source
 import csw.example.api._
 import csw.example.api.protocol.ExampleProtocol._
-import csw.example.model.Bag
+import csw.example.api.models.Bag
 import msocket.api.{Subscription, Transport}
 
 import scala.concurrent.Future

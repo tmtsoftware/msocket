@@ -6,7 +6,7 @@ import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
 import akka.stream.scaladsl.Source
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}
-import csw.example.model.Bag
+import csw.example.api.models.Bag
 import msocket.jvm.SourceExtension.WithSubscription
 import msocket.api.Subscription
 

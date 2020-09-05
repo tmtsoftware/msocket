@@ -1,7 +1,7 @@
 package csw.example.api
 
 import akka.stream.scaladsl.Source
-import csw.example.model.Bag
+import csw.example.api.models.Bag
 import msocket.api.Subscription
 
 import scala.concurrent.Future

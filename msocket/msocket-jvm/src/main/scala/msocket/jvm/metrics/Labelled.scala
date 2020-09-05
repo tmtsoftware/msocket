@@ -10,26 +10,26 @@ object RequestMetadata {
   val DefaultLabels    = List(MsgLabel, HostAddressLabel, AppNameLabel)
 }
 
-sealed abstract class Labelled[T] {
+sealed abstract class Labelled[Req] {
   def labelNames: List[String]
-  def labels(req: T, requestMetadata: RequestMetadata): MetricLabels
+  def labels(req: Req, requestMetadata: RequestMetadata): MetricLabels
 }
 
 object Labelled {
   type Labels = Map[String, String]
 
-  def apply[T: Labelled]: Labelled[T] = implicitly[Labelled[T]]
+  def apply[Req: Labelled]: Labelled[Req] = implicitly[Labelled[Req]]
 
-  def make[T](labelNames: List[String])(labelsFactory: PartialFunction[T, Labels]): Labelled[T] =
+  def make[Req](labelNames: List[String])(labelsFactory: PartialFunction[Req, Labels]): Labelled[Req] =
     make(labelNames, labelsFactory.lift(_).getOrElse(Map.empty))
 
-  implicit def emptyLabelled[T]: Labelled[T] = make(List.empty, _ => Map.empty)
+  implicit def emptyLabelled[Req]: Labelled[Req] = make(List.empty, _ => Map.empty)
 
-  private def make[T](labelList: List[String], labelsFactory: T => Labels): Labelled[T] =
-    new Labelled[T] {
+  private def make[Req](labelList: List[String], labelsFactory: Req => Labels): Labelled[Req] =
+    new Labelled[Req] {
       override def labelNames: List[String] = DefaultLabels ++ labelList
 
-      override def labels(req: T, requestMetadata: RequestMetadata): MetricLabels = {
+      override def labels(req: Req, requestMetadata: RequestMetadata): MetricLabels = {
         val labelMap = labelsFactory(req) ++ Map(
           MsgLabel         -> createLabel(req),
           HostAddressLabel -> requestMetadata.address,
@@ -39,7 +39,7 @@ object Labelled {
       }
     }
 
-  def createLabel[A](obj: A): String = {
+  def createLabel[Req](obj: Req): String = {
     val name = obj.getClass.getSimpleName
     if (name.endsWith("$")) name.dropRight(1) else name
   }

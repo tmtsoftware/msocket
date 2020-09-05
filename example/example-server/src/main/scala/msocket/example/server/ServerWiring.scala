@@ -4,10 +4,10 @@ import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.server.Route
 import csw.example.api.ExampleApi
-import csw.example.impl.handlers.ExampleStreamRequestHandler
 import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRequest}
 import csw.example.impl.ExampleImpl
+import csw.example.impl.handlers.ExampleStreamRequestHandler
 import io.rsocket.RSocket
 import msocket.api.ContentType
 import msocket.example.server.handlers._
@@ -16,13 +16,11 @@ import msocket.http.post.PostRouteFactory
 import msocket.http.post.streaming.PostStreamRouteFactory
 import msocket.http.sse.SseRouteFactory
 import msocket.http.ws.WebsocketRouteFactory
+import msocket.jvm.metrics.Labelled
 import msocket.rsocket.server.{RSocketImpl, RSocketServer}
 import msocket.security.AccessControllerFactory
-import msocket.security.api.TokenValidator
-import msocket.security.models.AccessToken
-import msocket.jvm.metrics.Labelled
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 /** This is where the supported handlers are wired with the server */
 class ServerWiring extends ExampleCodecs {

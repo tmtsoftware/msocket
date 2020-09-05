@@ -1,7 +1,7 @@
 package msocket.security
 
 import msocket.security.api.TokenValidator
-import msocket.security.models.{AccessToken, SecurityStatus}
+import msocket.security.models.SecurityStatus
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -12,7 +12,7 @@ class AccessControllerFactory(tokenValidator: TokenValidator, securityEnabled: B
 object AccessControllerFactory {
   def noOp(implicit ec: ExecutionContext) =
     new AccessControllerFactory(
-      tokenValidator = _ => Future.successful(new RuntimeException("access control is not supported for streaming transport, yet!")),
+      tokenValidator = _ => Future.failed(new RuntimeException("access control is not supported for streaming transport, yet!")),
       securityEnabled = false
     )
 }

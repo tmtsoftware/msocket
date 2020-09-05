@@ -11,8 +11,6 @@ object ExampleProtocol {
   case class Hello(name: String) extends ExampleRequest
   case object RandomBag          extends ExampleRequest
 
-  object ExampleRequest {}
-
   // these messages are used for requestStream interaction model
   sealed trait ExampleStreamRequest
   case class HelloStream(name: String)    extends ExampleStreamRequest

@@ -5,8 +5,9 @@ import akka.http.scaladsl.server.Directives.complete
 import akka.http.scaladsl.server.Route
 import io.bullet.borer.Encoder
 import msocket.api.models.{ErrorType, ResponseHeaders}
-import msocket.api.{ErrorProtocol, ResponseEncoder}
+import msocket.api.ErrorProtocol
 import msocket.impl.post.headers.ErrorTypeHeader
+import msocket.service.ResponseEncoder
 
 class HttpErrorEncoder[Req: ErrorProtocol] extends ResponseEncoder[Req, Route] with ServerHttpCodecs {
   override def encode[Res: Encoder](response: Res, headers: ResponseHeaders): Route = {

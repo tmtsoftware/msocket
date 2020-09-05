@@ -3,7 +3,7 @@ package msocket.api.utils
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.models.ResponseHeaders
-import msocket.api.{ErrorProtocol, LoggingResponseEncoder, Subscription, Transport}
+import msocket.api.{ErrorProtocol, Subscription, Transport}
 import msocket.portable.Observer
 import msocket.portable.PortableAkka.SourceOps
 

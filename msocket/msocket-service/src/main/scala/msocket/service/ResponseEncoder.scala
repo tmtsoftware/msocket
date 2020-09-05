@@ -1,6 +1,7 @@
-package msocket.api
+package msocket.service
 
 import io.bullet.borer.Encoder
+import msocket.api.ErrorProtocol
 import msocket.api.models.ErrorType.{AuthenticationError, AuthorizationError, DomainError, GenericError}
 import msocket.api.models.{ResponseHeaders, ServiceError}
 import msocket.security.api.AccessStatus.AuthorizationFailed

@@ -4,9 +4,9 @@ import io.bullet.borer.Dom.Element
 import io.bullet.borer.Encoder
 import io.rsocket.Payload
 import msocket.api.models.{ResponseHeaders, ServiceError}
-import msocket.api.{ContentType, ErrorProtocol, ResponseEncoder}
+import msocket.api.{ContentType, ErrorProtocol}
 import msocket.impl.rsocket.RSocketExtensions._
-import msocket.service.RequestHandler
+import msocket.service.{RequestHandler, ResponseEncoder}
 
 import scala.concurrent.{ExecutionContext, Future}
 

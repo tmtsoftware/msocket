@@ -1,5 +1,7 @@
 package msocket.security.api
 
+import msocket.security.models.AccessToken
+
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 

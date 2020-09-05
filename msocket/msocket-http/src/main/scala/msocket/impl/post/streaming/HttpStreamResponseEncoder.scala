@@ -7,7 +7,7 @@ import msocket.api.ContentEncoding.JsonText
 import msocket.api.ErrorProtocol
 import msocket.api.models.ResponseHeaders
 import msocket.impl.StreamResponseEncoder
-import msocket.security.api.AccessController
+import msocket.security.AccessController
 import msocket.service.StreamResponse
 import msocket.service.metrics.MetricCollector
 

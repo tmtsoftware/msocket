@@ -8,7 +8,7 @@ import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentEncoding, ErrorProtocol}
 import msocket.impl.CborByteString
-import msocket.security.api.AccessController
+import msocket.security.AccessController
 import msocket.service.StreamRequestHandler
 import msocket.service.metrics.{Labelled, MetricCollector}
 

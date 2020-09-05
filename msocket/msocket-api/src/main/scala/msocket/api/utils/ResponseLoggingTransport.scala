@@ -2,7 +2,6 @@ package msocket.api.utils
 
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
-import msocket.api.models.ResponseHeaders
 import msocket.api.{ErrorProtocol, Subscription, Transport}
 import msocket.portable.Observer
 import msocket.portable.PortableAkka.SourceOps
@@ -26,7 +25,7 @@ class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: 
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] = {
     val observer = Observer.create[Res](
-      eventHandler = out => loggingEncoder.encode(out, ResponseHeaders()),
+      eventHandler = out => loggingEncoder.encode(out),
       errorHandler = loggingEncoder.errorEncoder
     )
     transport.requestStream(request).viaObserver(observer)
@@ -39,7 +38,7 @@ class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: 
 
   def loggingObserver[Res: Encoder]: Observer[Res] =
     new Observer[Res] {
-      override def onNext(elm: Res): Unit       = loggingEncoder.encode(elm, ResponseHeaders())
+      override def onNext(elm: Res): Unit       = loggingEncoder.encode(elm)
       override def onError(ex: Throwable): Unit = loggingEncoder.errorEncoder(ex)
       override def onCompleted(): Unit          = action("stream completed")
     }

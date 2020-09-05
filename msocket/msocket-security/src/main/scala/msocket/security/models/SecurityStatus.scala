@@ -1,4 +1,4 @@
-package msocket.security.api
+package msocket.security.models
 
 sealed trait SecurityStatus
 

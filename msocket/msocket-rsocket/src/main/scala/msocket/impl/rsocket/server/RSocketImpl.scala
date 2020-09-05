@@ -6,7 +6,7 @@ import io.bullet.borer.Decoder
 import io.rsocket.{Payload, RSocket}
 import msocket.api.{ContentType, ErrorProtocol}
 import msocket.impl.rsocket.RSocketExtensions._
-import msocket.security.api.AccessControllerFactory
+import msocket.security.AccessControllerFactory
 import msocket.service.StreamRequestHandler
 import reactor.core.publisher.{Flux, Mono}
 

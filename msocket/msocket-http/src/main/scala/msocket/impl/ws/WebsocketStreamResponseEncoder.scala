@@ -6,7 +6,7 @@ import msocket.api.models.ResponseHeaders
 import msocket.api.{ContentType, ErrorProtocol}
 import msocket.impl.StreamResponseEncoder
 import msocket.impl.ws.WebsocketExtensions.WebsocketEncoding
-import msocket.security.api.AccessController
+import msocket.security.AccessController
 
 /**
  * This helper class can be extended to define custom  websocket handler in the server which returns [[Source]] of [[Message]].

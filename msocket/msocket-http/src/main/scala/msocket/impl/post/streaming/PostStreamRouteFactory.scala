@@ -8,7 +8,7 @@ import msocket.impl.RouteFactory
 import msocket.impl.post.PostDirectives.withAcceptHeader
 import msocket.impl.post.headers.AppNameHeader
 import msocket.impl.post.{PostDirectives, ServerHttpCodecs}
-import msocket.security.api.AccessControllerFactory
+import msocket.security.AccessControllerFactory
 import msocket.service.StreamRequestHandler
 import msocket.service.metrics.{Labelled, MetricCollector}
 

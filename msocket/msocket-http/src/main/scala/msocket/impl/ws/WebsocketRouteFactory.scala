@@ -9,7 +9,7 @@ import msocket.api.ErrorProtocol
 import msocket.impl.RouteFactory
 import msocket.impl.post.ServerHttpCodecs
 import msocket.impl.post.headers.AppNameHeader
-import msocket.security.api.AccessControllerFactory
+import msocket.security.AccessControllerFactory
 import msocket.service.StreamRequestHandler
 import msocket.service.metrics.{Labelled, MetricCollector}
 

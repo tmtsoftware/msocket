@@ -4,7 +4,8 @@ import akka.NotUsed
 import akka.stream.scaladsl.Source
 import msocket.api.ErrorProtocol
 import msocket.api.models.ResponseHeaders
-import msocket.security.api.{AccessController, AccessStatus}
+import msocket.security.AccessController
+import msocket.security.models.AccessStatus
 import msocket.service.metrics.{MetricCollector, Metrics}
 import msocket.service.{ResponseEncoder, StreamResponse}
 

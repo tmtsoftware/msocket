@@ -1,4 +1,7 @@
-package msocket.security.api
+package msocket.security
+
+import msocket.security.api.TokenValidator
+import msocket.security.models.SecurityStatus
 
 import scala.concurrent.ExecutionContext
 

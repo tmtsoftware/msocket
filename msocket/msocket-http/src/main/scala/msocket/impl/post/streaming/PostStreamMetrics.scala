@@ -1,4 +1,4 @@
-package msocket.impl.post
+package msocket.impl.post.streaming
 
 import io.prometheus.client.{Counter, Gauge}
 import msocket.service.metrics.{Labelled, Metrics}

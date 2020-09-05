@@ -13,6 +13,7 @@ import msocket.service.SourceExtension.WithSubscription
 import msocket.api.models.ErrorType
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.post.headers.AppNameHeader
+import msocket.impl.post.streaming.FetchEvent
 import msocket.impl.{HttpUtils, JvmTransport}
 
 import scala.concurrent.{ExecutionContext, Future}

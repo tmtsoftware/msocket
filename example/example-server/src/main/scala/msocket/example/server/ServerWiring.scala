@@ -12,7 +12,8 @@ import io.rsocket.RSocket
 import msocket.api.ContentType
 import msocket.example.server.handlers._
 import msocket.impl.RouteFactory
-import msocket.impl.post.{PostRouteFactory, PostStreamRouteFactory}
+import msocket.impl.post.PostRouteFactory
+import msocket.impl.post.streaming.PostStreamRouteFactory
 import msocket.impl.rsocket.server.{RSocketImpl, RSocketServer}
 import msocket.impl.sse.SseRouteFactory
 import msocket.impl.ws.WebsocketRouteFactory

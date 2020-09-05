@@ -1,11 +1,11 @@
-package msocket.impl.post
+package msocket.impl.post.streaming
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
 import msocket.api.ContentEncoding.JsonText
-import msocket.api.models.ResponseHeaders
 import msocket.api.ErrorProtocol
+import msocket.api.models.ResponseHeaders
 import msocket.impl.StreamResponseEncoder
 import msocket.security.api.AccessController
 import msocket.service.StreamResponse

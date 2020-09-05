@@ -14,4 +14,4 @@ jobs:
       - name: Compile
         run: sbt clean test:compile
       - name: Run tests
-        run: sbt example-service-test/test
+        run: sbt example-client-jvm-test/test

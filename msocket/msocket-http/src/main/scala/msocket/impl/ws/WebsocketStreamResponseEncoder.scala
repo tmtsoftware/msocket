@@ -4,9 +4,9 @@ import akka.http.scaladsl.model.ws.Message
 import io.bullet.borer.Encoder
 import msocket.api.models.ResponseHeaders
 import msocket.api.{ContentType, ErrorProtocol}
-import msocket.impl.StreamResponseEncoder
 import msocket.impl.ws.WebsocketExtensions.WebsocketEncoding
 import msocket.security.AccessController
+import msocket.service.StreamResponseEncoder
 
 /**
  * This helper class can be extended to define custom  websocket handler in the server which returns [[Source]] of [[Message]].

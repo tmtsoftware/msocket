@@ -66,7 +66,7 @@ lazy val msocket = project.aggregate(
   `msocket-api`.jvm,
   `msocket-api`.js,
   `msocket-security`,
-  `msocket-service`,
+  `msocket-jvm`,
   `msocket-http`,
   `msocket-rsocket`,
   `msocket-js`
@@ -92,8 +92,8 @@ lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
     )
   )
 
-lazy val `msocket-service` = project
-  .in(file("msocket/msocket-service"))
+lazy val `msocket-jvm` = project
+  .in(file("msocket/msocket-jvm"))
   .dependsOn(`msocket-api`.jvm, `msocket-security`)
   .settings(
     libraryDependencies ++= Seq(
@@ -104,7 +104,7 @@ lazy val `msocket-service` = project
 
 lazy val `msocket-http` = project
   .in(file("msocket/msocket-http"))
-  .dependsOn(`msocket-service`)
+  .dependsOn(`msocket-jvm`)
   .settings(
     libraryDependencies ++= Seq(
       `akka-http`,
@@ -112,6 +112,16 @@ lazy val `msocket-http` = project
       scalatest.value            % Test,
       `akka-actor-testkit-typed` % Test,
       `akka-http-testkit`        % Test
+    )
+  )
+
+lazy val `msocket-rsocket` = project
+  .in(file("msocket/msocket-rsocket"))
+  .dependsOn(`msocket-jvm`)
+  .settings(
+    libraryDependencies ++= Seq(
+      `rsocket-transport-netty`,
+      `rsocket-core`
     )
   )
 
@@ -124,16 +134,6 @@ lazy val `msocket-js` = project
       eventsource.value,
       `rsocket-websocket-client`.value,
       `scalajs-dom`.value
-    )
-  )
-
-lazy val `msocket-rsocket` = project
-  .in(file("msocket/msocket-rsocket"))
-  .dependsOn(`msocket-http`)
-  .settings(
-    libraryDependencies ++= Seq(
-      `rsocket-transport-netty`,
-      `rsocket-core`
     )
   )
 
@@ -156,7 +156,7 @@ lazy val `example-service-api` = crossProject(JSPlatform, JVMPlatform)
 
 lazy val `example-service` = project
   .in(file("example/example-service"))
-  .dependsOn(`example-service-api`.jvm, `msocket-service`)
+  .dependsOn(`example-service-api`.jvm, `msocket-jvm`)
 
 lazy val `example-server` = project
   .in(file("example/example-server"))
@@ -173,11 +173,6 @@ lazy val `example-server` = project
 lazy val `example-client-jvm` = project
   .in(file("example/example-client-jvm"))
   .dependsOn(`example-service-api`.jvm, `msocket-http`, `msocket-rsocket`)
-  .settings(
-    libraryDependencies ++= Seq(
-      scalatest.value % Test
-    )
-  )
 
 lazy val `example-client-js` = project
   .in(file("example/example-client-js"))

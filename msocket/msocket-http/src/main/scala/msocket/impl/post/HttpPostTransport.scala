@@ -14,7 +14,8 @@ import msocket.api.models.ErrorType
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.post.headers.AppNameHeader
 import msocket.impl.post.streaming.FetchEvent
-import msocket.impl.{HttpUtils, JvmTransport}
+import msocket.impl.HttpUtils
+import msocket.service.JvmTransport
 
 import scala.concurrent.{ExecutionContext, Future}
 

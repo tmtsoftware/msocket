@@ -1,4 +1,4 @@
-package msocket.impl
+package msocket.service
 
 import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.Sink

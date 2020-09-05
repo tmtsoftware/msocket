@@ -7,8 +7,8 @@ import io.rsocket.RSocket
 import msocket.service.SourceExtension.WithSubscription
 import msocket.api.models.ResponseHeaders
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
-import msocket.impl.JvmTransport
 import msocket.impl.rsocket.RSocketExtensions._
+import msocket.service.JvmTransport
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}

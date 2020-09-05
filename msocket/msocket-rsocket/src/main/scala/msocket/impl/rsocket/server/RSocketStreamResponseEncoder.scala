@@ -7,10 +7,9 @@ import io.bullet.borer.Encoder
 import io.rsocket.Payload
 import msocket.api.models.{ResponseHeaders, ServiceError}
 import msocket.api.{ContentType, ErrorProtocol}
-import msocket.impl.StreamResponseEncoder
 import msocket.impl.rsocket.RSocketExtensions._
 import msocket.security.AccessController
-import msocket.service.StreamResponse
+import msocket.service.{StreamResponse, StreamResponseEncoder}
 import msocket.service.metrics.MetricCollector
 
 import scala.concurrent.Future

@@ -14,7 +14,8 @@ import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType.Json
 import msocket.service.SourceExtension.WithSubscription
 import msocket.api.{ErrorProtocol, Subscription}
-import msocket.impl.{HttpUtils, JvmTransport}
+import msocket.impl.HttpUtils
+import msocket.service.JvmTransport
 
 import scala.concurrent.{ExecutionContext, Future}
 

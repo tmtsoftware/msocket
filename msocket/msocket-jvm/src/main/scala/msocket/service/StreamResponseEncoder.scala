@@ -1,4 +1,4 @@
-package msocket.impl
+package msocket.service
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
@@ -7,7 +7,6 @@ import msocket.api.models.ResponseHeaders
 import msocket.security.AccessController
 import msocket.security.models.AccessStatus
 import msocket.service.metrics.{MetricCollector, Metrics}
-import msocket.service.{ResponseEncoder, StreamResponse}
 
 import scala.concurrent.Future
 

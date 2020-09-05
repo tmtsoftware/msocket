@@ -11,7 +11,8 @@ import msocket.service.SourceExtension.WithSubscription
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.impl.post.headers.AppNameHeader
 import msocket.impl.ws.WebsocketExtensions.WebsocketEncoding
-import msocket.impl.{CborByteString, JvmTransport}
+import msocket.impl.CborByteString
+import msocket.service.JvmTransport
 
 import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}

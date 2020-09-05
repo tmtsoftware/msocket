@@ -15,14 +15,15 @@ import msocket.jvm.metrics.{Labelled, MetricCollector}
 
 class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
     endpoint: String,
-    streamRequestHandler: StreamRequestHandler[Req],
-    accessControllerFactory: AccessControllerFactory
+    streamRequestHandler: StreamRequestHandler[Req]
 )(implicit actorSystem: ActorSystem[_])
     extends RouteFactory[Req]
     with ServerHttpCodecs
     with WebsocketMetrics {
 
   import actorSystem.executionContext
+
+  private val accessControllerFactory = AccessControllerFactory.noOp
 
   def make(metricsEnabled: Boolean = false): Route = {
     lazy val gauge         = websocketGauge

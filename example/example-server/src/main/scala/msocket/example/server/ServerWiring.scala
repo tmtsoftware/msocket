@@ -37,11 +37,7 @@ class ServerWiring extends ExampleCodecs {
   def requestResponseHandler(contentType: ContentType): ExampleRSocketResponseHandler =
     new ExampleRSocketResponseHandler(exampleImpl, contentType)
   def rSocketFactory(contentType: ContentType): RSocket                               =
-    new RSocketImpl(requestResponseHandler, exampleStreamHandler, contentType, accessControllerFactory)
-
-  lazy val tokenValidator: TokenValidator = _ => Future.successful(AccessToken())
-  lazy val isSecurityEnabled: Boolean     = false
-  lazy val accessControllerFactory        = new AccessControllerFactory(tokenValidator, isSecurityEnabled)
+    new RSocketImpl(requestResponseHandler, exampleStreamHandler, contentType, AccessControllerFactory.noOp)
 
   private val testLabel                           = "test_label"
   implicit val labelled: Labelled[ExampleRequest] = Labelled.make(List(testLabel)) {
@@ -50,9 +46,9 @@ class ServerWiring extends ExampleCodecs {
 
   lazy val applicationRoute: Route = RouteFactory.combine(metricsEnabled = true)(
     new PostRouteFactory[ExampleRequest]("post-endpoint", postHandler),
-    new PostStreamRouteFactory[ExampleStreamRequest]("post-streaming-endpoint", exampleStreamHandler, accessControllerFactory),
-    new WebsocketRouteFactory[ExampleStreamRequest]("websocket-endpoint", exampleStreamHandler, accessControllerFactory),
-    new SseRouteFactory[ExampleStreamRequest]("sse-endpoint", exampleStreamHandler, accessControllerFactory)
+    new PostStreamRouteFactory[ExampleStreamRequest]("post-streaming-endpoint", exampleStreamHandler, AccessControllerFactory.noOp),
+    new WebsocketRouteFactory[ExampleStreamRequest]("websocket-endpoint", exampleStreamHandler),
+    new SseRouteFactory[ExampleStreamRequest]("sse-endpoint", exampleStreamHandler, AccessControllerFactory.noOp)
   )
 
   lazy val exampleServer = new ExampleServer(applicationRoute)(actorSystem)

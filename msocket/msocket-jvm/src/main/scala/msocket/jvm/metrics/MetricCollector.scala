@@ -19,16 +19,11 @@ class MetricCollector[Req: LabelExtractor](
 
   private lazy val labels: Seq[String] = {
     val labelMap = LabelExtractor[Req].extract(request) ++ Map(
-      MsgLabel         -> createLabel(request),
+      MsgLabel         -> LabelExtractor.createLabel(request),
       HostAddressLabel -> clientIp,
       AppNameLabel     -> appName.getOrElse("unknown")
     )
     LabelExtractor[Req].allLabelNames.map(name => labelMap.getOrElse(name, ""))
-  }
-
-  private def createLabel(obj: Req): String = {
-    val name = obj.getClass.getSimpleName
-    if (name.endsWith("$")) name.dropRight(1) else name
   }
 
   private lazy val counter: Option[Counter.Child] = _counter.map(_.labels(labels: _*))

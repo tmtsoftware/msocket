@@ -17,4 +17,14 @@ object LabelExtractor {
     }
 
   def empty[Req]: LabelExtractor[Req] = make(List.empty)(PartialFunction.empty)
+
+  def createLabel(obj: Any): String = {
+    val name = obj.getClass.getSimpleName
+    if (name.endsWith("$")) name.dropRight(1) else name
+  }
+
+}
+
+object LabelExtractorImplicits {
+  implicit def default[Req]: LabelExtractor[Req] = LabelExtractor.empty
 }

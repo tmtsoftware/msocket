@@ -14,6 +14,7 @@ import msocket.security.AccessControllerFactory
 import reactor.core.publisher.{Flux, Mono}
 
 import scala.compat.java8.FutureConverters.FutureOps
+import scala.concurrent.Future
 
 class RSocketImpl[Req: Decoder: ErrorProtocol: LabelExtractor, StreamReq: Decoder: ErrorProtocol: LabelExtractor](
     monoRequestHandler: MonoRequestHandler[Req],
@@ -35,12 +36,12 @@ class RSocketImpl[Req: Decoder: ErrorProtocol: LabelExtractor, StreamReq: Decode
   private lazy val monoCounter: Counter = RSocketMonoRequestMetrics.counter[Req]
 
   override def requestResponse(payload: Payload): Mono[Payload] = {
-    val req       = contentType.request[Req](payload)
-    val collector = new MetricCollector(metricsEnabled, req, "TODO", Some("TODO"), Some(monoCounter), None)
-    val payloadF  = monoResponseEncoder
-      .encodeMono(monoRequestHandler.handle(req), collector)
+    val payloadF = Future(contentType.request[Req](payload))
+      .flatMap { req =>
+        val collector = new MetricCollector(metricsEnabled, req, "TODO", Some("TODO"), Some(monoCounter), None)
+        monoResponseEncoder.encodeMono(monoRequestHandler.handle(req), collector)
+      }
       .recover(monoResponseEncoder.errorEncoder)
-
     Mono.fromCompletionStage(payloadF.toJava)
   }
 

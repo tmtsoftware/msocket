@@ -25,6 +25,7 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
 class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with ExampleCodecs with TestPolyfills {
 
   val PostEndpoint          = "http://localhost:5000/post-endpoint"
+  val PostEndpoint2         = "http://localhost:5000/post-endpoint2"
   val PostStreamingEndpoint = "http://localhost:5000/post-streaming-endpoint"
   val SseEndpoint           = "http://localhost:5000/sse-endpoint"
   val WebsocketEndpoint     = "ws://localhost:5000/websocket-endpoint"
@@ -41,8 +42,9 @@ class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with Exa
   }
 
   List(Cbor, Json).foreach { contentType =>
-    lazy val httpResponseTransport = new HttpPostTransportJs[ExampleRequest](PostEndpoint, contentType)
-    lazy val httpStreamTransport   = new HttpPostTransportJs[ExampleStreamRequest](PostStreamingEndpoint, contentType)
+    lazy val httpResponseTransport  = new HttpPostTransportJs[ExampleRequest](PostEndpoint, contentType)
+    lazy val httpResponseTransport2 = new HttpPostTransportJs[ExampleRequest](PostEndpoint2, contentType)
+    lazy val httpStreamTransport    = new HttpPostTransportJs[ExampleStreamRequest](PostStreamingEndpoint, contentType)
 
     lazy val (rSocketResponseTransport, connection1) = RSocketTransportFactoryJs.connect[ExampleRequest](RSocketEndpoint, contentType)
     lazy val (rSocketStreamTransport, connection2)   = RSocketTransportFactoryJs.connect[ExampleStreamRequest](RSocketEndpoint, Json)
@@ -54,34 +56,35 @@ class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with Exa
 
     contentType.toString - {
       "requestResponse" - {
-        List(httpResponseTransport, rSocketResponseTransport).foreach { transport =>
-          transport.getClass.getSimpleName - {
-            "success response" in async {
-              val client = new ExampleClient(transport, null)
-              await(client.hello("John")) shouldBe "Hello John"
-            }
-
-            "domain error" in async {
-              val client = new ExampleClient(transport, null)
-              val caught = await {
-                recoverToExceptionIf[HelloError] {
-                  client.hello("idiot")
-                }
+        List(httpResponseTransport, httpResponseTransport2, rSocketResponseTransport).zipWithIndex.foreach {
+          case (transport, index) =>
+            transport.getClass.getSimpleName + (index + 1) - {
+              "success response" in async {
+                val client = new ExampleClient(transport, null)
+                await(client.hello("John")) shouldBe "Hello John"
               }
 
-              caught shouldBe HelloError(5)
-            }
-
-            "generic error" in async {
-              val client = new ExampleClient(transport, null)
-              val caught = await {
-                recoverToExceptionIf[ServiceError] {
-                  client.hello("fool")
+              "domain error" in async {
+                val client = new ExampleClient(transport, null)
+                val caught = await {
+                  recoverToExceptionIf[HelloError] {
+                    client.hello("idiot")
+                  }
                 }
+
+                caught shouldBe HelloError(5)
               }
-              caught shouldBe ServiceError.fromThrowable(new IllegalArgumentException("you are a fool"))
+
+              "generic error" in async {
+                val client = new ExampleClient(transport, null)
+                val caught = await {
+                  recoverToExceptionIf[ServiceError] {
+                    client.hello("fool")
+                  }
+                }
+                caught shouldBe ServiceError.fromThrowable(new IllegalArgumentException("you are a fool"))
+              }
             }
-          }
         }
       }
 

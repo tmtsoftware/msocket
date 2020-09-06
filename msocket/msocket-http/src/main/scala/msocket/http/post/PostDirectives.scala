@@ -5,6 +5,9 @@ import akka.http.scaladsl.model.{HttpRequest, MediaRanges}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Directive0, ExceptionHandler}
 import msocket.api.ErrorProtocol
+import msocket.security.AccessControllerFactory
+
+import scala.concurrent.ExecutionContext
 
 object PostDirectives {
 
@@ -18,9 +21,9 @@ object PostDirectives {
 
   val withAcceptHeader: Directive0 = mapRequest(addMissingAcceptHeader)
 
-  def exceptionHandlerFor[Req: ErrorProtocol]: Directive0 =
+  def exceptionHandlerFor[Req: ErrorProtocol](implicit ec: ExecutionContext): Directive0 =
     handleExceptions {
-      ExceptionHandler(new HttpErrorEncoder[Req].errorEncoder)
+      ExceptionHandler(new HttpResponseEncoder[Req](AccessControllerFactory.noOp.make(None)).errorEncoder)
     }
 
 }

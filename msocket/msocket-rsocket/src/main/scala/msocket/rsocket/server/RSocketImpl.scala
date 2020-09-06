@@ -6,7 +6,7 @@ import io.bullet.borer.Decoder
 import io.prometheus.client.Counter
 import io.rsocket.{Payload, RSocket}
 import msocket.api.{ContentType, ErrorProtocol}
-import msocket.jvm.metrics.MetricCollector
+import msocket.jvm.metrics.{LabelExtractor, MetricCollector}
 import msocket.jvm.mono.MonoRequestHandler
 import msocket.jvm.stream.StreamRequestHandler
 import msocket.rsocket.RSocketExtensions._
@@ -15,7 +15,7 @@ import reactor.core.publisher.{Flux, Mono}
 
 import scala.compat.java8.FutureConverters.FutureOps
 
-class RSocketImpl[Req: Decoder: ErrorProtocol, StreamReq: Decoder: ErrorProtocol](
+class RSocketImpl[Req: Decoder: ErrorProtocol: LabelExtractor, StreamReq: Decoder: ErrorProtocol: LabelExtractor](
     monoRequestHandler: MonoRequestHandler[Req],
     streamRequestHandler: StreamRequestHandler[StreamReq],
     contentType: ContentType,
@@ -29,16 +29,14 @@ class RSocketImpl[Req: Decoder: ErrorProtocol, StreamReq: Decoder: ErrorProtocol
   private lazy val monoResponseEncoder   = new RSocketMonoResponseEncoder[Req](contentType, accessControllerFactory.make(None))
   private lazy val streamResponseEncoder = new RSocketStreamResponseEncoder[StreamReq](contentType, accessControllerFactory.make(None))
 
-  private lazy val streamRequestMetrics = new RSocketStreamRequestMetrics {}
-  private lazy val streamGauge          = streamRequestMetrics.rSocketStreamGauge
-  private lazy val perMsgCounter        = streamRequestMetrics.rSocketStreamPerMsgCounter
+  private lazy val streamGauge   = RSocketStreamRequestMetrics.gauge[StreamReq]()
+  private lazy val perMsgCounter = RSocketStreamRequestMetrics.counter[StreamReq]()
 
-  private lazy val monoRequestMetrics   = new RSocketMonoRequestMetrics {}
-  private lazy val monoCounter: Counter = monoRequestMetrics.rSocketMonoCounter
+  private lazy val monoCounter: Counter = RSocketMonoRequestMetrics.counter[Req]
 
   override def requestResponse(payload: Payload): Mono[Payload] = {
     val req       = contentType.request[Req](payload)
-    val collector = new MetricCollector(metricsEnabled, req, Some("TODO"), Some(monoCounter), None, "TODO")
+    val collector = new MetricCollector(metricsEnabled, req, "TODO", Some("TODO"), Some(monoCounter), None)
     val payloadF  = monoResponseEncoder
       .encodeMono(monoRequestHandler.handle(req), collector)
       .recover(monoResponseEncoder.errorEncoder)
@@ -50,7 +48,7 @@ class RSocketImpl[Req: Decoder: ErrorProtocol, StreamReq: Decoder: ErrorProtocol
     val value = Source
       .lazySingle(() => contentType.request[StreamReq](payload))
       .flatMapConcat { req =>
-        val collector = new MetricCollector[StreamReq](metricsEnabled, req, Some("TODO"), Some(perMsgCounter), Some(streamGauge), "TODO")
+        val collector = new MetricCollector[StreamReq](metricsEnabled, req, "TODO", Some("TODO"), Some(perMsgCounter), Some(streamGauge))
         streamResponseEncoder.encodeStream(streamRequestHandler.handle(req), collector)
       }
       .recover(streamResponseEncoder.errorEncoder)

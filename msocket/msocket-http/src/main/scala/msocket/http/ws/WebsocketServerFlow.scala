@@ -8,13 +8,13 @@ import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentEncoding, ErrorProtocol}
 import msocket.http.CborByteString
-import msocket.jvm.metrics.{Labelled, MetricCollector}
+import msocket.jvm.metrics.{LabelExtractor, MetricCollector}
 import msocket.jvm.stream.StreamRequestHandler
 import msocket.security.AccessController
 
 import scala.concurrent.duration.DurationLong
 
-class WebsocketServerFlow[Req: Decoder: ErrorProtocol: Labelled](
+class WebsocketServerFlow[Req: Decoder: ErrorProtocol: LabelExtractor](
     streamRequestHandler: StreamRequestHandler[Req],
     collectorFactory: Req => MetricCollector[Req],
     accessController: AccessController

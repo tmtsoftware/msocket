@@ -5,7 +5,7 @@ import akka.stream.scaladsl.Source
 import msocket.api.ErrorProtocol
 import msocket.api.models.ResponseHeaders
 import msocket.jvm.ResponseEncoder
-import msocket.jvm.metrics.{MetricCollector, Metrics}
+import msocket.jvm.metrics.MetricCollector
 import msocket.security.AccessController
 import msocket.security.models.AccessStatus
 
@@ -27,6 +27,6 @@ abstract class StreamResponseEncoder[Req: ErrorProtocol, M] extends ResponseEnco
       }
     }
 
-    Metrics.withMetrics(stream, collector)
+    collector.streamMetric(stream)
   }
 }

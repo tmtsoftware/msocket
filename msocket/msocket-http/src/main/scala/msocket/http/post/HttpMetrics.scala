@@ -1,14 +1,11 @@
 package msocket.http.post
 
 import io.prometheus.client.Counter
-import msocket.jvm.metrics.{Labelled, Metrics}
+import msocket.jvm.metrics.{LabelExtractor, Metrics}
 
-object HttpMetrics extends HttpMetrics
-
-trait HttpMetrics extends Metrics {
-
-  def httpCounter[Req: Labelled]: Counter =
-    counter(
+object HttpMetrics {
+  def counter[Req: LabelExtractor]: Counter =
+    Metrics.counter(
       metricName = "http_requests_total",
       help = "Total http requests"
     )

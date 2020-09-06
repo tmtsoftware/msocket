@@ -2,9 +2,9 @@ package msocket.http
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import msocket.jvm.metrics.{Labelled, Metrics}
+import msocket.jvm.metrics.{LabelExtractor, Metrics}
 
-abstract class RouteFactory[T: Labelled] {
+abstract class RouteFactory[T: LabelExtractor] {
   def make(metricsEnabled: Boolean): Route
 }
 

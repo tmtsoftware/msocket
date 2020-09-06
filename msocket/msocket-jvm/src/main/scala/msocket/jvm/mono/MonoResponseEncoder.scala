@@ -3,7 +3,7 @@ package msocket.jvm.mono
 import msocket.api.ErrorProtocol
 import msocket.api.models.ResponseHeaders
 import msocket.jvm.ResponseEncoder
-import msocket.jvm.metrics.{MetricCollector, Metrics}
+import msocket.jvm.metrics.MetricCollector
 import msocket.security.AccessController
 import msocket.security.models.AccessStatus
 
@@ -25,7 +25,7 @@ abstract class MonoResponseEncoder[Req: ErrorProtocol, M](implicit ec: Execution
     }
 
     future.map { result =>
-      Metrics.record[Req](collector)
+      collector.record()
       result
     }
 

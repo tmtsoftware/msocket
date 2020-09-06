@@ -1,12 +1,12 @@
 package msocket.rsocket.server
 
 import io.prometheus.client.Counter
-import msocket.jvm.metrics.{Labelled, Metrics}
+import msocket.jvm.metrics.{LabelExtractor, Metrics}
 
-trait RSocketMonoRequestMetrics extends Metrics {
+object RSocketMonoRequestMetrics {
 
-  def rSocketMonoCounter[Req: Labelled]: Counter =
-    counter(
+  def counter[Req: LabelExtractor]: Counter =
+    Metrics.counter(
       metricName = "rsocket_mono_requests_total",
       help = "Total rsocket mono requests"
     )

@@ -1,18 +1,17 @@
 package msocket.rsocket.server
 
 import io.prometheus.client.{Counter, Gauge}
-import msocket.jvm.metrics.{Labelled, Metrics}
+import msocket.jvm.metrics.{LabelExtractor, Metrics}
 
-trait RSocketStreamRequestMetrics extends Metrics {
-
-  def rSocketStreamGauge[Req: Labelled]: Gauge =
-    gauge(
+object RSocketStreamRequestMetrics {
+  def gauge[Req: LabelExtractor](): Gauge =
+    Metrics.gauge(
       metricName = "rsocket_stream_active_request_total",
       help = "Total active rsocket streaming channels"
     )
 
-  def rSocketStreamPerMsgCounter[Req: Labelled]: Counter =
-    counter(
+  def counter[Req: LabelExtractor](): Counter =
+    Metrics.counter(
       metricName = "rsocket_stream_total_messages_per_connection",
       help = "Total messages passing through rsocket channel"
     )

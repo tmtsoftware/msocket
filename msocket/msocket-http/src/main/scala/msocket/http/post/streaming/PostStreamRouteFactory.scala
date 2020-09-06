@@ -8,27 +8,26 @@ import msocket.http.RouteFactory
 import msocket.http.post.PostDirectives.withAcceptHeader
 import msocket.http.post.headers.AppNameHeader
 import msocket.http.post.{PostDirectives, ServerHttpCodecs}
-import msocket.jvm.metrics.{Labelled, MetricCollector}
+import msocket.jvm.metrics.{LabelExtractor, MetricCollector}
 import msocket.jvm.stream.StreamRequestHandler
 import msocket.security.AccessControllerFactory
 
 import scala.concurrent.ExecutionContext
 
-class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
+class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: LabelExtractor](
     endpoint: String,
     streamRequestHandler: StreamRequestHandler[Req],
     accessControllerFactory: AccessControllerFactory
 )(implicit ec: ExecutionContext)
     extends RouteFactory[Req]
-    with ServerHttpCodecs
-    with PostStreamMetrics {
+    with ServerHttpCodecs {
 
   private val withExceptionHandler: Directive0 = PostDirectives.exceptionHandlerFor[Req]
   private val streamResponseEncoder            = new HttpStreamResponseEncoder[Req](accessControllerFactory.make(None))
 
   def make(metricsEnabled: Boolean = false): Route = {
-    lazy val gauge         = postStreamGauge
-    lazy val perMsgCounter = postStreamPerMsgCounter
+    lazy val gauge         = PostStreamMetrics.gauge()
+    lazy val perMsgCounter = PostStreamMetrics.counter()
 
     post {
       path(endpoint) {
@@ -37,7 +36,7 @@ class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: Labelled](
             withExceptionHandler {
               entity(as[Req]) { req =>
                 extractClientIP { clientIp =>
-                  val collector = new MetricCollector(metricsEnabled, req, appName, Some(perMsgCounter), Some(gauge), clientIp.toString())
+                  val collector = new MetricCollector(metricsEnabled, req, clientIp.toString(), appName, Some(perMsgCounter), Some(gauge))
                   complete(streamResponseEncoder.encodeStream(streamRequestHandler.handle(req), collector))
                 }
               }

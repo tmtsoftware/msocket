@@ -23,7 +23,7 @@ object PostDirectives {
 
   def exceptionHandlerFor[Req: ErrorProtocol](implicit ec: ExecutionContext): Directive0 =
     handleExceptions {
-      ExceptionHandler(new HttpResponseEncoder[Req](AccessControllerFactory.noOp.make(None)).errorEncoder)
+      ExceptionHandler(new HttpResponseEncoder[Req](AccessControllerFactory.noop.make(None)).errorEncoder)
     }
 
 }

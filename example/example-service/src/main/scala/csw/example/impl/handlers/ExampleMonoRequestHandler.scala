@@ -3,6 +3,7 @@ package csw.example.impl.handlers
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, Hello, RandomBag}
 import msocket.jvm.mono.{MonoRequestHandler, MonoResponse}
+import msocket.security.api.AuthorizationPolicy.AuthorizedPolicy
 
 import scala.concurrent.Future
 
@@ -14,7 +15,7 @@ class ExampleMonoRequestHandler(exampleApi: ExampleApi) extends MonoRequestHandl
 
   override def handle(message: ExampleRequest): Future[MonoResponse] =
     message match {
-      case Hello(name) => future(exampleApi.hello(name))
+      case Hello(name) => future(exampleApi.hello(name), policy = AuthorizedPolicy("ESW-User"))
       case RandomBag   => future(exampleApi.randomBag())
     }
 }

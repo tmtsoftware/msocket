@@ -17,9 +17,14 @@ class AccessController(tokenValidator: TokenValidator, securityStatus: SecurityS
           case SecurityStatus.TokenMissing        => Future.successful(AccessStatus.AuthenticationFailed("access-token is missing"))
           case SecurityStatus.TokenPresent(token) =>
             tokenValidator.validate(token).flatMap { accessToken =>
-              authorizationPolicy.asyncAuthorize(accessToken).map { isAuthorized =>
-                if (isAuthorized) AccessStatus.Authorized else AccessStatus.AuthorizationFailed("not enough access rights")
-              }
+              authorizationPolicy
+                .asyncAuthorize(accessToken)
+                .map { isAuthorized =>
+                  if (isAuthorized) AccessStatus.Authorized else AccessStatus.AuthorizationFailed("not enough access rights")
+                }
+                .recover {
+                  case NonFatal(ex) => AccessStatus.AuthorizationFailed(ex.getMessage)
+                }
             } recover {
               case NonFatal(ex) => AccessStatus.AuthenticationFailed(ex.getMessage)
             }

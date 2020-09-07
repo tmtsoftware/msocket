@@ -10,7 +10,7 @@ class AccessControllerFactory(tokenValidator: TokenValidator, securityEnabled: B
 }
 
 object AccessControllerFactory {
-  def noOp(implicit ec: ExecutionContext) =
+  def noop(implicit ec: ExecutionContext) =
     new AccessControllerFactory(
       tokenValidator = _ => Future.failed(new RuntimeException("access control is not supported for streaming transport, yet!")),
       securityEnabled = false

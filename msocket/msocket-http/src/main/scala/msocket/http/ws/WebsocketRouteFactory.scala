@@ -22,7 +22,7 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: LabelExtractor](
 
   import actorSystem.executionContext
 
-  private val accessControllerFactory = AccessControllerFactory.noOp
+  private val accessControllerFactory = AccessControllerFactory.noop
 
   def make(metricsEnabled: Boolean = false): Route = {
     lazy val gauge         = WebsocketMetrics.gauge()

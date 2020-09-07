@@ -16,15 +16,14 @@ object LabelExtractor {
       override def extract(request: Req): Map[String, String] = labelsFactory0.lift(request).getOrElse(Map.empty)
     }
 
-  def empty[Req]: LabelExtractor[Req] = make(List.empty)(PartialFunction.empty)
+  def default[Req]: LabelExtractor[Req] = make(List.empty)(PartialFunction.empty)
 
   def createLabel(obj: Any): String = {
     val name = obj.getClass.getSimpleName
     if (name.endsWith("$")) name.dropRight(1) else name
   }
 
-}
-
-object LabelExtractorImplicits {
-  implicit def default[Req]: LabelExtractor[Req] = LabelExtractor.empty
+  object Implicits {
+    implicit def default[Req]: LabelExtractor[Req] = LabelExtractor.default
+  }
 }

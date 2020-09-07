@@ -19,3 +19,6 @@ scalacOptions ++= Seq(
   "-Ywarn-dead-code",
   "-Xfuture"
 )
+
+// uncomment this to use csbt for updateSbtClassifiers, then comment back
+//addSbtCoursier

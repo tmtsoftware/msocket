@@ -2,33 +2,49 @@ package msocket.security.api
 
 import msocket.security.models.AccessToken
 
-import scala.concurrent.Future
-import scala.util.control.NonFatal
+import scala.concurrent.{ExecutionContext, Future}
 
-trait AuthorizationPolicy extends AsyncAuthorizationPolicy {
-  protected def authorize(accessToken: AccessToken): Boolean
+/**
+ * An authorization policy is a way to filter incoming HTTP requests based on rules
+ */
+trait AuthorizationPolicy {
 
-  final override def asyncAuthorize(accessToken: AccessToken): Future[Boolean] =
-    try {
-      Future.successful(authorize(accessToken))
-    } catch {
-      case NonFatal(ex) => Future.failed(ex)
-    }
+  /**
+   * Implement this method to create an asynchronous AuthorizationPolicy
+   */
+  def authorize(accessToken: AccessToken): Future[Boolean]
 }
 
 object AuthorizationPolicy {
-  case object PassThroughPolicy extends AuthorizationPolicy {
-    override def authorize(accessToken: AccessToken): Boolean = {
-      throw new RuntimeException(s"authorization should not be checked for $PassThroughPolicy policy")
+
+  implicit class AuthorizationPolicyOps(private val target: AuthorizationPolicy) extends AnyVal {
+
+    /**
+     * Applies a new authorization policy in combination with previous policy.
+     * Passing of both policies is requried for authorization to succeed.
+     *
+     * @param other new Authorization policy
+     * @return combined authorization policy
+     */
+    def &(other: AuthorizationPolicy)(implicit ec: ExecutionContext): AuthorizationPolicy = { accessToken =>
+      val leftF  = target.authorize(accessToken)
+      val rightF = other.authorize(accessToken)
+      leftF.zipWith(rightF)(_ && _)
     }
-  }
 
-  case object AuthenticatedPolicy extends AuthorizationPolicy {
-    override protected def authorize(accessToken: AccessToken): Boolean = true
-  }
+    /**
+     * Applies a new authorization policy if the previous policy fails.
+     *
+     * Authorization will succeed if any of the provided policy passes.
+     *
+     * @param other new Authorization policy
+     * @return combined authorization policy
+     */
+    def |(other: AuthorizationPolicy)(implicit ec: ExecutionContext): AuthorizationPolicy = { accessToken =>
+      val leftF  = target.authorize(accessToken)
+      val rightF = other.authorize(accessToken)
+      leftF.zipWith(rightF)(_ || _)
+    }
 
-  case class AuthorizedPolicy(role: String) extends AuthorizationPolicy {
-    override protected def authorize(accessToken: AccessToken): Boolean = accessToken.hasRealmRole(role)
   }
-
 }

@@ -3,7 +3,7 @@ package csw.example.impl.handlers
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, Hello, RandomBag}
 import msocket.jvm.mono.{MonoRequestHandler, MonoResponse}
-import msocket.security.api.AuthorizationPolicy.AuthorizedPolicy
+import csw.example.impl.ExampleAuthorizationPolicy.AuthorizedPolicy
 
 import scala.concurrent.Future
 

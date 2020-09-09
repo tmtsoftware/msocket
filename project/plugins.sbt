@@ -19,5 +19,5 @@ scalacOptions ++= Seq(
   "-Xfuture"
 )
 
-// does not work with sbt 1.4.x, yet.
-//addSbtPlugin("com.timushev.sbt"   % "sbt-rewarn"               % "0.1.0")
+resolvers += Resolver.bintrayIvyRepo("rtimush", "sbt-plugin-snapshots")
+addSbtPlugin("com.timushev.sbt" % "sbt-rewarn" % "0.0.1-15-3102b36")

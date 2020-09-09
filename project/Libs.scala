@@ -18,8 +18,9 @@ object Libs {
   val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "1.6.1")
   val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "1.6.1"
 
-  val `akka-http-cors` = "ch.megard" %% "akka-http-cors" % "1.1.0"
-  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.1")
+  val `akka-http-cors` = "ch.megard"         %% "akka-http-cors" % "1.1.0"
+  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.2")
+  val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.2.0"
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "1.1.0")
 
   val eventsource                = dep("org.scalablytyped" %%% "eventsource" % "1.1.4-5269e8")

@@ -1,4 +1,6 @@
 import Libs._
+import org.openqa.selenium.chrome.ChromeOptions
+import org.scalajs.jsenv.selenium.SeleniumJSEnv
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
@@ -189,6 +191,10 @@ lazy val `example-client-js` = project
     libraryDependencies ++= Seq(
       scalatest.value % Test,
       `scala-async`
+    ),
+    jsEnv in Test := new SeleniumJSEnv(
+      new ChromeOptions().setHeadless(true)
+//      SeleniumJSEnv.Config().withKeepAlive(true)
     )
   )
 

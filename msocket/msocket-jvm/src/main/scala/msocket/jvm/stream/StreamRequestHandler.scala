@@ -9,32 +9,16 @@ import scala.concurrent.Future
 trait StreamRequestHandler[Req] {
   def handle(request: Req): Future[StreamResponse]
 
-  protected def future[Res: Encoder](
-      result: => Future[Res],
-      policy: AuthorizationPolicy = PassThroughPolicy
-  ): Future[StreamResponse] = {
-    stream(Source.future(result), policy)
-  }
+  protected def future[Res: Encoder](result: Future[Res]): Future[StreamResponse] =
+    stream(Source.future(result))
 
-  protected def stream[Res: Encoder](
-      stream: => Source[Res, Any],
-      policy: AuthorizationPolicy = PassThroughPolicy
-  ): Future[StreamResponse] = {
-    Future.successful {
-      new StreamResponse {
-        override type Response = Res
-        override def responseStream: Source[Response, Any]    = stream
-        override def encoder: Encoder[Response]               = Encoder[Res]
-        override def authorizationPolicy: AuthorizationPolicy = policy
-      }
-    }
-  }
+  protected def sFuture[Res: Encoder](policy: AuthorizationPolicy)(result: => Future[Res]): Future[StreamResponse] =
+    sStream(policy)(Source.future(result))
 
-}
+  protected def stream[Res: Encoder](stream: Source[Res, Any]): Future[StreamResponse] =
+    sStream(PassThroughPolicy)(stream)
 
-trait StreamResponse {
-  type Response
-  def responseStream: Source[Response, Any]
-  def encoder: Encoder[Response]
-  def authorizationPolicy: AuthorizationPolicy
+  protected def sStream[Res: Encoder](policy: AuthorizationPolicy)(stream: => Source[Res, Any]): Future[StreamResponse] =
+    Future.successful(StreamResponse.from(stream, policy))
+
 }

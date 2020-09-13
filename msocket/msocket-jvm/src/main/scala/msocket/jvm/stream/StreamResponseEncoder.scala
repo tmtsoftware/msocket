@@ -17,8 +17,9 @@ abstract class StreamResponseEncoder[Req: ErrorProtocol, M] extends ResponseEnco
   def encodeStream(streamResponseF: Future[StreamResponse], collector: MetricCollector[Req]): Source[M, NotUsed] = {
     val stream = Source.future(streamResponseF).flatMapConcat { streamResponse =>
       Source.future(accessController.check(streamResponse.authorizationPolicy)).flatMapConcat {
-        case AccessStatus.Authorized                             =>
-          streamResponse.responseStream
+        case AccessStatus.Authorized(accessToken)                =>
+          streamResponse
+            .responseFactory(accessToken)
             .map(res => encode(res, ResponseHeaders())(streamResponse.encoder))
             .recover(errorEncoder)
             .mapMaterializedValue(_ => NotUsed)

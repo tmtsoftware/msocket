@@ -71,3 +71,7 @@ case class AccessToken(
       case _               => UnknownUser
     }
 }
+
+object AccessToken {
+  val Empty: AccessToken = AccessToken()
+}

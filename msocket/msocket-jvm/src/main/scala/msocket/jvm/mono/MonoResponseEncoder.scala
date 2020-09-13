@@ -15,8 +15,9 @@ abstract class MonoResponseEncoder[Req: ErrorProtocol, M](implicit ec: Execution
   def encodeMono(monoResponseF: Future[MonoResponse], collector: MetricCollector[Req]): Future[M] = {
     val future = monoResponseF.flatMap { monoResponse =>
       accessController.check(monoResponse.authorizationPolicy).flatMap {
-        case AccessStatus.Authorized                             =>
-          monoResponse.response
+        case AccessStatus.Authorized(accessToken)                =>
+          monoResponse
+            .responseFactory(accessToken)
             .map(res => encode(res, ResponseHeaders())(monoResponse.encoder))
             .recover(errorEncoder)
         case failedAccessStatus: AccessStatus.FailedAccessStatus =>

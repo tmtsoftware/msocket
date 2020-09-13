@@ -15,7 +15,7 @@ class ExampleMonoRequestHandler(exampleApi: ExampleApi) extends MonoRequestHandl
 
   override def handle(message: ExampleRequest): Future[MonoResponse] =
     message match {
-      case Hello(name) => sFuture(AuthorizedPolicy("ESW-User"))(exampleApi.hello(name))
+      case Hello(name) => sFuture(AuthorizedPolicy("ESW-User"))(_ => exampleApi.hello(name))
       case RandomBag   => future(exampleApi.randomBag())
     }
 }

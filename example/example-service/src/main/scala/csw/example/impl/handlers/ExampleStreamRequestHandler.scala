@@ -15,7 +15,7 @@ class ExampleStreamRequestHandler(exampleApi: ExampleApi) extends StreamRequestH
     message match {
       case Square(number)          => future(exampleApi.square(number))
       case HelloStream(name)       => stream(exampleApi.helloStream(name))
-      case GetNumbers(divisibleBy) => sStream(AuthorizedPolicy("ESW-User"))(exampleApi.getNumbers(divisibleBy))
+      case GetNumbers(divisibleBy) => sStream(AuthorizedPolicy("ESW-User"))(_ => exampleApi.getNumbers(divisibleBy))
       case RandomBagStream         => stream(exampleApi.randomBagStream())
     }
 }

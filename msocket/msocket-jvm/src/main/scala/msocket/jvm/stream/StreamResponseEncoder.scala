@@ -7,7 +7,7 @@ import msocket.api.models.ResponseHeaders
 import msocket.jvm.ResponseEncoder
 import msocket.jvm.metrics.MetricCollector
 import msocket.security.AccessController
-import msocket.security.models.AccessStatus
+import msocket.security.models.AccessStatus.Authorized
 
 import scala.concurrent.Future
 
@@ -15,18 +15,20 @@ abstract class StreamResponseEncoder[Req: ErrorProtocol, M] extends ResponseEnco
   def accessController: AccessController
 
   def encodeStream(streamResponseF: Future[StreamResponse], collector: MetricCollector[Req]): Source[M, NotUsed] = {
-    val stream = Source.future(streamResponseF).flatMapConcat { streamResponse =>
-      Source.future(accessController.check(streamResponse.authorizationPolicy)).flatMapConcat {
-        case AccessStatus.Authorized(accessToken)                =>
-          streamResponse
-            .responseFactory(accessToken)
-            .map(res => encode(res, ResponseHeaders())(streamResponse.encoder))
-            .recover(errorEncoder)
-            .mapMaterializedValue(_ => NotUsed)
-        case failedAccessStatus: AccessStatus.FailedAccessStatus =>
-          Source.failed(failedAccessStatus)
+    val stream = Source
+      .future(streamResponseF)
+      .flatMapConcat { streamResponse =>
+        val eventualAuthStatus = accessController.authenticateAndAuthorize(streamResponse.authorizationPolicy)
+        Source
+          .future(eventualAuthStatus)
+          .flatMapConcat {
+            case Authorized(accessToken)      => streamResponse.responseFactory(accessToken)
+            case authStatus: RuntimeException => Source.failed(authStatus)
+          }
+          .map(res => encode(res, ResponseHeaders())(streamResponse.encoder))
+          .recover(errorEncoder)
+          .mapMaterializedValue(_ => NotUsed)
       }
-    }
 
     collector.streamMetric(stream)
   }

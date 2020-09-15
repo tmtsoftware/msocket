@@ -20,6 +20,7 @@ class HttpResponseEncoder[Req: ErrorProtocol](val accessController: AccessContro
     val statusCode = headers.errorType match {
       case Some(value) =>
         value match {
+          case ErrorType.TokenMissingError   => StatusCodes.Unauthorized
           case ErrorType.AuthenticationError => StatusCodes.Unauthorized
           case ErrorType.AuthorizationError  => StatusCodes.Forbidden
           case _                             => StatusCodes.InternalServerError

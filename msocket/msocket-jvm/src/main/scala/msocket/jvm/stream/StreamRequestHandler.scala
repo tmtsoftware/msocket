@@ -2,7 +2,7 @@ package msocket.jvm.stream
 
 import akka.stream.scaladsl.Source
 import io.bullet.borer.Encoder
-import msocket.security.api.{AuthorizationPolicy, PassThroughPolicy}
+import msocket.security.api.AuthorizationPolicy
 import msocket.security.models.AccessToken
 
 import scala.concurrent.Future
@@ -17,9 +17,9 @@ trait StreamRequestHandler[Req] {
     sStream(policy)(accessToken => Source.future(resultFactory(accessToken)))
 
   protected def stream[Res: Encoder](stream: Source[Res, Any]): Future[StreamResponse] =
-    sStream(PassThroughPolicy)(_ => stream)
+    Future.successful(StreamResponse.from(_ => stream, None))
 
   protected def sStream[Res: Encoder](policy: AuthorizationPolicy)(streamFactory: AccessToken => Source[Res, Any]): Future[StreamResponse] =
-    Future.successful(StreamResponse.from(streamFactory, policy))
+    Future.successful(StreamResponse.from(streamFactory, Some(policy)))
 
 }

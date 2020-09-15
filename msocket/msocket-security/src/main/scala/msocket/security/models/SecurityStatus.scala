@@ -3,10 +3,8 @@ package msocket.security.models
 sealed trait SecurityStatus
 
 object SecurityStatus {
-  sealed trait SecurityEnabled extends SecurityStatus
-
-  case class TokenPresent(token: String) extends SecurityEnabled
-  case object TokenMissing               extends SecurityEnabled
+  case class TokenPresent(token: String) extends SecurityStatus
+  case object TokenMissing               extends SecurityStatus
   case object Disabled                   extends SecurityStatus
 
   def from(maybeToken: Option[String], securityEnabled: Boolean): SecurityStatus = {

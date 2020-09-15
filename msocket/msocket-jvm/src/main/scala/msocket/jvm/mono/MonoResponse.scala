@@ -10,16 +10,16 @@ trait MonoResponse {
   type Response
   def responseFactory(accessToken: AccessToken): Future[Response]
   def encoder: Encoder[Response]
-  def authorizationPolicy: AuthorizationPolicy
+  def authorizationPolicy: Option[AuthorizationPolicy]
 }
 
 object MonoResponse {
-  def from[Res: Encoder](resultFactory: AccessToken => Future[Res], policy: AuthorizationPolicy): MonoResponse = {
+  def from[Res: Encoder](resultFactory: AccessToken => Future[Res], policy: Option[AuthorizationPolicy]): MonoResponse = {
     new MonoResponse {
       override type Response = Res
       override def responseFactory(accessToken: AccessToken): Future[Response] = resultFactory(accessToken)
       override def encoder: Encoder[Response]                                  = Encoder[Res]
-      override def authorizationPolicy: AuthorizationPolicy                    = policy
+      override def authorizationPolicy: Option[AuthorizationPolicy]            = policy
     }
   }
 }

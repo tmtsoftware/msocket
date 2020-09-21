@@ -1,0 +1,10 @@
+{
+  "mount": {
+    "target/scala-2.13/example-client-js-fastopt-test-html": "/",
+    "public": "/",
+    "target/scala-2.13": "/_dist_"
+  },
+  "devOptions": {
+    "port": 9092
+  }
+}

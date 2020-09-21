@@ -1,0 +1,15 @@
+{
+  "mount": {
+    "public": "/",
+    "target/scala-2.13": "/_dist_"
+  },
+  "plugins": [
+    [
+      "@snowpack/plugin-run-script",
+      {
+        "cmd": "set -x; cd ../..; sbtn example-client-js/fastOptJS; cd -",
+        "watch": "set -x; cd ../..; sbtn ~example-client-js/fastOptJS; cd -"
+      }
+    ]
+  ]
+}

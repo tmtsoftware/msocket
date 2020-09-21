@@ -176,28 +176,6 @@ lazy val `example-client-jvm` = project
   .in(file("example/example-client-jvm"))
   .dependsOn(`example-service-api`.jvm, `msocket-http`, `msocket-rsocket`)
 
-lazy val `example-client-js` = project
-  .in(file("example/example-client-js"))
-  .dependsOn(`example-service-api`.js, `msocket-js`)
-  .configure(baseJsSettings, bundlerSettings)
-  .settings(
-    npmDependencies in Compile ++= Seq(
-      "eventsource"              -> "1.0.7",
-      "rsocket-websocket-client" -> "0.0.19"
-    ),
-    npmDependencies in Test ++= Seq(
-      "whatwg-fetch" -> "3.4.0"
-    ),
-    libraryDependencies ++= Seq(
-      scalatest.value % Test,
-      `scala-async`
-    ),
-    jsEnv in Test := new SeleniumJSEnv(
-      new ChromeOptions().setHeadless(true)
-//      SeleniumJSEnv.Config().withKeepAlive(true)
-    )
-  )
-
 lazy val `example-client-jvm-test` = project
   .in(file("example/example-client-jvm-test"))
   .dependsOn(`example-server`, `example-client-jvm`)
@@ -208,27 +186,21 @@ lazy val `example-client-jvm-test` = project
     )
   )
 
-///////////////
-
-lazy val baseJsSettings: Project => Project =
-  _.enablePlugins(ScalaJSPlugin)
-    .settings(
-      scalaJSUseMainModuleInitializer := true,
-      scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule).withSourceMap(false) },
-      resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")
-    )
-
-lazy val bundlerSettings: Project => Project =
-  _.enablePlugins(ScalaJSBundlerPlugin)
-    .settings(
-      requireJsDomEnv in Test := true,
-      version in installJsdom := "16.4.0",
-      startWebpackDevServer / version := "3.8.0",
-      webpack / version := "4.39.3",
-      Compile / fastOptJS / webpackExtraArgs += "--mode=development",
-      Compile / fullOptJS / webpackExtraArgs += "--mode=production",
-      Compile / fastOptJS / webpackDevServerExtraArgs += "--mode=development",
-      Compile / fullOptJS / webpackDevServerExtraArgs += "--mode=production",
-      useYarn := true,
-      Compile / jsSourceDirectories += baseDirectory.value / "html"
-    )
+lazy val `example-client-js` = project
+  .in(file("example/example-client-js"))
+  .enablePlugins(ScalaJSPlugin, ScalaJsSeleniumSnowpackPlugin)
+  .dependsOn(`example-service-api`.js, `msocket-js`)
+  .settings(
+    scalaJSUseMainModuleInitializer := true,
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule).withSourceMap(false) },
+    libraryDependencies ++= Seq(
+      scalatest.value % Test,
+      `scala-async`
+    ),
+    jsEnv in Test := new SeleniumJSEnv(
+      new ChromeOptions().setHeadless(true),
+      snowpackTestServer.value.seleniumConfig
+    ),
+    testPort := 9093,
+    extraArgs := List("--reload")
+  )

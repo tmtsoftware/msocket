@@ -2,11 +2,9 @@ addSbtPlugin("com.timushev.sbt"   % "sbt-updates"              % "0.5.1")
 addSbtPlugin("org.scalameta"      % "sbt-scalafmt"             % "2.4.2")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
 addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "1.2.0")
-addSbtPlugin("ch.epfl.scala"      % "sbt-scalajs-bundler"      % "0.18.0")
 addSbtPlugin("io.spray"           % "sbt-revolver"             % "0.9.1")
 
-libraryDependencies += "com.sun.activation" % "javax.activation"     % "1.2.0"
-libraryDependencies += "org.scala-js"      %% "scalajs-env-selenium" % "1.0.0"
+libraryDependencies += "com.sun.activation" % "javax.activation" % "1.2.0"
 
 scalacOptions ++= Seq(
   "-encoding",
@@ -21,3 +19,6 @@ scalacOptions ++= Seq(
 
 resolvers += Resolver.bintrayIvyRepo("rtimush", "sbt-plugin-snapshots")
 addSbtPlugin("com.timushev.sbt" % "sbt-rewarn" % "0.0.1-15-3102b36")
+
+resolvers += "jitpack" at "https://jitpack.io"
+libraryDependencies += "com.github.mushtaq.scalajs-selenium-snowpack" % "scalajs-selenium-snowpack" % "cf9b97f"

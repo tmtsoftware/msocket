@@ -1,0 +1,12 @@
+{
+  "mount": {
+    "target/scala-2.13/test-run": "/",
+    "public": "/",
+    "target/scala-2.13": "/_dist_"
+  },
+  "devOptions": {
+    "port": 9093,
+    "open": "none",
+    "hmr": false
+  }
+}

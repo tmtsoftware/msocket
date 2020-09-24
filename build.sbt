@@ -1,6 +1,4 @@
 import Libs._
-import org.openqa.selenium.chrome.ChromeOptions
-import org.scalajs.jsenv.selenium.SeleniumJSEnv
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
@@ -188,19 +186,11 @@ lazy val `example-client-jvm-test` = project
 
 lazy val `example-client-js` = project
   .in(file("example/example-client-js"))
-  .enablePlugins(ScalaJSPlugin, ScalaJsSeleniumSnowpackPlugin)
+  .enablePlugins(ScalaJSPlugin, SnowpackTestPlugin)
   .dependsOn(`example-service-api`.js, `msocket-js`)
   .settings(
-    scalaJSUseMainModuleInitializer := true,
-    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule).withSourceMap(false) },
     libraryDependencies ++= Seq(
       scalatest.value % Test,
       `scala-async`
-    ),
-    jsEnv in Test := new SeleniumJSEnv(
-      new ChromeOptions().setHeadless(true),
-      snowpackTestServer.value.seleniumConfig
-    ),
-    testPort := 9093,
-    extraArgs := List("--reload")
+    )
   )

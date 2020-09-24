@@ -6,8 +6,7 @@
   },
   "dependencies": {
     "eventsource": "^1.0.7",
-    "rsocket-websocket-client": "^0.0.19",
-    "rsocket-core": "^0.0.19"
+    "rsocket-websocket-client": "^0.0.19"
   },
   "devDependencies": {
     "@snowpack/plugin-run-script": "^2.1.1",

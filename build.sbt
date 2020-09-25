@@ -132,6 +132,7 @@ lazy val `msocket-js` = project
   .settings(
     libraryDependencies ++= Seq(
       eventsource.value,
+      `microsoft__fetch-event-source`.value,
       `rsocket-websocket-client`.value,
       `scalajs-dom`.value
     )

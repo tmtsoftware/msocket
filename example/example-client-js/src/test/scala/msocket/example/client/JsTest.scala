@@ -12,6 +12,7 @@ import msocket.api.Subscription
 import msocket.api.models.ServiceError
 import msocket.js.post.HttpPostTransportJs
 import msocket.js.rsocket.RSocketTransportFactoryJs
+import msocket.js.sse.SseTransportJs
 import msocket.js.ws.WebsocketTransportJs
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.freespec.AsyncFreeSpec
@@ -24,12 +25,15 @@ import scala.util.control.NonFatal
 
 class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with ExampleCodecs {
 
-  val PostEndpoint          = "http://localhost:5000/post-endpoint"
-  val PostEndpoint2         = "http://localhost:5000/post-endpoint2"
-  val PostStreamingEndpoint = "http://localhost:5000/post-streaming-endpoint"
-  val SseEndpoint           = "http://localhost:5000/sse-endpoint"
-  val WebsocketEndpoint     = "ws://localhost:5000/websocket-endpoint"
-  val RSocketEndpoint       = "ws://localhost:7000"
+  val httpPort    = 5000
+  val rSocketPort = 7000
+
+  val PostEndpoint          = s"http://localhost:$httpPort/post-endpoint"
+  val PostEndpoint2         = s"http://localhost:$httpPort/post-endpoint2"
+  val PostStreamingEndpoint = s"http://localhost:$httpPort/post-streaming-endpoint"
+  val SseEndpoint           = s"http://localhost:$httpPort/sse-endpoint"
+  val WebsocketEndpoint     = s"ws://localhost:$httpPort/websocket-endpoint"
+  val RSocketEndpoint       = s"ws://localhost:$rSocketPort"
 
   implicit val streamingDelay: FiniteDuration              = 1.second
   implicit val actorSystem: ActorSystem[Any]               = new ActorSystem
@@ -52,7 +56,7 @@ class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with Exa
 
       connections :::= List(connection1, connection2)
 
-      //    lazy val sseTransport       = new SseTransportJs[ExampleStreamRequest](SseEndpoint)
+      lazy val sseTransport       = new SseTransportJs[ExampleStreamRequest](SseEndpoint)
       lazy val websocketTransport = new WebsocketTransportJs[ExampleStreamRequest](WebsocketEndpoint, contentType)
 
       contentType.toString - {
@@ -91,7 +95,7 @@ class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with Exa
 
         "requestStream" - {
           lazy val bilingualTransports = List(rSocketStreamTransport, websocketTransport)
-          lazy val jsonOnlyTransports  = List(httpStreamTransport)
+          lazy val jsonOnlyTransports  = List(httpStreamTransport, sseTransport)
           val transports               = if (contentType == Json) bilingualTransports ++ jsonOnlyTransports else bilingualTransports
 
           transports.foreach { transport =>

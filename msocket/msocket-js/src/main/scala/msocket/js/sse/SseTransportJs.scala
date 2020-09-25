@@ -1,15 +1,17 @@
 package msocket.js.sse
 
-import io.bullet.borer.{Decoder, Encoder, Json}
+import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
-import msocket.api.{ErrorProtocol, Subscription}
+import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.js.JsTransport
 import msocket.portable.Observer
-import typings.eventsource.MessageEvent
-import typings.eventsource.mod.{EventSourceInitDict, ^ => Sse}
+import typings.microsoftFetchEventSource.fetchMod.FetchEventSourceInit
+import typings.microsoftFetchEventSource.mod.fetchEventSource
+import typings.std.global.AbortController
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js
+import scala.scalajs.js.JSConverters.JSRichFutureNonThenable
 import scala.util.control.NonFatal
 
 class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: ExecutionContext) extends JsTransport[Req] {
@@ -20,34 +22,42 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
 
   override def requestStream[Res: Decoder: Encoder](request: Req, observer: Observer[Res]): Subscription = {
 
-    val sse = new Sse(uri, EventSourceInitDict().setHeaders(queryHeader(request))) {
+    val controller = new AbortController()
 
-      override def onopen(evt: MessageEvent[_]): js.Any = {
-        println("sse connection open")
+    val fetchEventSourceInit = new FetchEventSourceInit {
+      signal = controller.signal
+
+      method = "POST"
+
+      body = JsonText.encode(request)
+
+      headers = js.Array(js.Array("Content-Type", ContentType.Json.mimeType))
+
+      onopen = js.defined { res =>
+        println(s"sse connection open with status: ${res.status}")
+        Future.successful(()).toJSPromise
       }
 
-      override def onmessage(evt: MessageEvent[_]): js.Any = {
+      onmessage = js.defined { evt =>
         val jsonString = evt.data.asInstanceOf[String]
         if (jsonString != "") {
           try observer.onNext(JsonText.decodeWithError(jsonString))
           catch {
             case NonFatal(ex) =>
               observer.onError(ex)
-              close()
+              controller.abort()
           }
         }
       }
 
-      override def onerror(evt: MessageEvent[_]): js.Any = {
+      onerror = js.defined { evt =>
         observer.onError(new RuntimeException(s"sse connection error=$evt"))
-        close()
+        controller.abort()
       }
     }
 
-    () => sse.close(); observer.onCompleted()
-  }
+    fetchEventSource(uri, fetchEventSourceInit)
 
-  private def queryHeader(req: Req): js.Object = {
-    js.Dynamic.literal("Query" -> Json.encode(req).toUtf8String)
+    () => controller.abort(); observer.onCompleted()
   }
 }

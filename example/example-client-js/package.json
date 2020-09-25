@@ -5,7 +5,7 @@
     "test": "set -x; cd ../..; sbtn 'project example-client-js; startSnowpackTestServer; test; stopSnowpackTestServer'; cd -"
   },
   "dependencies": {
-    "eventsource": "^1.0.7",
+    "@microsoft/fetch-event-source": "^1.0.0",
     "rsocket-websocket-client": "^0.0.19"
   },
   "devDependencies": {

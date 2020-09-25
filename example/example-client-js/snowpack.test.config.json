@@ -10,7 +10,8 @@
       "rsocket-flowable",
       "rsocket-types",
       "buffer",
-      "node"
+      "node",
+      "@microsoft/fetch-event-source"
     ]
   }
 }

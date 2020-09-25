@@ -2,20 +2,44 @@ package msocket.http
 
 import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
 import akka.http.scaladsl.unmarshalling.Unmarshal
+import io.bullet.borer.Encoder
 import msocket.api.models.{ErrorType, ServiceError}
 import msocket.api.{ContentType, ErrorProtocol}
 import msocket.http.post.ClientHttpCodecs
-import msocket.http.post.headers.ErrorTypeHeader
+import msocket.http.post.headers.{AppNameHeader, ErrorTypeHeader}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
 
-class HttpUtils[Req](val clientContentType: ContentType)(implicit actorSystem: ActorSystem[_], ep: ErrorProtocol[Req])
-    extends ClientHttpCodecs {
+class HttpUtils[Req: Encoder](
+    val clientContentType: ContentType,
+    uri: String,
+    tokenFactory: () => Option[String],
+    appName: Option[String] = None
+)(implicit
+    actorSystem: ActorSystem[_],
+    ep: ErrorProtocol[Req]
+) extends ClientHttpCodecs {
 
   import actorSystem.executionContext
+
+  def getResponse(request: Req): Future[HttpResponse] = {
+    val authHeader    = tokenFactory().map(t => Authorization(OAuth2BearerToken(t)))
+    val appNameHeader = appName.map(name => AppNameHeader(name))
+    Marshal(request).to[RequestEntity].flatMap { requestEntity =>
+      val httpRequest = HttpRequest(
+        HttpMethods.POST,
+        uri = uri,
+        entity = requestEntity,
+        headers = authHeader.toList ++ appNameHeader
+      )
+      handleRequest(httpRequest)
+    }
+  }
 
   def handleRequest(httpRequest: HttpRequest): Future[HttpResponse] = {
     Http().singleRequest(httpRequest).flatMap { response =>

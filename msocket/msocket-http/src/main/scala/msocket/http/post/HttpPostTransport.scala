@@ -2,20 +2,16 @@ package msocket.http.post
 
 import akka.NotUsed
 import akka.actor.typed.ActorSystem
-import akka.http.scaladsl.marshalling.Marshal
-import akka.http.scaladsl.model.headers.{Authorization, OAuth2BearerToken}
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, RequestEntity}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
-import msocket.jvm.SourceExtension.WithSubscription
 import msocket.api.models.ErrorType
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.http.HttpUtils
-import msocket.http.post.headers.AppNameHeader
 import msocket.http.post.streaming.FetchEvent
 import msocket.jvm.JvmTransport
+import msocket.jvm.SourceExtension.WithSubscription
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,13 +29,14 @@ class HttpPostTransport[Req: Encoder](
   override def clientContentType: ContentType = contentType
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
+  val httpUtils                     = new HttpUtils[Req](contentType, uri, tokenFactory, appName)
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
-    getResponse(request).flatMap(Unmarshal(_).to[Res])
+    httpUtils.getResponse(request).flatMap(Unmarshal(_).to[Res])
   }
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] = {
-    val futureSource = getResponse(request).flatMap(Unmarshal(_).to[Source[FetchEvent, NotUsed]])
+    val futureSource = httpUtils.getResponse(request).flatMap(Unmarshal(_).to[Source[FetchEvent, NotUsed]])
     Source
       .futureSource(futureSource)
       .filter(_ != FetchEvent.Heartbeat)
@@ -48,19 +45,5 @@ class HttpPostTransport[Req: Encoder](
         JsonText.decodeFull(event.data, maybeErrorType)
       }
       .withSubscription()
-  }
-
-  private def getResponse(request: Req): Future[HttpResponse] = {
-    val authHeader    = tokenFactory().map(t => Authorization(OAuth2BearerToken(t)))
-    val appNameHeader = appName.map(name => AppNameHeader(name))
-    Marshal(request).to[RequestEntity].flatMap { requestEntity =>
-      val httpRequest = HttpRequest(
-        HttpMethods.POST,
-        uri = uri,
-        entity = requestEntity,
-        headers = authHeader.toList ++ appNameHeader
-      )
-      new HttpUtils[Req](contentType).handleRequest(httpRequest)
-    }
   }
 }

@@ -195,9 +195,10 @@ lazy val `example-client-js` = project
       `scala-async`
     ),
     Test / test := Def.taskDyn {
+      (`example-server` / Compile / compile).value
       (`example-server` / reStart).toTask("").value
       reStartSnowpackTestServer.value
       (Test / test).value
-      (`example-server` / reStop)
+      (Test / testHtml)
     }.value
   )

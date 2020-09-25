@@ -32,8 +32,11 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
 
   import wiring._
 
-  Await.result(exampleServer.start("0.0.0.0", 5000), 10.seconds)
-  Await.result(rSocketServer.start("0.0.0.0", 7000), 10.seconds)
+  private val httpPort    = 5001
+  private val rSocketPort = 7001
+
+  Await.result(exampleServer.start("0.0.0.0", httpPort), 10.seconds)
+  Await.result(rSocketServer.start("0.0.0.0", rSocketPort), 10.seconds)
   var connections: List[Subscription] = Nil
 
   override protected def afterAll(): Unit = {
@@ -47,12 +50,12 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
 
   def makeProbe[T](implicit system: ActorSystem[_]): Sink[T, Probe[T]] = TestSink.probe[T](system.toClassic)
 
-  val PostEndpoint          = "http://localhost:5000/post-endpoint"
-  val PostEndpoint2         = "http://localhost:5000/post-endpoint2"
-  val PostStreamingEndpoint = "http://localhost:5000/post-streaming-endpoint"
-  val SseEndpoint           = "http://localhost:5000/sse-endpoint"
-  val WebsocketEndpoint     = "ws://localhost:5000/websocket-endpoint"
-  val RSocketEndpoint       = "ws://localhost:7000"
+  val PostEndpoint          = s"http://localhost:$httpPort/post-endpoint"
+  val PostEndpoint2         = s"http://localhost:$httpPort/post-endpoint2"
+  val PostStreamingEndpoint = s"http://localhost:$httpPort/post-streaming-endpoint"
+  val SseEndpoint           = s"http://localhost:$httpPort/sse-endpoint"
+  val WebsocketEndpoint     = s"ws://localhost:$httpPort/websocket-endpoint"
+  val RSocketEndpoint       = s"ws://localhost:$rSocketPort"
 
   List(Json, Cbor).foreach { contentType =>
     lazy val httpResponseTransport  = new HttpPostTransport[ExampleRequest](PostEndpoint, contentType, () => None)
@@ -64,7 +67,7 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
 
     connections :::= List(connection1, connection2)
 
-    lazy val sseTransport       = new SseTransport[ExampleStreamRequest](SseEndpoint)
+    lazy val sseTransport       = new SseTransport[ExampleStreamRequest](SseEndpoint, contentType, () => None)
     lazy val websocketTransport = new WebsocketTransport[ExampleStreamRequest](WebsocketEndpoint, contentType)
 
     contentType.toString - {

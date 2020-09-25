@@ -192,5 +192,9 @@ lazy val `example-client-js` = project
     libraryDependencies ++= Seq(
       scalatest.value % Test,
       `scala-async`
-    )
+    ),
+    Test / test := {
+      val _ = reStartSnowpackTestServer.value
+      (Test / test).value
+    }
   )

@@ -1,4 +1,7 @@
 {
+  "devOptions": {
+    "port": 9093
+  },
   "installOptions": {
     "polyfillNode": true,
     "namedExports": [

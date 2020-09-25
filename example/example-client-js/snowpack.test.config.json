@@ -1,5 +1,6 @@
 {
   "installOptions": {
+    "polyfillNode": true,
     "namedExports": [
       "rsocket-core",
       "rsocket-websocket-client",

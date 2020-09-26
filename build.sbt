@@ -187,7 +187,7 @@ lazy val `example-client-jvm-test` = project
 
 lazy val `example-client-js` = project
   .in(file("example/example-client-js"))
-  .enablePlugins(ScalaJSPlugin, SnowpackTestPlugin)
+  .enablePlugins(ScalaJSPlugin, SnowpackPlugin)
   .dependsOn(`example-service-api`.js, `msocket-js`)
   .settings(
     libraryDependencies ++= Seq(

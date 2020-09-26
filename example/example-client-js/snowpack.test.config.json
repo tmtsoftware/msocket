@@ -1,17 +1,6 @@
 {
+  "extends": "snowpack.common.config.json",
   "devOptions": {
     "port": 9092
-  },
-  "installOptions": {
-    "polyfillNode": true,
-    "namedExports": [
-      "rsocket-core",
-      "rsocket-websocket-client",
-      "rsocket-flowable",
-      "rsocket-types",
-      "buffer",
-      "node",
-      "@microsoft/fetch-event-source"
-    ]
   }
 }

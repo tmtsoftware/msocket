@@ -1,6 +1,6 @@
 {
   "devOptions": {
-    "port": 9093
+    "port": 9092
   },
   "installOptions": {
     "polyfillNode": true,

@@ -21,7 +21,7 @@ trait Observer[-T] {
 object Observer {
   def create[T](
       eventHandler: T => Unit = (x: T) => (),
-      errorHandler: Throwable => Unit = ex => throw ex,
+      errorHandler: Throwable => Unit = ex => (),
       completionHandler: () => Unit = () => ()
   ): Observer[T] =
     new Observer[T] {

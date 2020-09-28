@@ -195,16 +195,17 @@ lazy val `example-client-js` = project
       `scala-async`
     ),
     Test / test := {
-      (`example-server` / Compile / compile).value
-      (`example-server` / reStart).toTask("").value
-      (Test / reStartSnowpackServer).value
-      (Test / test).value
-      (Test / testHtml).value
+      val a = (`example-server` / Compile / compile).value
+      val b = (`example-server` / reStart).toTask("").value
+      val () = (Test / reStartSnowpackServer).value
+      val () = (Test / test).value
+      val c = (Test / testHtml).value
     },
+
     Compile / run := {
-      (`example-server` / Compile / compile).value
-      (`example-server` / reStart).toTask("").value
-      (Compile / reStartSnowpackServer).value
-      (Compile / run).toTask("").value
+      val a = (`example-server` / Compile / compile).value
+      val b = (`example-server` / reStart).toTask("").value
+      val () = (Compile / reStartSnowpackServer).value
+      val () = (Compile / run).toTask("").value
     }
   )

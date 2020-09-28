@@ -21,4 +21,5 @@ resolvers += Resolver.bintrayIvyRepo("rtimush", "sbt-plugin-snapshots")
 addSbtPlugin("com.timushev.sbt" % "sbt-rewarn" % "0.0.1-15-3102b36")
 
 resolvers += "jitpack" at "https://jitpack.io"
-libraryDependencies += "com.github.mushtaq.sbt-snowpack" % "sbt-snowpack" % "0201039"
+// this is a sbt-plugin but do not use addSbtPlugin because it is being resolved via jitpack
+libraryDependencies += "com.github.mushtaq.sbt-snowpack" % "sbt-snowpack" % "d2d3d8e"

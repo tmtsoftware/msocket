@@ -1,5 +1,6 @@
 package msocket.api
 
+import io.bullet.borer.Dom.{Element, StringElem}
 import io.bullet.borer.{Decoder, Encoder}
 
 import scala.reflect.ClassTag
@@ -19,8 +20,16 @@ object ErrorProtocol {
   def bind[T, Err <: Throwable: Encoder: Decoder: ClassTag]: ErrorProtocol[T] =
     new ErrorProtocol[T] {
       override type E = Err
-      override val enc: Encoder[E]       = Encoder[E]
+      override val enc: Encoder[E]       = enrich(Encoder[E])
       override val dec: Decoder[E]       = Decoder[E]
       override val classTag: ClassTag[E] = scala.reflect.classTag[E]
     }
+
+  private def enrich[E <: Throwable](encoder: Encoder[E]): Encoder[E] = {
+    Encoder[Map[String, Element]].contramapWithWriter { (w, error) =>
+      val bytes   = w.target.encode(error)(encoder).toByteArray
+      val mapElem = w.target.decode(bytes).to[Map[String, Element]].value
+      mapElem + ("error_message" -> StringElem(error.getMessage))
+    }
+  }
 }

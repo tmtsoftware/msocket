@@ -1,8 +1,8 @@
 package csw.example.api.protocol
 
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRequest}
-import io.bullet.borer.Codec
-import io.bullet.borer.derivation.CompactMapBasedCodecs
+import io.bullet.borer.derivation.MapBasedCodecs
+import io.bullet.borer.{AdtEncodingStrategy, Codec}
 import msocket.api.ErrorProtocol
 
 /**
@@ -10,13 +10,14 @@ import msocket.api.ErrorProtocol
  */
 object ExampleCodecs extends ExampleCodecs
 trait ExampleCodecs {
+  implicit val flatAdtEncoding: AdtEncodingStrategy = AdtEncodingStrategy.flat()
 
   /** Codec for message protocol */
-  implicit lazy val exampleRequestResponseCodec: Codec[ExampleRequest]     = CompactMapBasedCodecs.deriveAllCodecs
-  implicit lazy val exampleRequestStreamCodec: Codec[ExampleStreamRequest] = CompactMapBasedCodecs.deriveAllCodecs
+  implicit lazy val exampleRequestResponseCodec: Codec[ExampleRequest]     = MapBasedCodecs.deriveAllCodecs
+  implicit lazy val exampleRequestStreamCodec: Codec[ExampleStreamRequest] = MapBasedCodecs.deriveAllCodecs
 
   /** Codec for error protocol */
-  implicit lazy val exampleErrorCodec: Codec[ExampleError] = CompactMapBasedCodecs.deriveAllCodecs
+  implicit lazy val exampleErrorCodec: Codec[ExampleError] = MapBasedCodecs.deriveAllCodecs
 
   /**
    * Bind error protocol to the message protocol

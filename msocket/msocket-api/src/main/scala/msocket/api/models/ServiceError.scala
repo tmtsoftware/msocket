@@ -9,13 +9,7 @@ import io.bullet.borer.derivation.CompactMapBasedCodecs
  * Service error is returned as response in these scenarios.
  * _ in field names is intentional to make it harder for this to get deserialized as a domain model with same fields
  */
-case class ServiceError(error_name: String, error_message: String)
-    extends RuntimeException(
-      s"""
-      |error_name:     $error_name:
-      |error_message:  $error_message
-      |""".stripMargin
-    )
+case class ServiceError(error_name: String, error_message: String) extends RuntimeException(s"$error_name: $error_message")
 
 object ServiceError {
   implicit lazy val serviceErrorCodec: Codec[ServiceError] = CompactMapBasedCodecs.deriveCodec

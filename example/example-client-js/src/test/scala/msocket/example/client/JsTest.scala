@@ -46,6 +46,11 @@ class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with Exa
   }
 
   try {
+    TestPolyfills.GlobalJsdom()
+    TestPolyfills.CrossFetch
+//    TestPolyfills.FastTextEncoding
+//    TestPolyfills.StardazedStreamsPolyfill
+
     List(Cbor, Json).foreach { contentType =>
       lazy val httpResponseTransport  = new HttpPostTransportJs[ExampleRequest](PostEndpoint, contentType)
       lazy val httpResponseTransport2 = new HttpPostTransportJs[ExampleRequest](PostEndpoint2, contentType)
@@ -95,7 +100,7 @@ class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with Exa
 
         "requestStream" - {
           lazy val bilingualTransports = List(rSocketStreamTransport, websocketTransport)
-          lazy val jsonOnlyTransports  = List(httpStreamTransport, sseTransport)
+          lazy val jsonOnlyTransports  = List()
           val transports               = if (contentType == Json) bilingualTransports ++ jsonOnlyTransports else bilingualTransports
 
           transports.foreach { transport =>

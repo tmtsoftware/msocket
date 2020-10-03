@@ -195,17 +195,18 @@ lazy val `example-client-js` = project
       `scala-async`
     ),
     Test / test := {
-      val a = (`example-server` / Compile / compile).value
-      val b = (`example-server` / reStart).toTask("").value
-      val () = (Test / reStartSnowpackServer).value
+      val a  = (`example-server` / Compile / compile).value
+      val b  = (`example-server` / reStart).toTask("").value
+//      val () = (Test / reStartSnowpackServer).value
       val () = (Test / test).value
-      val c = (Test / testHtml).value
+//      val c = (Test / testHtml).value
     },
-
     Compile / run := {
-      val a = (`example-server` / Compile / compile).value
-      val b = (`example-server` / reStart).toTask("").value
+      val a  = (`example-server` / Compile / compile).value
+      val b  = (`example-server` / reStart).toTask("").value
       val () = (Compile / reStartSnowpackServer).value
       val () = (Compile / run).toTask("").value
-    }
+    },
+    jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule).withSourceMap(false) }
   )

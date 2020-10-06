@@ -3,6 +3,7 @@ addSbtPlugin("org.scalameta"      % "sbt-scalafmt"             % "2.4.2")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
 addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "1.2.0")
 addSbtPlugin("io.spray"           % "sbt-revolver"             % "0.9.1")
+addSbtPlugin("com.timushev.sbt"   % "sbt-rewarn"               % "0.1.1")
 
 libraryDependencies += "com.sun.activation" % "javax.activation" % "1.2.0"
 
@@ -16,9 +17,6 @@ scalacOptions ++= Seq(
   "-Ywarn-dead-code",
   "-Xfuture"
 )
-
-resolvers += Resolver.bintrayIvyRepo("rtimush", "sbt-plugin-snapshots")
-addSbtPlugin("com.timushev.sbt" % "sbt-rewarn" % "0.0.1-15-3102b36")
 
 resolvers += "jitpack" at "https://jitpack.io"
 // this is a sbt-plugin but do not use addSbtPlugin because it is being resolved via jitpack

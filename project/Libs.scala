@@ -11,8 +11,8 @@ object Libs {
   val `akka-actor-testkit-typed` = "com.typesafe.akka" %% "akka-actor-testkit-typed" % "2.6.9"
   val `akka-stream-testkit`      = "com.typesafe.akka" %% "akka-stream-testkit"      % "2.6.9"
 
-  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.2.0"
-  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.2.0"
+  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.2.1"
+  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.2.1"
 
   val `borer-core`        = dep("io.bullet" %%% "borer-core" % "1.6.1")
   val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "1.6.1")

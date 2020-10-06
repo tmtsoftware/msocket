@@ -34,8 +34,9 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
       headers = js.Array(js.Array("Content-Type", ContentType.Json.mimeType))
 
       onopen = js.defined { res =>
-        println(s"sse connection open with status: ${res.status}")
-        Future.successful(()).toJSPromise
+        Future {
+          println(s"sse connection open with status: ${res.status}")
+        }.toJSPromise
       }
 
       onmessage = js.defined { evt =>

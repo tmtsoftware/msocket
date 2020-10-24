@@ -1,9 +1,9 @@
 addSbtPlugin("com.timushev.sbt"   % "sbt-updates"              % "0.5.1")
 addSbtPlugin("org.scalameta"      % "sbt-scalafmt"             % "2.4.2")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
-addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "1.2.0")
+addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "1.3.0")
 addSbtPlugin("io.spray"           % "sbt-revolver"             % "0.9.1")
-addSbtPlugin("com.timushev.sbt"   % "sbt-rewarn"               % "0.1.1")
+addSbtPlugin("com.timushev.sbt"   % "sbt-rewarn"               % "0.1.2")
 
 libraryDependencies += "com.sun.activation" % "javax.activation" % "1.2.0"
 
@@ -20,4 +20,4 @@ scalacOptions ++= Seq(
 
 resolvers += "jitpack" at "https://jitpack.io"
 // this is a sbt-plugin but do not use addSbtPlugin because it is being resolved via jitpack
-libraryDependencies += "com.github.mushtaq.sbt-snowpack" % "sbt-snowpack" % "d2d3d8e"
+libraryDependencies += "com.github.mushtaq.sbt-snowpack" % "sbt-snowpack" % "230a748"

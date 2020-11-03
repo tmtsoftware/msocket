@@ -27,8 +27,8 @@ object Libs {
   val `microsoft__fetch-event-source` = dep("org.scalablytyped" %%% "microsoft__fetch-event-source" % "1.0.0-c77a26")
   val `rsocket-websocket-client`      = dep("org.scalablytyped" %%% "rsocket-websocket-client" % "0.0.3-cac4be")
 
-  val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % "1.0.2"
-  val `rsocket-transport-netty` = "io.rsocket" % "rsocket-transport-netty" % "1.0.2"
+  val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % "1.1.0"
+  val `rsocket-transport-netty` = "io.rsocket" % "rsocket-transport-netty" % "1.1.0"
 }
 
 object Prometheus {

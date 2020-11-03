@@ -20,4 +20,4 @@ scalacOptions ++= Seq(
 
 resolvers += "jitpack" at "https://jitpack.io"
 // this is a sbt-plugin but do not use addSbtPlugin because it is being resolved via jitpack
-libraryDependencies += "com.github.mushtaq.sbt-snowpack" % "sbt-snowpack" % "230a748"
+libraryDependencies += "com.github.mushtaq.sbt-snowpack" % "sbt-snowpack" % "5bceb32"

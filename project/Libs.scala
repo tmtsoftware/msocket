@@ -6,20 +6,20 @@ object Libs {
   // 1.0.0-M1 does not work with Scala.js js yet
   val `scala-async` = "org.scala-lang.modules" %% "scala-async" % "0.10.0"
 
-  val `akka-stream`              = "com.typesafe.akka" %% "akka-stream"              % "2.6.10"
-  val `akka-actor-typed`         = "com.typesafe.akka" %% "akka-actor-typed"         % "2.6.10"
-  val `akka-actor-testkit-typed` = "com.typesafe.akka" %% "akka-actor-testkit-typed" % "2.6.10"
-  val `akka-stream-testkit`      = "com.typesafe.akka" %% "akka-stream-testkit"      % "2.6.10"
+  val `akka-stream`              = "com.typesafe.akka" %% "akka-stream"              % "2.6.11"
+  val `akka-actor-typed`         = "com.typesafe.akka" %% "akka-actor-typed"         % "2.6.11"
+  val `akka-actor-testkit-typed` = "com.typesafe.akka" %% "akka-actor-testkit-typed" % "2.6.11"
+  val `akka-stream-testkit`      = "com.typesafe.akka" %% "akka-stream-testkit"      % "2.6.11"
 
-  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.2.1"
-  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.2.1"
+  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.2.3"
+  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.2.3"
 
-  val `borer-core`        = dep("io.bullet" %%% "borer-core" % "1.6.2")
-  val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "1.6.2")
-  val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "1.6.2"
+  val `borer-core`        = dep("io.bullet" %%% "borer-core" % "1.6.3")
+  val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "1.6.3")
+  val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "1.6.3"
 
-  val `akka-http-cors` = "ch.megard"         %% "akka-http-cors" % "1.1.0"
-  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.2")
+  val `akka-http-cors` = "ch.megard"         %% "akka-http-cors" % "1.1.1"
+  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.3")
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.2.0"
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "1.1.0")
 
@@ -32,7 +32,7 @@ object Libs {
 }
 
 object Prometheus {
-  val Version             = "0.9.0"
+  val Version             = "0.10.0"
   val simpleclient        = "io.prometheus" % "simpleclient"        % Version
   val simpleclient_common = "io.prometheus" % "simpleclient_common" % Version
 }

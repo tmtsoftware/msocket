@@ -23,5 +23,6 @@ class ErrorEncoderTest extends AnyFreeSpec with Matchers {
           }
         }
       }
+    case x        => throw new MatchError(x)
   }
 }

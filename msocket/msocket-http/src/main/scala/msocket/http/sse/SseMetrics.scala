@@ -12,7 +12,7 @@ object SseMetrics {
 
   def counter[Req: LabelExtractor](): Counter =
     Metrics.counter(
-      metricName = "sse_total_messages_per_connection",
+      metricName = "sse_messages_per_connection_total",
       help = "Total messages passing through sse connection"
     )
 }

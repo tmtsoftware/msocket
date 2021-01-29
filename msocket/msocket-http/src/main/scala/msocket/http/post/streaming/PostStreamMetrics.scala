@@ -12,7 +12,7 @@ object PostStreamMetrics {
 
   def counter[Req: LabelExtractor](): Counter =
     Metrics.counter(
-      metricName = "post_stream_total_messages_per_connection",
+      metricName = "post_stream_messages_per_connection_total",
       help = "Total messages passing through post stream connection"
     )
 }

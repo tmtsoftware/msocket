@@ -12,7 +12,7 @@ object WebsocketMetrics {
 
   def counter[Req: LabelExtractor](): Counter =
     Metrics.counter(
-      metricName = "websocket_total_messages_per_connection",
+      metricName = "websocket_messages_per_connection_total",
       help = "Total messages passing through websocket connection"
     )
 }

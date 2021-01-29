@@ -12,7 +12,7 @@ object RSocketStreamRequestMetrics {
 
   def counter[Req: LabelExtractor](): Counter =
     Metrics.counter(
-      metricName = "rsocket_stream_total_messages_per_connection",
+      metricName = "rsocket_stream_messages_per_connection_total",
       help = "Total messages passing through rsocket channel"
     )
 }

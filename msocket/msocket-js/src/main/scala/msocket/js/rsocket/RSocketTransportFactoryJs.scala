@@ -3,7 +3,7 @@ package msocket.js.rsocket
 import io.bullet.borer.Encoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentType, ErrorProtocol, Subscription, Transport}
-import typings.rsocketCore.mod
+import tmttyped.rsocketCore.mod
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration

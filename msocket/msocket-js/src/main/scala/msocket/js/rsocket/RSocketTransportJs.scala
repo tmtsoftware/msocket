@@ -5,15 +5,15 @@ import msocket.api.models.ResponseHeaders
 import msocket.api.{ContentEncoding, ErrorProtocol, Subscription}
 import msocket.js.JsTransport
 import msocket.portable.Observer
-import typings.rsocketCore.anon.DataMimeType
-import typings.rsocketCore.mod.RSocketClient
-import typings.rsocketCore.rsocketclientMod.ClientConfig
-import typings.rsocketCore.rsocketencodingMod.Encoders
-import typings.rsocketFlowable.singleMod.{CancelCallback, IFutureSubscriber}
-import typings.rsocketTypes.reactiveSocketTypesMod.{Payload, ReactiveSocket}
-import typings.rsocketTypes.reactiveStreamTypesMod.{ISubscriber, ISubscription}
-import typings.rsocketWebsocketClient.mod.{default => RSocketWebSocketClient}
-import typings.rsocketWebsocketClient.rsocketwebsocketclientMod.ClientOptions
+import tmttyped.rsocketCore.anon.DataMimeType
+import tmttyped.rsocketCore.mod.RSocketClient
+import tmttyped.rsocketCore.rsocketclientMod.ClientConfig
+import tmttyped.rsocketCore.rsocketencodingMod.Encoders
+import tmttyped.rsocketFlowable.singleMod.{CancelCallback, IFutureSubscriber}
+import tmttyped.rsocketTypes.reactiveSocketTypesMod.{Payload, ReactiveSocket}
+import tmttyped.rsocketTypes.reactiveStreamTypesMod.{ISubscriber, ISubscription}
+import tmttyped.rsocketWebsocketClient.mod.{default => RSocketWebSocketClient}
+import tmttyped.rsocketWebsocketClient.rsocketwebsocketclientMod.ClientOptions
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future, Promise}

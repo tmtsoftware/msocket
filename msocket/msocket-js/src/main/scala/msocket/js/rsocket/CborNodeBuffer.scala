@@ -4,8 +4,8 @@ import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding
 import msocket.api.ContentEncoding.CborByteArray
 import msocket.api.ContentType.Cbor
-import typings.node
-import typings.node.bufferMod.Buffer
+import tmttyped.node
+import tmttyped.node.bufferMod.Buffer
 
 import scala.scalajs.js
 import scala.scalajs.js.typedarray.{AB2TA, Int8Array}

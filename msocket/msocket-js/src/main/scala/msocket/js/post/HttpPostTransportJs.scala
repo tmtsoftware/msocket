@@ -10,8 +10,8 @@ import msocket.js.JsTransport
 import msocket.js.post.HttpJsExtensions.HttpJsEncoding
 import msocket.portable.Observer
 import org.scalajs.dom.experimental.WriteableStream
-import typings.std.global.{JSON, TextDecoderStream, TransformStream, WritableStream}
-import typings.std.{Transformer, UnderlyingSink}
+import tmttyped.std.global.{JSON, TextDecoderStream, TransformStream, WritableStream}
+import tmttyped.std.{Transformer, UnderlyingSink}
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.control.NonFatal

@@ -7,11 +7,8 @@ inThisBuild(
     version := "0.1.0-SNAPSHOT",
     organization := "com.github.tmtsoftware.msocket",
     organizationName := "ThoughtWorks",
-    resolvers ++= Seq(
-      Resolver.jcenterRepo,
-      Resolver.bintrayRepo("mausamy", "tmtyped")
-    ),
     scalafmtOnCompile := true,
+    resolvers += "jitpack" at "https://jitpack.io",
     scalacOptions ++= Seq(
       "-encoding",
       "UTF-8",
@@ -131,9 +128,7 @@ lazy val `msocket-js` = project
   .dependsOn(`msocket-api`.js)
   .settings(
     libraryDependencies ++= Seq(
-      eventsource.value,
-      `microsoft__fetch-event-source`.value,
-      `rsocket-websocket-client`.value,
+      `tmt-typed`.value,
       `scalajs-dom`.value
     )
   )

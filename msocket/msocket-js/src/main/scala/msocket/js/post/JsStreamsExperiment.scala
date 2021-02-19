@@ -1,7 +1,7 @@
 package msocket.js.post
 
-import typings.std.Transformer
-import typings.std.global.TransformStream
+import tmttyped.std.Transformer
+import tmttyped.std.global.TransformStream
 
 object JsStreamsExperiment {
   def splitStream(splitOn: String): TransformStream[String, String] = {

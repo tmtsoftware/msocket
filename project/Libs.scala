@@ -23,9 +23,7 @@ object Libs {
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.2.0"
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "1.1.0")
 
-  val eventsource                     = dep("org.scalablytyped" %%% "eventsource" % "1.1.4-5269e8")
-  val `microsoft__fetch-event-source` = dep("org.scalablytyped" %%% "microsoft__fetch-event-source" % "1.0.0-c77a26")
-  val `rsocket-websocket-client`      = dep("org.scalablytyped" %%% "rsocket-websocket-client" % "0.0.3-cac4be")
+  val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "65a6866")
 
   val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % "1.1.0"
   val `rsocket-transport-netty` = "io.rsocket" % "rsocket-transport-netty" % "1.1.0"

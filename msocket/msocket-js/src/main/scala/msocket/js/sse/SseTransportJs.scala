@@ -5,9 +5,9 @@ import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.js.JsTransport
 import msocket.portable.Observer
-import typings.microsoftFetchEventSource.fetchMod.FetchEventSourceInit
-import typings.microsoftFetchEventSource.mod.fetchEventSource
-import typings.std.global.AbortController
+import tmttyped.microsoftFetchEventSource.fetchMod.FetchEventSourceInit
+import tmttyped.microsoftFetchEventSource.mod.fetchEventSource
+import tmttyped.std.global.AbortController
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js

@@ -1,5 +1,0 @@
-libraryDependencies ++= Seq(
-  "org.scalablytyped" %%% "microsoft__fetch-event-source" % "1.0.0-c77a26",
-  "org.scalablytyped" %%% "rsocket-websocket-client" % "0.0.3-cac4be",
-  "org.scalablytyped" %%% "rxjs" % "6.6.3-c8579e"
-)

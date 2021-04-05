@@ -46,8 +46,8 @@ class HttpUtils[Req: Encoder](
       response.status match {
         case StatusCodes.OK                  => Future.successful(response)
         case StatusCodes.InternalServerError =>
-          val maybeErrorType = response.headers.collectFirst {
-            case ErrorTypeHeader(value) => ErrorType.from(value)
+          val maybeErrorType = response.headers.collectFirst { case ErrorTypeHeader(value) =>
+            ErrorType.from(value)
           }
           val entityF        = response.entity.toStrict(1.seconds)
           val errorF         = maybeErrorType match {

@@ -25,12 +25,12 @@ class AccessController(tokenValidator: TokenValidator, securityStatus: SecurityS
                     if (isAuthorized) AccessStatus.Authorized(accessToken)
                     else AccessStatus.AuthorizationFailed("not enough access rights")
                   }
-                  .recover {
-                    case NonFatal(ex) => AccessStatus.AuthorizationFailed(ex.getMessage)
+                  .recover { case NonFatal(ex) =>
+                    AccessStatus.AuthorizationFailed(ex.getMessage)
                   }
               }
-              .recover {
-                case NonFatal(ex) => AccessStatus.AuthenticationFailed(ex.getMessage)
+              .recover { case NonFatal(ex) =>
+                AccessStatus.AuthenticationFailed(ex.getMessage)
               }
         }
     }

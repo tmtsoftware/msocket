@@ -72,30 +72,29 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
 
     contentType.toString - {
       "requestResponse" - {
-        List(httpResponseTransport, httpResponseTransport2, rSocketResponseTransport).zipWithIndex.foreach {
-          case (transport, index) =>
-            transport.getClass.getSimpleName + (index + 1) - {
-              "success response" in {
-                val client = new ExampleClient(transport, null)
-                client.hello("John").futureValue shouldBe "Hello John"
-              }
-
-              "domain error" in {
-                val client = new ExampleClient(transport, null)
-                val caught = intercept[HelloError] {
-                  Await.result(client.hello("idiot"), 3.second)
-                }
-                caught shouldBe HelloError(5)
-              }
-
-              "generic error" in {
-                val client = new ExampleClient(transport, null)
-                val caught = intercept[ServiceError] {
-                  Await.result(client.hello("fool"), 3.second)
-                }
-                caught shouldBe ServiceError.fromThrowable(new IllegalArgumentException("you are a fool"))
-              }
+        List(httpResponseTransport, httpResponseTransport2, rSocketResponseTransport).zipWithIndex.foreach { case (transport, index) =>
+          transport.getClass.getSimpleName + (index + 1) - {
+            "success response" in {
+              val client = new ExampleClient(transport, null)
+              client.hello("John").futureValue shouldBe "Hello John"
             }
+
+            "domain error" in {
+              val client = new ExampleClient(transport, null)
+              val caught = intercept[HelloError] {
+                Await.result(client.hello("idiot"), 3.second)
+              }
+              caught shouldBe HelloError(5)
+            }
+
+            "generic error" in {
+              val client = new ExampleClient(transport, null)
+              val caught = intercept[ServiceError] {
+                Await.result(client.hello("fool"), 3.second)
+              }
+              caught shouldBe ServiceError.fromThrowable(new IllegalArgumentException("you are a fool"))
+            }
+          }
         }
       }
 

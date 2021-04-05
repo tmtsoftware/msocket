@@ -38,10 +38,9 @@ class MetricCollector[Req: LabelExtractor](
       incGauge()
       source
         .wireTap { _ => incCounter() }
-        .watchTermination() {
-          case (mat, completion) =>
-            completion.onComplete(_ => decGauge())
-            mat
+        .watchTermination() { case (mat, completion) =>
+          completion.onComplete(_ => decGauge())
+          mat
         }
     } else source
   }

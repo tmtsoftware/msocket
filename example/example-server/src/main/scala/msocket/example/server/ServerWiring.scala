@@ -28,8 +28,8 @@ class ServerWiring extends ExampleCodecs {
   implicit lazy val ec: ExecutionContext        = actorSystem.executionContext
 
   private val testLabel                                              = "test_label"
-  implicit val requestLabelExtractor: LabelExtractor[ExampleRequest] = LabelExtractor.make(List(testLabel)) {
-    case _ => Map(testLabel -> "test_value")
+  implicit val requestLabelExtractor: LabelExtractor[ExampleRequest] = LabelExtractor.make(List(testLabel)) { case _ =>
+    Map(testLabel -> "test_value")
   }
 
   lazy val exampleImpl: ExampleApi = new ExampleImpl

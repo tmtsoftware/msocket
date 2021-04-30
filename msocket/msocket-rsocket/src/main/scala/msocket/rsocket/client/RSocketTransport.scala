@@ -4,7 +4,7 @@ import akka.actor.typed.ActorSystem
 import akka.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.{Decoder, Encoder}
 import io.rsocket.RSocket
-import msocket.jvm.SourceExtension.WithSubscription
+import msocket.jvm.SourceExtension.RichSource
 import msocket.api.models.ResponseHeaders
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.rsocket.RSocketExtensions._

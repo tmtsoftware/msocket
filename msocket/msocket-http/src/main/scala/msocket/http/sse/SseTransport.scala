@@ -13,7 +13,7 @@ import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.http.HttpUtils
 import msocket.jvm.JvmTransport
-import msocket.jvm.SourceExtension.WithSubscription
+import msocket.jvm.SourceExtension.RichSource
 
 import scala.concurrent.{ExecutionContext, Future}
 

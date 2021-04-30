@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
-import msocket.jvm.SourceExtension.WithSubscription
+import msocket.jvm.SourceExtension.RichSource
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.http.CborByteString
 import msocket.http.post.headers.AppNameHeader

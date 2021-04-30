@@ -11,7 +11,7 @@ import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.http.HttpUtils
 import msocket.http.post.streaming.FetchEvent
 import msocket.jvm.JvmTransport
-import msocket.jvm.SourceExtension.WithSubscription
+import msocket.jvm.SourceExtension.RichSource
 
 import scala.concurrent.{ExecutionContext, Future}
 

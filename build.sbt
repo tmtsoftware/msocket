@@ -95,7 +95,8 @@ lazy val `msocket-jvm` = project
   .settings(
     libraryDependencies ++= Seq(
       Prometheus.simpleclient,
-      Prometheus.simpleclient_common
+      Prometheus.simpleclient_common,
+      scalatest.value % Test
     )
   )
 

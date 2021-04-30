@@ -11,5 +11,12 @@ object SourceExtension {
         .viaMat(KillSwitches.single)(Keep.right)
         .mapMaterializedValue[Subscription](switch => () => switch.shutdown())
     }
+
+    def distinctUntilChanged: Source[Out, Mat] =
+      stream
+        .map(Option.apply)
+        .prepend(Source.single(None))
+        .sliding(2)
+        .collect { case Seq(a, b @ Some(x)) if a != b => x }
   }
 }

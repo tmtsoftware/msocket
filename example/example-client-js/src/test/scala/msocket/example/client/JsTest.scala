@@ -61,35 +61,34 @@ class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with Exa
 
       contentType.toString - {
         "requestResponse" - {
-          List(httpResponseTransport, httpResponseTransport2, rSocketResponseTransport).zipWithIndex.foreach {
-            case (transport, index) =>
-              transport.getClass.getSimpleName + (index + 1) - {
-                "success response" in async {
-                  val client = new ExampleClient(transport, null)
-                  await(client.hello("John")) shouldBe "Hello John"
-                }
-
-                "domain error" in async {
-                  val client = new ExampleClient(transport, null)
-                  val caught = await {
-                    recoverToExceptionIf[HelloError] {
-                      client.hello("idiot")
-                    }
-                  }
-
-                  caught shouldBe HelloError(5)
-                }
-
-                "generic error" in async {
-                  val client = new ExampleClient(transport, null)
-                  val caught = await {
-                    recoverToExceptionIf[ServiceError] {
-                      client.hello("fool")
-                    }
-                  }
-                  caught shouldBe ServiceError.fromThrowable(new IllegalArgumentException("you are a fool"))
-                }
+          List(httpResponseTransport, httpResponseTransport2, rSocketResponseTransport).zipWithIndex.foreach { case (transport, index) =>
+            transport.getClass.getSimpleName + (index + 1) - {
+              "success response" in async {
+                val client = new ExampleClient(transport, null)
+                await(client.hello("John")) shouldBe "Hello John"
               }
+
+              "domain error" in async {
+                val client = new ExampleClient(transport, null)
+                val caught = await {
+                  recoverToExceptionIf[HelloError] {
+                    client.hello("idiot")
+                  }
+                }
+
+                caught shouldBe HelloError(5)
+              }
+
+              "generic error" in async {
+                val client = new ExampleClient(transport, null)
+                val caught = await {
+                  recoverToExceptionIf[ServiceError] {
+                    client.hello("fool")
+                  }
+                }
+                caught shouldBe ServiceError.fromThrowable(new IllegalArgumentException("you are a fool"))
+              }
+            }
           }
         }
 

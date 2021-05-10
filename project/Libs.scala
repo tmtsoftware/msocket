@@ -6,20 +6,20 @@ object Libs {
   // 1.0.0-M1 does not work with Scala.js js yet
   val `scala-async` = "org.scala-lang.modules" %% "scala-async" % "0.10.0"
 
-  val `akka-stream`              = "com.typesafe.akka" %% "akka-stream"              % "2.6.13"
-  val `akka-actor-typed`         = "com.typesafe.akka" %% "akka-actor-typed"         % "2.6.13"
-  val `akka-actor-testkit-typed` = "com.typesafe.akka" %% "akka-actor-testkit-typed" % "2.6.13"
-  val `akka-stream-testkit`      = "com.typesafe.akka" %% "akka-stream-testkit"      % "2.6.13"
+  val `akka-stream`              = "com.typesafe.akka" %% "akka-stream"              % "2.6.14"
+  val `akka-actor-typed`         = "com.typesafe.akka" %% "akka-actor-typed"         % "2.6.14"
+  val `akka-actor-testkit-typed` = "com.typesafe.akka" %% "akka-actor-testkit-typed" % "2.6.14"
+  val `akka-stream-testkit`      = "com.typesafe.akka" %% "akka-stream-testkit"      % "2.6.14"
 
   val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % "10.2.4"
   val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % "10.2.4"
 
-  val `borer-core`        = dep("io.bullet" %%% "borer-core" % "1.6.3")
-  val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "1.6.3")
-  val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "1.6.3"
+  val `borer-core`        = dep("io.bullet" %%% "borer-core" % "1.7.2")
+  val `borer-derivation`  = dep("io.bullet" %%% "borer-derivation" % "1.7.2")
+  val `borer-compat-akka` = "io.bullet" %% "borer-compat-akka" % "1.7.2"
 
   val `akka-http-cors` = "ch.megard"         %% "akka-http-cors" % "1.1.1"
-  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.7")
+  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.8")
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.2.0"
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "1.1.0")
 

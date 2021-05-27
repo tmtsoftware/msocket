@@ -10,7 +10,7 @@ import io.bullet.borer.Encoder
 import msocket.api.models.{ErrorType, ServiceError}
 import msocket.api.{ContentType, ErrorProtocol}
 import msocket.http.post.ClientHttpCodecs
-import msocket.http.post.headers.{AppNameHeader, ErrorTypeHeader}
+import msocket.http.post.headers.{AppNameHeader, ErrorTypeHeader, UserNameHeader}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
@@ -19,7 +19,8 @@ class HttpUtils[Req: Encoder](
     val clientContentType: ContentType,
     uri: String,
     tokenFactory: () => Option[String],
-    appName: Option[String] = None
+    appName: Option[String] = None,
+    username: Option[String] = None
 )(implicit
     actorSystem: ActorSystem[_],
     ep: ErrorProtocol[Req]
@@ -30,12 +31,13 @@ class HttpUtils[Req: Encoder](
   def getResponse(request: Req): Future[HttpResponse] = {
     val authHeader    = tokenFactory().map(t => Authorization(OAuth2BearerToken(t)))
     val appNameHeader = appName.map(name => AppNameHeader(name))
+    val usernameHeader = username.map(name => UserNameHeader(name))
     Marshal(request).to[RequestEntity].flatMap { requestEntity =>
       val httpRequest = HttpRequest(
         HttpMethods.POST,
         uri = uri,
         entity = requestEntity,
-        headers = authHeader.toList ++ appNameHeader
+        headers = authHeader.toList ++ appNameHeader ++ usernameHeader
       )
       handleRequest(httpRequest)
     }

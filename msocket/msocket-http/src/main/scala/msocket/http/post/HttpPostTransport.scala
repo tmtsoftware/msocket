@@ -19,7 +19,8 @@ class HttpPostTransport[Req: Encoder](
     uri: String,
     contentType: ContentType,
     tokenFactory: () => Option[String],
-    appName: Option[String] = None
+    appName: Option[String] = None,
+    username: Option[String] = None
 )(implicit
     actorSystem: ActorSystem[_],
     ep: ErrorProtocol[Req]
@@ -29,7 +30,7 @@ class HttpPostTransport[Req: Encoder](
   override def clientContentType: ContentType = contentType
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
-  val httpUtils                     = new HttpUtils[Req](contentType, uri, tokenFactory, appName)
+  val httpUtils                     = new HttpUtils[Req](contentType, uri, tokenFactory, appName, username)
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
     httpUtils.getResponse(request).flatMap(Unmarshal(_).to[Res])

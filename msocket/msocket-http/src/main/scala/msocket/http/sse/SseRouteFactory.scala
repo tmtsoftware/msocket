@@ -8,7 +8,7 @@ import msocket.api.ContentEncoding.JsonText
 import msocket.api.ErrorProtocol
 import msocket.http.RouteFactory
 import msocket.http.post.PostDirectives
-import msocket.http.post.headers.AppNameHeader
+import msocket.http.post.headers.{AppNameHeader, UserNameHeader}
 import msocket.jvm.metrics.{LabelExtractor, MetricCollector}
 import msocket.jvm.stream.StreamRequestHandler
 import msocket.security.AccessControllerFactory
@@ -33,12 +33,14 @@ class SseRouteFactory[Req: Decoder: ErrorProtocol: LabelExtractor](
     post {
       path(endpoint) {
         optionalHeaderValueByName(AppNameHeader.name) { appName =>
-          withExceptionHandler {
-            entity(as[String]) { request =>
-              val req = JsonText.decode[Req](request)
-              extractClientIP { clientIp =>
-                val collector = new MetricCollector(metricsEnabled, req, clientIp.toString(), appName, Some(perMsgCounter), Some(gauge))
-                complete(sseResponseEncoder.encodeStream(streamRequestHandler.handle(req), collector))
+          optionalHeaderValueByName(UserNameHeader.name) { username =>
+            withExceptionHandler {
+              entity(as[String]) { request =>
+                val req = JsonText.decode[Req](request)
+                extractClientIP { clientIp =>
+                  val collector = new MetricCollector(metricsEnabled, req, clientIp.toString(), appName, username, Some(perMsgCounter), Some(gauge))
+                  complete(sseResponseEncoder.encodeStream(streamRequestHandler.handle(req), collector))
+                }
               }
             }
           }

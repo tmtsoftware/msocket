@@ -6,7 +6,7 @@ import io.bullet.borer.Decoder
 import msocket.api.ErrorProtocol
 import msocket.http.RouteFactory
 import msocket.http.post.PostDirectives.withAcceptHeader
-import msocket.http.post.headers.AppNameHeader
+import msocket.http.post.headers.{AppNameHeader, UserNameHeader}
 import msocket.jvm.metrics.{LabelExtractor, MetricCollector}
 import msocket.jvm.mono.MonoRequestHandler
 import msocket.security.AccessControllerFactory
@@ -33,11 +33,13 @@ class PostRouteFactory2[Req: Decoder: ErrorProtocol: LabelExtractor](
         withAcceptHeader {
           withExceptionHandler {
             optionalHeaderValueByName(AppNameHeader.name) { appName =>
-              extractClientIP { clientIp =>
-                entity(as[Req]) { req =>
-                  val collector = new MetricCollector(metricsEnabled, req, clientIp.toString(), appName, Some(counter), None)
-                  val routeF    = responseEncoder.encodeMono(requestHandler.handle(req), collector)
-                  onSuccess(routeF)(identity)
+              optionalHeaderValueByName(UserNameHeader.name) { username =>
+                extractClientIP { clientIp =>
+                  entity(as[Req]) { req =>
+                    val collector = new MetricCollector(metricsEnabled, req, clientIp.toString(), appName, username, Some(counter), None)
+                    val routeF    = responseEncoder.encodeMono(requestHandler.handle(req), collector)
+                    onSuccess(routeF)(identity)
+                  }
                 }
               }
             }

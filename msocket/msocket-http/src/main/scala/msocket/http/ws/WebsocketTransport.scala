@@ -7,12 +7,12 @@ import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest
 import akka.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
-import msocket.jvm.SourceExtension.RichSource
 import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.http.CborByteString
-import msocket.http.post.headers.AppNameHeader
-import WebsocketExtensions.WebsocketEncoding
+import msocket.http.post.headers.{AppNameHeader, UserNameHeader}
+import msocket.http.ws.WebsocketExtensions.WebsocketEncoding
 import msocket.jvm.JvmTransport
+import msocket.jvm.SourceExtension.RichSource
 
 import scala.concurrent.duration.DurationLong
 import scala.concurrent.{ExecutionContext, Future}
@@ -21,7 +21,8 @@ class WebsocketTransport[Req: Encoder: ErrorProtocol](
     uri: String,
     contentType: ContentType,
     tokenFactory: () => Option[String] = () => None,
-    appName: Option[String] = None
+    appName: Option[String] = None,
+    username: Option[String] = None
 )(implicit actorSystem: ActorSystem[_])
     extends JvmTransport[Req] {
 
@@ -29,8 +30,9 @@ class WebsocketTransport[Req: Encoder: ErrorProtocol](
 
   def setup(): WebsocketTransportSetup = {
     val appNameParam  = appName.map(name => AppNameHeader.name -> name)
+    val userNameParam = username.map(name => UserNameHeader.name -> name)
     val tokenParam    = tokenFactory().map(token => Authorization.name -> token)
-    val params        = (appNameParam ++ tokenParam).toMap
+    val params        = (userNameParam ++ appNameParam ++ tokenParam).toMap
     val uriWithParams = Uri(uri).withQuery(Uri.Query(params))
     new WebsocketTransportSetup(WebSocketRequest(uriWithParams))
   }

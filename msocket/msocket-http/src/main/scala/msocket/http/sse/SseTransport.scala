@@ -21,7 +21,8 @@ class SseTransport[Req: Encoder: ErrorProtocol](
     uri: String,
     contentType: ContentType,
     tokenFactory: () => Option[String],
-    appName: Option[String] = None
+    appName: Option[String] = None,
+    username: Option[String] = None
 )(implicit actorSystem: ActorSystem[_])
     extends JvmTransport[Req] {
 
@@ -29,7 +30,7 @@ class SseTransport[Req: Encoder: ErrorProtocol](
   implicit val system: actor.ActorSystem          = actorSystem.toClassic
   private implicit val materializer: Materializer = Materializer(actorSystem)
 
-  val httpUtils = new HttpUtils[Req](contentType, uri, tokenFactory, appName)
+  val httpUtils = new HttpUtils[Req](contentType, uri, tokenFactory, appName, username)
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
     Future.failed(new RuntimeException("requestResponse protocol without timeout is not supported for this transport"))

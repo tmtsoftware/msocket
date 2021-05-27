@@ -11,6 +11,7 @@ class MetricCollector[Req: LabelExtractor](
     val request: Req,
     val clientIp: String,
     val appName: Option[String],
+    val username: Option[String],
     _counter: => Option[Counter],
     _gauge: => Option[Gauge]
 )(implicit ec: ExecutionContext) {
@@ -21,7 +22,8 @@ class MetricCollector[Req: LabelExtractor](
     val labelMap = LabelExtractor[Req].extract(request) ++ Map(
       MsgLabel         -> LabelExtractor.createLabel(request),
       HostAddressLabel -> clientIp,
-      AppNameLabel     -> appName.getOrElse("unknown")
+      AppNameLabel     -> appName.getOrElse("unknown"),
+      UsernameLabel    -> username.getOrElse("unknown")
     )
     LabelExtractor[Req].allLabelNames.map(name => labelMap.getOrElse(name, ""))
   }
@@ -54,5 +56,6 @@ object MetricCollector {
   val MsgLabel         = "msg"
   val HostAddressLabel = "hostname"
   val AppNameLabel     = "app_name"
-  val DefaultLabels    = List(MsgLabel, HostAddressLabel, AppNameLabel)
+  val UsernameLabel    = "username"
+  val DefaultLabels    = List(MsgLabel, HostAddressLabel, AppNameLabel, UsernameLabel)
 }

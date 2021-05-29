@@ -38,7 +38,7 @@ class RSocketImpl[Req: Decoder: ErrorProtocol: LabelExtractor, StreamReq: Decode
   override def requestResponse(payload: Payload): Mono[Payload] = {
     val payloadF = Future(contentType.request[Req](payload))
       .flatMap { req =>
-        val collector = new MetricCollector(metricsEnabled, req, "TODO", Some("TODO"), Some(monoCounter), None)
+        val collector = new MetricCollector(metricsEnabled, req, "TODO", Some("TODO"), Some("TODO"), Some(monoCounter), None)
         monoResponseEncoder.encodeMono(monoRequestHandler.handle(req), collector)
       }
       .recover(monoResponseEncoder.errorEncoder)
@@ -49,7 +49,8 @@ class RSocketImpl[Req: Decoder: ErrorProtocol: LabelExtractor, StreamReq: Decode
     val value = Source
       .lazySingle(() => contentType.request[StreamReq](payload))
       .flatMapConcat { req =>
-        val collector = new MetricCollector[StreamReq](metricsEnabled, req, "TODO", Some("TODO"), Some(perMsgCounter), Some(streamGauge))
+        val collector =
+          new MetricCollector[StreamReq](metricsEnabled, req, "TODO", Some("TODO"), Some("TODO"), Some(perMsgCounter), Some(streamGauge))
         streamResponseEncoder.encodeStream(streamRequestHandler.handle(req), collector)
       }
       .recover(streamResponseEncoder.errorEncoder)

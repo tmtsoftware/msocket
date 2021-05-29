@@ -29,8 +29,8 @@ class HttpUtils[Req: Encoder](
   import actorSystem.executionContext
 
   def getResponse(request: Req): Future[HttpResponse] = {
-    val authHeader    = tokenFactory().map(t => Authorization(OAuth2BearerToken(t)))
-    val appNameHeader = appName.map(name => AppNameHeader(name))
+    val authHeader     = tokenFactory().map(t => Authorization(OAuth2BearerToken(t)))
+    val appNameHeader  = appName.map(name => AppNameHeader(name))
     val usernameHeader = username.map(name => UserNameHeader(name))
     Marshal(request).to[RequestEntity].flatMap { requestEntity =>
       val httpRequest = HttpRequest(

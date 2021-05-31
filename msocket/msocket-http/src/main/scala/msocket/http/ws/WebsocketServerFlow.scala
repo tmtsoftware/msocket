@@ -40,19 +40,19 @@ class WebsocketServerFlow[Req: Decoder: ErrorProtocol: LabelExtractor](
     Source
       .lazySingle(() => contentEncoding.decode[Req](element))
       .flatMapConcat(req => wsResponseEncoder.encodeStream(streamRequestHandler.handle(req), collectorFactory(req)))
-      .recover(wsResponseEncoder.errorEncoder)
       .via(cleanup)
+      .recover(wsResponseEncoder.errorEncoder)
   }
 
-  private lazy val sharedKillSwitch = KillSwitches.shared("my-kill-switch")
+  private lazy val cleanupSwitch = KillSwitches.shared("websocket-cleanup-switch")
 
   private def cleanup[T]: Flow[T, T, NotUsed] = Flow[T]
-    .via(sharedKillSwitch.flow)
+    .via(cleanupSwitch.flow)
     .watchTermination() { case (mat, doneF) =>
       import actorSystem.executionContext
       doneF.onComplete {
-        case Success(_)  => sharedKillSwitch.shutdown()
-        case Failure(ex) => sharedKillSwitch.abort(ex)
+        case Success(_)  => cleanupSwitch.shutdown()
+        case Failure(ex) => cleanupSwitch.abort(ex)
       }
       mat
     }

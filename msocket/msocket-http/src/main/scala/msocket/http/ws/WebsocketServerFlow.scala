@@ -3,6 +3,7 @@ package msocket.http.ws
 import akka.NotUsed
 import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
+import akka.stream.KillSwitches
 import akka.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
@@ -13,6 +14,7 @@ import msocket.jvm.stream.StreamRequestHandler
 import msocket.security.AccessController
 
 import scala.concurrent.duration.DurationLong
+import scala.util.{Failure, Success}
 
 class WebsocketServerFlow[Req: Decoder: ErrorProtocol: LabelExtractor](
     streamRequestHandler: StreamRequestHandler[Req],
@@ -22,7 +24,7 @@ class WebsocketServerFlow[Req: Decoder: ErrorProtocol: LabelExtractor](
 
   val flow: Flow[Message, Message, NotUsed] = {
     Flow[Message]
-      .take(1)
+      .via(cleanup)
       .mapAsync(1) {
         case msg: TextMessage   => msg.toStrict(100.millis)
         case msg: BinaryMessage => msg.toStrict(100.millis)
@@ -39,6 +41,19 @@ class WebsocketServerFlow[Req: Decoder: ErrorProtocol: LabelExtractor](
       .lazySingle(() => contentEncoding.decode[Req](element))
       .flatMapConcat(req => wsResponseEncoder.encodeStream(streamRequestHandler.handle(req), collectorFactory(req)))
       .recover(wsResponseEncoder.errorEncoder)
+      .via(cleanup)
   }
 
+  private lazy val sharedKillSwitch = KillSwitches.shared("my-kill-switch")
+
+  private def cleanup[T]: Flow[T, T, NotUsed] = Flow[T]
+    .via(sharedKillSwitch.flow)
+    .watchTermination() { case (mat, doneF) =>
+      import actorSystem.executionContext
+      doneF.onComplete {
+        case Success(_)  => sharedKillSwitch.shutdown()
+        case Failure(ex) => sharedKillSwitch.abort(ex)
+      }
+      mat
+    }
 }

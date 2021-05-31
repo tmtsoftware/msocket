@@ -48,7 +48,6 @@ class WebsocketTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType
 
     () => {
       webSocket.close()
-      observer.onCompleted()
     }
   }
 

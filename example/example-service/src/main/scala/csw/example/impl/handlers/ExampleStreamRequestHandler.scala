@@ -13,7 +13,7 @@ import scala.concurrent.Future
 class ExampleStreamRequestHandler(exampleApi: ExampleApi) extends StreamRequestHandler[ExampleStreamRequest] {
   override def handle(message: ExampleStreamRequest): Future[StreamResponse] =
     message match {
-      case Square(number)          => future(exampleApi.square(number))
+      case Square(number)          => response(exampleApi.square(number))
       case HelloStream(name)       => stream(exampleApi.helloStream(name))
       case GetNumbers(divisibleBy) => sStream(AuthorizedPolicy("ESW-User"))(_ => exampleApi.getNumbers(divisibleBy))
       case RandomBagStream         => stream(exampleApi.randomBagStream())

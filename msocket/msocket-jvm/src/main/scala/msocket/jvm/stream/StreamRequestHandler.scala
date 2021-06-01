@@ -10,10 +10,10 @@ import scala.concurrent.Future
 trait StreamRequestHandler[Req] {
   def handle(request: Req): Future[StreamResponse]
 
-  protected def future[Res: Encoder](result: Future[Res]): Future[StreamResponse] =
+  protected def response[Res: Encoder](result: Future[Res]): Future[StreamResponse] =
     stream(Source.future(result))
 
-  protected def sFuture[Res: Encoder](policy: AuthorizationPolicy)(resultFactory: AccessToken => Future[Res]): Future[StreamResponse] =
+  protected def sResponse[Res: Encoder](policy: AuthorizationPolicy)(resultFactory: AccessToken => Future[Res]): Future[StreamResponse] =
     sStream(policy)(accessToken => Source.future(resultFactory(accessToken)))
 
   protected def stream[Res: Encoder](stream: Source[Res, Any]): Future[StreamResponse] =

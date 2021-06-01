@@ -9,9 +9,9 @@ import scala.concurrent.Future
 trait MonoRequestHandler[Req] {
   def handle(request: Req): Future[MonoResponse]
 
-  protected def future[Res: Encoder](result: Future[Res]): Future[MonoResponse] =
+  protected def response[Res: Encoder](result: Future[Res]): Future[MonoResponse] =
     Future.successful(MonoResponse.from(_ => result, None))
 
-  protected def sFuture[Res: Encoder](policy: AuthorizationPolicy)(resultFactory: AccessToken => Future[Res]): Future[MonoResponse] =
+  protected def sResponse[Res: Encoder](policy: AuthorizationPolicy)(resultFactory: AccessToken => Future[Res]): Future[MonoResponse] =
     Future.successful(MonoResponse.from(resultFactory, Some(policy)))
 }

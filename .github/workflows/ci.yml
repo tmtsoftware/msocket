@@ -1,7 +1,7 @@
 name: CI
 on:
   pull_request:
-    branches: [master]
+    branches: [ master ]
   push:
     branches:
       - master
@@ -19,3 +19,12 @@ jobs:
         run: sbt clean test:compile
       - name: Run tests
         run: sbt example-client-jvm-test/test msocket-http/test example-server/test
+
+      - name: Notify slack
+        if: always()
+        continue-on-error: true
+        uses: kpritam/slack-job-status-action@v1
+        with:
+          job-status: ${{ job.status }}
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel: ci-dev

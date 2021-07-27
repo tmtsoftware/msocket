@@ -36,11 +36,9 @@ class PostStreamRouteFactory[Req: Decoder: ErrorProtocol: LabelExtractor](
             withAcceptHeader {
               withExceptionHandler {
                 entity(as[Req]) { req =>
-                  extractClientIP { clientIp =>
-                    val collector =
-                      new MetricCollector(metricsEnabled, req, clientIp.toString(), appName, username, Some(perMsgCounter), Some(gauge))
-                    complete(streamResponseEncoder.encodeStream(streamRequestHandler.handle(req), collector))
-                  }
+                  val collector =
+                    new MetricCollector(metricsEnabled, req, appName, username, Some(perMsgCounter), Some(gauge))
+                  complete(streamResponseEncoder.encodeStream(streamRequestHandler.handle(req), collector))
                 }
               }
             }

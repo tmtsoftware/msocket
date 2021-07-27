@@ -28,11 +28,9 @@ class PostRouteFactory[Req: Decoder: ErrorProtocol: LabelExtractor](endpoint: St
             withAcceptHeader {
               withExceptionHandler {
                 entity(as[Req]) { req =>
-                  extractClientIP { clientIp =>
-                    val collector = new MetricCollector(metricsEnabled, req, clientIp.toString(), appName, username, Some(counter), None)
-                    collector.record()
-                    postHandler.handle(req)
-                  }
+                  val collector = new MetricCollector(metricsEnabled, req, appName, username, Some(counter), None)
+                  collector.record()
+                  postHandler.handle(req)
                 }
               }
             }

@@ -15,12 +15,12 @@ inThisBuild(
       "-feature",
       "-unchecked",
       "-deprecation",
+      "-Xasync",
       "-Wconf:any:warning-verbose",
       "-Wdead-code",
       "-Xlint:_,-missing-interpolator",
       "-Xsource:3",
       "-Xcheckinit"
-//      "-Xasync" does not work with Scala.js js yet
     )
   )
 )

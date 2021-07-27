@@ -11,6 +11,6 @@ final case class UserNameHeader(value: String) extends ModeledCustomHeader[UserN
 }
 
 object UserNameHeader extends ModeledCustomHeaderCompanion[UserNameHeader] {
-  override def name: String                              = "Username"
+  override def name: String                              = "X-TMT-Username"
   override def parse(value: String): Try[UserNameHeader] = Try(new UserNameHeader(value))
 }

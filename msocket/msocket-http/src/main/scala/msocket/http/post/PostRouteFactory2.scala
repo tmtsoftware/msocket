@@ -34,12 +34,10 @@ class PostRouteFactory2[Req: Decoder: ErrorProtocol: LabelExtractor](
           withExceptionHandler {
             optionalHeaderValueByName(AppNameHeader.name) { appName =>
               optionalHeaderValueByName(UserNameHeader.name) { username =>
-                extractClientIP { clientIp =>
-                  entity(as[Req]) { req =>
-                    val collector = new MetricCollector(metricsEnabled, req, clientIp.toString(), appName, username, Some(counter), None)
-                    val routeF    = responseEncoder.encodeMono(requestHandler.handle(req), collector)
-                    onSuccess(routeF)(identity)
-                  }
+                entity(as[Req]) { req =>
+                  val collector = new MetricCollector(metricsEnabled, req, appName, username, Some(counter), None)
+                  val routeF    = responseEncoder.encodeMono(requestHandler.handle(req), collector)
+                  onSuccess(routeF)(identity)
                 }
               }
             }

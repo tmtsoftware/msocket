@@ -8,7 +8,6 @@ import io.bullet.borer.Decoder
 import msocket.api.ErrorProtocol
 import msocket.http.RouteFactory
 import msocket.http.post.ServerHttpCodecs
-import msocket.http.post.headers.{AppNameHeader, UserNameHeader}
 import msocket.jvm.metrics.{LabelExtractor, MetricCollector}
 import msocket.jvm.stream.StreamRequestHandler
 import msocket.security.AccessControllerFactory
@@ -23,6 +22,8 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: LabelExtractor](
   import actorSystem.executionContext
 
   private val accessControllerFactory = AccessControllerFactory.noop
+  private val appNameParam            = "appName"
+  private val usernameParam           = "username"
 
   def make(metricsEnabled: Boolean = false): Route = {
     lazy val gauge         = WebsocketMetrics.gauge()
@@ -30,13 +31,11 @@ class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: LabelExtractor](
 
     get {
       path(endpoint) {
-        parameters(AppNameHeader.name.optional, UserNameHeader.name.optional, Authorization.name.optional) { (appName, username, token) =>
+        parameters(appNameParam.optional, usernameParam.optional, Authorization.name.optional) { (appName, username, token) =>
           val accessController = accessControllerFactory.make(token)
-          extractClientIP { clientIp =>
-            val collectorFactory =
-              new MetricCollector[Req](metricsEnabled, _, clientIp.toString(), appName, username, Some(perMsgCounter), Some(gauge))
-            handleWebSocketMessages(new WebsocketServerFlow(streamRequestHandler, collectorFactory, accessController).flow)
-          }
+          val collectorFactory =
+            new MetricCollector[Req](metricsEnabled, _, appName, username, Some(perMsgCounter), Some(gauge))
+          handleWebSocketMessages(new WebsocketServerFlow(streamRequestHandler, collectorFactory, accessController).flow)
         }
       }
     }

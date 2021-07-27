@@ -36,12 +36,10 @@ class SseRouteFactory[Req: Decoder: ErrorProtocol: LabelExtractor](
           optionalHeaderValueByName(UserNameHeader.name) { username =>
             withExceptionHandler {
               entity(as[String]) { request =>
-                val req = JsonText.decode[Req](request)
-                extractClientIP { clientIp =>
-                  val collector =
-                    new MetricCollector(metricsEnabled, req, clientIp.toString(), appName, username, Some(perMsgCounter), Some(gauge))
-                  complete(sseResponseEncoder.encodeStream(streamRequestHandler.handle(req), collector))
-                }
+                val req       = JsonText.decode[Req](request)
+                val collector =
+                  new MetricCollector(metricsEnabled, req, appName, username, Some(perMsgCounter), Some(gauge))
+                complete(sseResponseEncoder.encodeStream(streamRequestHandler.handle(req), collector))
               }
             }
           }

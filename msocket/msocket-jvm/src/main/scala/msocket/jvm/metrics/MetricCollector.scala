@@ -9,7 +9,6 @@ import scala.concurrent.ExecutionContext
 class MetricCollector[Req: LabelExtractor](
     val enabled: Boolean,
     val request: Req,
-    val clientIp: String,
     val appName: Option[String],
     val username: Option[String],
     _counter: => Option[Counter],
@@ -20,10 +19,9 @@ class MetricCollector[Req: LabelExtractor](
 
   private lazy val labels: Seq[String] = {
     val labelMap = LabelExtractor[Req].extract(request) ++ Map(
-      MsgLabel         -> LabelExtractor.createLabel(request),
-      HostAddressLabel -> clientIp,
-      AppNameLabel     -> appName.getOrElse("unknown"),
-      UsernameLabel    -> username.getOrElse("unknown")
+      MsgLabel      -> LabelExtractor.createLabel(request),
+      AppNameLabel  -> appName.getOrElse("unknown"),
+      UsernameLabel -> username.getOrElse("unknown")
     )
     LabelExtractor[Req].allLabelNames.map(name => labelMap.getOrElse(name, ""))
   }
@@ -54,8 +52,7 @@ class MetricCollector[Req: LabelExtractor](
 
 object MetricCollector {
   val MsgLabel         = "msg"
-  val HostAddressLabel = "hostname"
   val AppNameLabel     = "app_name"
   val UsernameLabel    = "username"
-  val DefaultLabels    = List(MsgLabel, HostAddressLabel, AppNameLabel, UsernameLabel)
+  val DefaultLabels    = List(MsgLabel, AppNameLabel, UsernameLabel)
 }

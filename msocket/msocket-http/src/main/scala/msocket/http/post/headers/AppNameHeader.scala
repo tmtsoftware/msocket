@@ -11,6 +11,6 @@ final case class AppNameHeader(value: String) extends ModeledCustomHeader[AppNam
 }
 
 object AppNameHeader extends ModeledCustomHeaderCompanion[AppNameHeader] {
-  override def name: String                             = "App-Name"
+  override def name: String                             = "X-TMT-App-Name"
   override def parse(value: String): Try[AppNameHeader] = Try(new AppNameHeader(value))
 }

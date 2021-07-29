@@ -38,7 +38,7 @@ class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType:
 
   def parseJson[Res: Decoder: Encoder](promise: Promise[Done]): TransformStream[String, FetchEventJs] = {
     new TransformStream(
-      Transformer[String, FetchEventJs]()
+      Transformer[String, FetchEventJs]((), ())
         .setTransform { (chunk, controller) =>
           if (chunk.nonEmpty && chunk != "\n") {
             val fetchEventJs = FetchEventJs(JSON.parse(chunk))
@@ -51,7 +51,7 @@ class HttpPostTransportJs[Req: Encoder: ErrorProtocol](uri: String, contentType:
 
   def sinkOf[Res: Decoder: Encoder](observer: Observer[Res]): WriteableStream[FetchEventJs] = {
     new WritableStream[FetchEventJs](
-      UnderlyingSink[FetchEventJs]()
+      UnderlyingSink[FetchEventJs](())
         .setWrite { (fetchEventJs, controller) =>
           val jsonString = fetchEventJs.data
           try {

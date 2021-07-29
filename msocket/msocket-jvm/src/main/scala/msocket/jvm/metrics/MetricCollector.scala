@@ -51,8 +51,8 @@ class MetricCollector[Req: LabelExtractor](
 }
 
 object MetricCollector {
-  val MsgLabel         = "msg"
-  val AppNameLabel     = "app_name"
-  val UsernameLabel    = "username"
-  val DefaultLabels    = List(MsgLabel, AppNameLabel, UsernameLabel)
+  val MsgLabel      = "msg"
+  val AppNameLabel  = "app_name"
+  val UsernameLabel = "username"
+  val DefaultLabels = List(MsgLabel, AppNameLabel, UsernameLabel)
 }

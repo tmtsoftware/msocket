@@ -28,7 +28,7 @@ object Libs {
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.2.0"
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "1.1.0")
 
-  val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "902393a")
+  val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "8dc3e04")
 
   private val rsocketVersion    = "1.1.1"
   val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % rsocketVersion

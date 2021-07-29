@@ -36,7 +36,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
         lifetime = 1800000,
         metadataMimeType = contentEncoding.contentType.mimeType
       ),
-      transport = new RSocketWebSocketClient(ClientOptions(url = uri), encoders)
+      transport = new RSocketWebSocketClient(ClientOptions(url = uri), encoders.asInstanceOf[Encoders[js.Any]])
     )
   )
 
@@ -101,7 +101,7 @@ class RSocketTransportJs[Req: Encoder: ErrorProtocol, En](uri: String, contentEn
           val headers = contentEncoding.decode[ResponseHeaders](payload.metadata.get)
           Try(contentEncoding.decodeFull(payload.data.get, headers.errorType))
         }
-        .subscribe(PartialOf(subscriber))
+        .subscribe(PartialOf(subscriber.asInstanceOf[js.Any]))
     }
 
     () =>

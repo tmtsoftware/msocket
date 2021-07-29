@@ -8,7 +8,7 @@ object JsStreamsExperiment {
     var buffer = ""
 
     new TransformStream(
-      Transformer[String, String]()
+      Transformer[String, String]((), ())
         .setTransform { (chunk, controller) =>
           buffer += chunk
           val parts = buffer.split(splitOn)

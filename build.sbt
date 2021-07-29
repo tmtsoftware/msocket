@@ -191,15 +191,12 @@ lazy val `example-client-js` = project
       `scala-async`
     ),
     Test / test := {
-//      (`example-server` / Compile / compile).value
 //      (`example-server` / reStart).toTask("").value
 //      (Test / reStartSnowpackServer).value
       (Test / test).value
 //      (Test / testHtml).value
-//      ()
     },
     Compile / run := {
-//      (`example-server` / Compile / compile).value
 //      (`example-server` / reStart).toTask("").value
 //      (Compile / reStartSnowpackServer).value
       (Compile / run).toTask("").value

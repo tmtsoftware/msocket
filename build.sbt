@@ -4,6 +4,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 inThisBuild(
   Seq(
     scalaVersion := "2.13.6",
+    crossScalaVersions := List("2.12.10", "2.13.6"),
     version := "0.1.0-SNAPSHOT",
     organization := "com.github.tmtsoftware.msocket",
     organizationName := "ThoughtWorks",

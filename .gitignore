@@ -1,6 +1,9 @@
 .bsp
 ts
 *.log
+/project/.boot/
+/project/.ivy/
+/project/.sbtboot/
 project/project/target
 project/target
 target

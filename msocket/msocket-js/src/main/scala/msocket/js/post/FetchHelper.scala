@@ -29,11 +29,10 @@ object FetchHelper {
       response.status match {
         case 200 => Future.successful(response)
         case 500 =>
-          val maybeErrorType = response.headers.get("Error-Type").toOption.map(ErrorType.from)
+          val maybeErrorType = ErrorType.from(response.headers.get("Error-Type"))
           val errorF         = maybeErrorType match {
-            case Some(ErrorType.DomainError) => contentType.response[ep.E, Req](response)
-            case Some(_)                     => contentType.response[ServiceError, Req](response)
-            case None                        => transportError(response)
+            case ErrorType.DomainError => contentType.response[ep.E, Req](response)
+            case _                     => contentType.response[ServiceError, Req](response)
           }
           errorF.map(throw _)
         case _   => transportError(response).map(throw _)

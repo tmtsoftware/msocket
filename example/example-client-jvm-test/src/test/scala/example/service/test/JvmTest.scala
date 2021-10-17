@@ -32,8 +32,8 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
 
   import wiring._
 
-  private val httpPort    = 5001
-  private val rSocketPort = 7001
+  private val httpPort    = 5002
+  private val rSocketPort = 7002
 
   Await.result(exampleServer.start("0.0.0.0", httpPort), 10.seconds)
   Await.result(rSocketServer.start("0.0.0.0", rSocketPort), 10.seconds)

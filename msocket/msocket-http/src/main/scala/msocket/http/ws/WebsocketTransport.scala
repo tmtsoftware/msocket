@@ -1,6 +1,7 @@
 package msocket.http.ws
 
 import akka.actor.typed.ActorSystem
+import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.Uri
 import akka.http.scaladsl.model.headers.Authorization
 import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
@@ -28,13 +29,13 @@ class WebsocketTransport[Req: Encoder: ErrorProtocol](
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
-  def setup(): WebsocketTransportSetup = {
+  def webSocketRequest(): WebSocketRequest = {
     val appNameParam  = appName.map(name => AppNameHeader.name -> name)
     val userNameParam = username.map(name => UserNameHeader.name -> name)
     val tokenParam    = tokenFactory().map(token => Authorization.name -> token)
     val params        = (userNameParam ++ appNameParam ++ tokenParam).toMap
     val uriWithParams = Uri(uri).withQuery(Uri.Query(params))
-    new WebsocketTransportSetup(WebSocketRequest(uriWithParams))
+    WebSocketRequest(uriWithParams)
   }
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
@@ -42,8 +43,10 @@ class WebsocketTransport[Req: Encoder: ErrorProtocol](
   }
 
   override def requestStream[Res: Decoder: Encoder](request: Req): Source[Res, Subscription] =
-    setup()
-      .request(contentType.strictMessage(request))
+    Source
+      .single(contentType.strictMessage(request))
+      .concat(Source.maybe)
+      .via(Http().webSocketClientFlow(webSocketRequest()))
       .mapAsync(16) {
         case msg: TextMessage   => msg.toStrict(100.millis).map(m => JsonText.decodeWithError[Res, Req](m.text))
         case msg: BinaryMessage => msg.toStrict(100.millis).map(m => CborByteString.decodeWithError[Res, Req](m.data))

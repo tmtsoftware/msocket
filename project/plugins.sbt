@@ -1,7 +1,7 @@
-addSbtPlugin("com.timushev.sbt"   % "sbt-updates"              % "0.5.3")
-addSbtPlugin("org.scalameta"      % "sbt-scalafmt"             % "2.4.2")
-addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
-addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "1.6.0")
+addSbtPlugin("com.timushev.sbt"   % "sbt-updates"              % "0.6.0")
+addSbtPlugin("org.scalameta"      % "sbt-scalafmt"             % "2.4.3")
+addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.1.0")
+addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "1.7.1")
 addSbtPlugin("io.spray"           % "sbt-revolver"             % "0.9.1")
 addSbtPlugin("com.timushev.sbt"   % "sbt-rewarn"               % "0.1.3")
 

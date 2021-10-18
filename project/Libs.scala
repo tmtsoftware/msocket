@@ -6,6 +6,8 @@ object Libs {
   // 1.0.0-M1 does not work with Scala.js js yet
   val `scala-async` = "org.scala-lang.modules" %% "scala-async" % "1.0.0"
 
+  val `scala-java8-compat` = "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.1"
+
   private val akkaVersion = "2.6.15"
 
   val `akka-stream`              = "com.typesafe.akka" %% "akka-stream"              % akkaVersion
@@ -28,7 +30,7 @@ object Libs {
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.2.0"
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "1.1.0")
 
-  val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "8dc3e04")
+  val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "0.1.0-SNAPSHOT"/*"8dc3e04"*/)
 
   private val rsocketVersion    = "1.1.1"
   val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % rsocketVersion

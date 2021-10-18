@@ -10,6 +10,7 @@ import msocket.http.post.headers.ErrorTypeHeader
 import msocket.jvm.mono.MonoResponseEncoder
 import msocket.security.AccessController
 
+import scala.collection.immutable.Seq
 import scala.concurrent.ExecutionContext
 
 class HttpResponseEncoder[Req: ErrorProtocol](val accessController: AccessController)(implicit ec: ExecutionContext)

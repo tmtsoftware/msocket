@@ -19,7 +19,8 @@ trait BasicCodecs {
   implicit lazy val doneCodec: Codec[Done] = Codec.bimap[String, Done](_ => "Done", _ => Done)
 
   implicit lazy val timeoutInSecondsCodec: Codec[Timeout] = {
-    @nowarn implicit val durationInSecondsCodec: Codec[FiniteDuration] =
+    /*@nowarn*/
+    implicit val durationInSecondsCodec: Codec[FiniteDuration] =
       Codec.bimap[Long, FiniteDuration](_.toSeconds, FiniteDuration(_, TimeUnit.SECONDS))
 
     CompactMapBasedCodecs.deriveCodec

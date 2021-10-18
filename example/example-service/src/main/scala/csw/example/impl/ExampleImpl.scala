@@ -71,9 +71,9 @@ class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
   private def randomize() = {
     val random = new Random()
     Bag(
-      red = random.between(1, 10),
-      green = random.between(1, 10),
-      blue = random.between(1, 10)
+      red = random.nextInt(9) + 1,   //#todo .between(1, 10),
+      green = random.nextInt(9) + 1, //#todo .between(1, 10),
+      blue = random.nextInt(9) + 1   //#todo .between(1, 10)
     )
   }
 }

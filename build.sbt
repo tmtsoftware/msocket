@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
   Seq(
-    scalaVersion := "2.13.6",
+    scalaVersion := "2.12.10",
     crossScalaVersions := List("2.12.10", "2.13.6"),
     version := "0.1.0-SNAPSHOT",
     organization := "com.github.tmtsoftware.msocket",
@@ -16,9 +16,9 @@ inThisBuild(
       "-feature",
       "-unchecked",
       "-deprecation",
-      "-Xasync",
-      "-Wconf:any:warning-verbose",
-      "-Wdead-code",
+      //"-Xasync",  #todo make work for cross compile
+      //"-Wconf:any:warning-verbose",
+      //"-Wdead-code",
       "-Xlint:_,-missing-interpolator",
       "-Xsource:3",
       "-Xcheckinit"
@@ -189,7 +189,8 @@ lazy val `example-client-js` = project
   .settings(
     libraryDependencies ++= Seq(
       scalatest.value % Test,
-      `scala-async`
+      `scala-async`,
+      `scala-java8-compat`
     ),
     Test / test := {
 //      (`example-server` / reStart).toTask("").value

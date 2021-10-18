@@ -12,7 +12,9 @@ import msocket.jvm.JvmTransport
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
-import scala.jdk.FutureConverters.CompletionStageOps
+//import scala.jdk._
+import scala.compat.java8._
+import FutureConverters.CompletionStageOps
 
 class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket, contentType: ContentType)(implicit actorSystem: ActorSystem[_])
     extends JvmTransport[Req] {
@@ -20,7 +22,7 @@ class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket, contentTyp
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
   override def requestResponse[Res: Decoder: Encoder](request: Req): Future[Res] = {
-    rSocket.requestResponse(contentType.payload(request, ResponseHeaders())).toFuture.asScala.map { payload =>
+    rSocket.requestResponse(contentType.payload(request, ResponseHeaders())).toFuture.toScala.map { payload =>
       contentType.response[Res, Req](payload)
     }
   }

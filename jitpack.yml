@@ -3,4 +3,4 @@ jdk:
 before_install:
   - wget https://repo1.maven.org/maven2/org/scala-sbt/sbt-launch/1.5.5/sbt-launch-1.5.5.jar
 install:
-  - echo $GIT_COMMIT
+  - echo $VERSION

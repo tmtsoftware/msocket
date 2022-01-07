@@ -1,15 +1,19 @@
 package experiments
 
 import akka.actor.typed.*
+import experiments.BehaviourExtensions.withSafeEc
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import SampleActor.*
 
 object SafeEcDemo {
-
   def main(args: Array[String]): Unit = {
-    import SampleActor.*
-    val demo = ActorSystem(safeBehavior, "demo")
+    val demo = ActorSystem(
+//      behavior(global),
+      withSafeEc(ec => behavior(ec)),
+      "demo"
+    )
 
     (1 to 100000).foreach { _ =>
       Future {

@@ -12,11 +12,7 @@ object SampleActor {
   case object IncrementViaCallback extends Msg
   case object GetTotal             extends Msg
 
-  def unsafeBehavior: Behavior[Msg] = Behaviors.setup(ctx => behavior(ctx.executionContext))
-
-  def safeBehavior: Behavior[Msg] = BehaviourExtensions.withSafeEc(ec => behavior(ec))
-
-  private def behavior(implicit ec: ExecutionContext): Behavior[Msg] = {
+  def behavior(implicit ec: ExecutionContext): Behavior[Msg] = {
     var total = 0
 
     Behaviors.receiveMessage {

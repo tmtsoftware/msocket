@@ -15,8 +15,8 @@ import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
 
 /**
- * This helper class can be extended to define custom SSE handler in the server which returns [[Source]] of [[ServerSentEvent]].
- * SseHandler takes a request type which will be bound to Domain specific error using ErrorProtocol.
+ * This helper class can be extended to define custom SSE handler in the server which returns [[Source]] of [[ServerSentEvent]]. SseHandler
+ * takes a request type which will be bound to Domain specific error using ErrorProtocol.
  */
 class SseStreamResponseEncoder[Req: ErrorProtocol](val accessController: AccessController)
     extends StreamResponseEncoder[Req, ServerSentEvent] {

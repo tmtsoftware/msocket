@@ -1,9 +1,8 @@
 package csw.example.api.protocol
 
 /**
- * Transport agnostic message protocol is defined as a Scala ADT
- * For each API method, there needs to be a matching message in this ADT
- * For example, Hello(name) is the message for hello(name) method in the API
+ * Transport agnostic message protocol is defined as a Scala ADT For each API method, there needs to be a matching message in this ADT For
+ * example, Hello(name) is the message for hello(name) method in the API
  */
 object ExampleProtocol {
   // these messages are used for requestResponse interaction model

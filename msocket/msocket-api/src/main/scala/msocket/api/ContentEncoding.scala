@@ -16,8 +16,8 @@ abstract class ContentEncoding[E](val contentType: ContentType) {
       case Some(_)                     => throw decode[ServiceError](input)
     }
   }
-  def decodeWithError[T: Decoder, S](input: E)(implicit ep: ErrorProtocol[S]): T = Try(decode[T](input)).getOrElse(throw decodeError(input))
-  def decodeError[S](input: E)(implicit ep: ErrorProtocol[S]): Throwable         = Try(decode[ep.E](input)).getOrElse(decode[ServiceError](input))
+  def decodeWithError[T: Decoder, S](input: E)(implicit ep: ErrorProtocol[S]): T                                  = Try(decode[T](input)).getOrElse(throw decodeError(input))
+  def decodeError[S](input: E)(implicit ep: ErrorProtocol[S]): Throwable                                          = Try(decode[ep.E](input)).getOrElse(decode[ServiceError](input))
 }
 
 object ContentEncoding {

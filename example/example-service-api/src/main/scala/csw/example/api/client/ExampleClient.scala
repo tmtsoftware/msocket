@@ -10,9 +10,8 @@ import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
 
 /**
- * Assuming that an appropriate transport instance is provided at the client-app site,
- * we can mechanically derive the client for the [[ExampleApi]] by delegating to correct
- * interaction models (e.g., requestResponse or requestStream). See the docs for [[Transport]]
+ * Assuming that an appropriate transport instance is provided at the client-app site, we can mechanically derive the client for the
+ * [[ExampleApi]] by delegating to correct interaction models (e.g., requestResponse or requestStream). See the docs for [[Transport]]
  */
 class ExampleClient(responseTransport: Transport[ExampleRequest], streamTransport: Transport[ExampleStreamRequest]) extends ExampleApi {
 

@@ -9,7 +9,7 @@ import msocket.jvm.stream.StreamResponseEncoder
 import msocket.security.AccessController
 
 /**
- * This helper class can be extended to define custom websocket handler in the server which returns [[Source]] of [[Message]].
+ * This helper class can be extended to define custom  websocket handler in the server which returns [[Source]] of [[Message]].
  * WebsocketHandler takes a request type which will be bound to Domain specific error using ErrorProtocol.
  */
 class WebsocketStreamResponseEncoder[Req: ErrorProtocol](contentType: ContentType, val accessController: AccessController)

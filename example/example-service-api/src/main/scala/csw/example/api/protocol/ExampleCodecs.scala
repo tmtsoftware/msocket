@@ -20,8 +20,9 @@ trait ExampleCodecs {
   implicit lazy val exampleErrorCodec: Codec[ExampleError] = MapBasedCodecs.deriveAllCodecs
 
   /**
-   * Bind error protocol to the message protocol This is required so that domain specific errors are correctly serialized without error
-   * types being known at compile time
+   * Bind error protocol to the message protocol
+   * This is required so that domain specific errors are correctly
+   * serialized without error types being known at compile time
    */
   implicit lazy val exampleRequestResponseErrorProtocol: ErrorProtocol[ExampleRequest]     =
     ErrorProtocol.bind[ExampleRequest, ExampleError]

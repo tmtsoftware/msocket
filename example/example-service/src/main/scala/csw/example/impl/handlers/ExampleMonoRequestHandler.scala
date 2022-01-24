@@ -8,8 +8,8 @@ import msocket.jvm.mono.{MonoRequestHandler, MonoResponse}
 import scala.concurrent.Future
 
 /**
- * Implements RSocketResponseHandler for all requestResponse messages in the protocol These handlers handle RSocket's requestResponse
- * interaction model and returns a [[Future]] of [[Payload]]
+ * Implements RSocketResponseHandler for all requestResponse messages in the protocol
+ * These handlers handle RSocket's requestResponse interaction model and returns a [[Future]] of [[Payload]]
  */
 class ExampleMonoRequestHandler(exampleApi: ExampleApi) extends MonoRequestHandler[ExampleRequest] {
 

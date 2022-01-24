@@ -7,9 +7,10 @@ import msocket.api.Subscription
 import scala.concurrent.Future
 
 /**
- * We begin by defining an interface that will be the contract between service and the client It has a mix of requestResponse methods (e.g.
- * hello) that return a [[Future]] and requestStream style methods (e.g. getNumbers) that returns a [[Source]] with Subscription as its
- * materialized value
+ * We begin by defining an interface that will be the contract between service and the client
+ * It has a mix of requestResponse methods (e.g. hello) that return a [[Future]]
+ * and requestStream style methods (e.g. getNumbers) that returns a [[Source]]
+ * with Subscription as its materialized value
  */
 trait ExampleApi {
   // these are requestResponse style APIs that are only supported by transports that have implicit timeouts

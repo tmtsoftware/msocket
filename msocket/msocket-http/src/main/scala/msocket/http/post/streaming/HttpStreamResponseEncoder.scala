@@ -14,8 +14,8 @@ import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
 
 /**
- * This helper class can be extended to define custom HTTP streaming source handler in the server. HttpStreamHandler takes a request type
- * which will be bound to Domain specific error using ErrorProtocol.
+ * This helper class can be extended to define custom HTTP streaming source handler in the server.
+ * HttpStreamHandler takes a request type which will be bound to Domain specific error using ErrorProtocol.
  */
 class HttpStreamResponseEncoder[Req: ErrorProtocol](val accessController: AccessController) extends StreamResponseEncoder[Req, FetchEvent] {
   override def encodeStream(streamResponseF: Future[StreamResponse], collector: MetricCollector[Req]): Source[FetchEvent, NotUsed] = {

@@ -20,13 +20,11 @@ object AuthorizationPolicy {
   implicit class AuthorizationPolicyOps(private val target: AuthorizationPolicy) extends AnyVal {
 
     /**
-     * Applies a new authorization policy in combination with previous policy. Passing of both policies is requried for authorization to
-     * succeed.
+     * Applies a new authorization policy in combination with previous policy.
+     * Passing of both policies is requried for authorization to succeed.
      *
-     * @param other
-     *   new Authorization policy
-     * @return
-     *   combined authorization policy
+     * @param other new Authorization policy
+     * @return combined authorization policy
      */
     def &(other: AuthorizationPolicy)(implicit ec: ExecutionContext): AuthorizationPolicy = { accessToken =>
       val leftF  = target.authorize(accessToken)
@@ -39,10 +37,8 @@ object AuthorizationPolicy {
      *
      * Authorization will succeed if any of the provided policy passes.
      *
-     * @param other
-     *   new Authorization policy
-     * @return
-     *   combined authorization policy
+     * @param other new Authorization policy
+     * @return combined authorization policy
      */
     def |(other: AuthorizationPolicy)(implicit ec: ExecutionContext): AuthorizationPolicy = { accessToken =>
       val leftF  = target.authorize(accessToken)

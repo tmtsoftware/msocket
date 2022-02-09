@@ -1,4 +1,6 @@
 import Libs._
+import org.openqa.selenium.chrome.ChromeOptions
+import org.scalajs.jsenv.selenium.SeleniumJSEnv
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
@@ -186,22 +188,30 @@ lazy val `example-client-jvm-test` = project
 
 lazy val `example-client-js` = project
   .in(file("example/example-client-js"))
-  .enablePlugins(ScalaJSPlugin, SnowpackPlugin)
+  .enablePlugins(ScalaJSPlugin)
   .dependsOn(`example-service-api`.js, `msocket-js`)
   .settings(
+    scalaJSUseMainModuleInitializer := true,
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule).withSourceMap(false) },
+    Test / jsEnv                    := {
+      new SeleniumJSEnv(
+        new ChromeOptions().setHeadless(true),
+        seleniumConfig(9091, crossTarget.value.getAbsolutePath)
+      )
+    },
     libraryDependencies ++= Seq(
       scalatest.value % Test,
-      `scala-async`
-    ),
-    Test / test   := {
-//      (`example-server` / reStart).toTask("").value
-//      (Test / reStartSnowpackServer).value
-      (Test / test).value
-//      (Test / testHtml).value
-    },
-    Compile / run := {
-//      (`example-server` / reStart).toTask("").value
-//      (Compile / reStartSnowpackServer).value
-      (Compile / run).toTask("").value
-    }
+      `scala-async`.value
+    )
   )
+
+def seleniumConfig(port: Int, base: String): SeleniumJSEnv.Config = {
+  import _root_.io.github.bonigarcia.wdm.WebDriverManager
+  //  WebDriverManager.chromedriver().setup()
+  val contentDirName = "selenium"
+  val webRoot        = s"http://localhost:$port/$contentDirName/"
+  val contentDir     = s"$base/$contentDirName"
+  SeleniumJSEnv
+    .Config()
+    .withMaterializeInServer(contentDir, webRoot)
+}

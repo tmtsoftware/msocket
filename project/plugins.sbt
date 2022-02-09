@@ -5,7 +5,9 @@ addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "1.8.0")
 addSbtPlugin("io.spray"           % "sbt-revolver"             % "0.9.1")
 addSbtPlugin("com.timushev.sbt"   % "sbt-rewarn"               % "0.1.3")
 
-libraryDependencies += "com.sun.activation" % "javax.activation" % "1.2.0"
+libraryDependencies += "com.sun.activation"   % "javax.activation"     % "1.2.0"
+libraryDependencies += "io.github.bonigarcia" % "webdrivermanager"     % "5.0.3"
+libraryDependencies += "org.scala-js"        %% "scalajs-env-selenium" % "1.1.1"
 
 scalacOptions ++= Seq(
   "-encoding",
@@ -17,7 +19,3 @@ scalacOptions ++= Seq(
   "-Ywarn-dead-code",
   "-Xfuture"
 )
-
-resolvers += "jitpack" at "https://jitpack.io"
-// this is a sbt-plugin but do not use addSbtPlugin because it is being resolved via jitpack
-libraryDependencies += "com.github.mushtaq.sbt-snowpack" % "sbt-snowpack" % "5bceb32"

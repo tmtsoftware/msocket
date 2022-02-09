@@ -16,7 +16,7 @@ object SampleActor {
     var total = 0
 
     Behaviors.receiveMessage {
-      case Increment =>
+      case Increment            =>
         total += 1
         Behaviors.same
       case IncrementViaCallback =>
@@ -24,7 +24,7 @@ object SampleActor {
           total += 1
         }
         Behaviors.same
-      case GetTotal =>
+      case GetTotal             =>
         println(total)
         Behaviors.same
     }

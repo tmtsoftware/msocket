@@ -3,7 +3,7 @@ import sbt.Def.{setting => dep}
 import sbt._
 
 object Libs {
-  val `scala-async` = "org.scala-lang.modules" %% "scala-async" % "1.0.1"
+  val `scala-async` = dep("org.scala-lang.modules" %%% "scala-async" % "1.0.1")
 
   private val akkaVersion = "2.6.18"
 

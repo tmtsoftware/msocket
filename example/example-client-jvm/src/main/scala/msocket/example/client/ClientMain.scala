@@ -20,11 +20,14 @@ object ClientMain extends ExampleCodecs {
     implicit lazy val system: ActorSystem[Nothing] = ActorSystem(Behaviors.empty, "demo")
     import system.executionContext
 
-    val PostEndpoint          = "http://localhost:5000/post-endpoint"
-    val PostStreamingEndpoint = "http://localhost:5000/post-streaming-endpoint"
-    val SseEndpoint           = "http://localhost:5000/sse-endpoint"
-    val WebsocketEndpoint     = "ws://localhost:5000/websocket-endpoint"
-    val RSocketEndpoint       = "ws://localhost:7000"
+    val httpPort    = 5002
+    val rSocketPort = 7002
+
+    val PostEndpoint          = s"http://localhost:$httpPort/post-endpoint"
+    val PostStreamingEndpoint = s"http://localhost:$httpPort/post-streaming-endpoint"
+    val SseEndpoint           = s"http://localhost:$httpPort/sse-endpoint"
+    val WebsocketEndpoint     = s"ws://localhost:$httpPort/websocket-endpoint"
+    val RSocketEndpoint       = s"ws://localhost:$rSocketPort"
 
     lazy val httpResponseTransport = new HttpPostTransport[ExampleRequest](PostEndpoint, Json, () => None)
     lazy val httpStreamTransport   = new HttpPostTransport[ExampleStreamRequest](PostStreamingEndpoint, Json, () => None)

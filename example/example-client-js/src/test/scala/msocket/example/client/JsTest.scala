@@ -25,8 +25,8 @@ import scala.util.control.NonFatal
 
 class JsTest extends AsyncFreeSpec with Matchers with BeforeAndAfterAll with ExampleCodecs {
 
-  val httpPort    = 5000
-  val rSocketPort = 7000
+  val httpPort    = 5002
+  val rSocketPort = 7002
 
   val PostEndpoint          = s"http://localhost:$httpPort/post-endpoint"
   val PostEndpoint2         = s"http://localhost:$httpPort/post-endpoint2"

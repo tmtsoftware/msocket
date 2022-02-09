@@ -1,6 +1,0 @@
-{
-  "extends": "snowpack.common.config.json",
-  "devOptions": {
-    "port": 8082
-  }
-}

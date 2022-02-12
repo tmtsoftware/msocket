@@ -196,7 +196,8 @@ lazy val `example-client-js` = project
     Test / jsEnv                    := {
       new SeleniumJSEnv(
         new ChromeOptions().setHeadless(true),
-        seleniumConfig(9091, crossTarget.value.getAbsolutePath)
+//        seleniumConfig(9091, crossTarget.value.getAbsolutePath)
+        seleniumConfig(3000, baseDirectory.value.getAbsolutePath)
       )
     },
     libraryDependencies ++= Seq(

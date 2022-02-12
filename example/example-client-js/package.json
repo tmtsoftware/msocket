@@ -1,16 +1,20 @@
 {
   "scripts": {
-    "start": "snowpack dev",
-    "build": "snowpack build"
+    "dev": "vite",
+    "build": "set -x; cd ../..; sbtn example-client-js/fullLinkJS; cd -; vite build",
+    "serve": "vite preview"
   },
   "dependencies": {
     "@microsoft/fetch-event-source": "^2.0.1",
+    "buffer": "^6.0.3",
     "rsocket-websocket-client": "^0.0.19"
   },
   "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@snowpack/plugin-run-script": "^2.3.0",
     "@types/snowpack-env": "^2.3.4",
     "snowpack": "^3.8.8",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "vite": "^2.6.4"
   }
 }

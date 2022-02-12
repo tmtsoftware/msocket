@@ -4,7 +4,7 @@ import io.bullet.borer.Encoder
 import msocket.api.models.{ErrorType, ServiceError}
 import msocket.api.{ContentType, ErrorProtocol}
 import msocket.js.post.HttpJsExtensions.HttpJsEncoding
-import org.scalajs.dom.experimental.{Fetch, HttpMethod, RequestInit, Response}
+import org.scalajs.dom.{Fetch, HttpMethod, RequestInit, Response}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js

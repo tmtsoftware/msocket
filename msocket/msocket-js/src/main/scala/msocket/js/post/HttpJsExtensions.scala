@@ -5,8 +5,7 @@ import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType
 import msocket.api.ContentType.{Cbor, Json}
 import msocket.js.CborArrayBuffer
-import org.scalajs.dom.experimental.{BodyInit, Response}
-import org.scalajs.dom.raw.Blob
+import org.scalajs.dom.{BodyInit, Response, Blob}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js

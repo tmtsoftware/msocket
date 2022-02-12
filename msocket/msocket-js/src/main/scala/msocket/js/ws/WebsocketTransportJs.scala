@@ -5,7 +5,7 @@ import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.js.JsTransport
 import msocket.js.ws.WebsocketJsExtensions.WebsocketJsEncoding
 import msocket.portable.Observer
-import org.scalajs.dom.raw.WebSocket
+import org.scalajs.dom.WebSocket
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal

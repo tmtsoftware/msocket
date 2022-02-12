@@ -9,7 +9,7 @@ import msocket.api.{ContentType, ErrorProtocol, Subscription}
 import msocket.js.JsTransport
 import msocket.js.post.HttpJsExtensions.HttpJsEncoding
 import msocket.portable.Observer
-import org.scalajs.dom.experimental.WriteableStream
+import org.scalajs.dom.WriteableStream
 import tmttyped.std.global.{JSON, TextDecoderStream, TransformStream, WritableStream}
 import tmttyped.std.{Transformer, UnderlyingSink}
 

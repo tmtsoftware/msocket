@@ -25,9 +25,9 @@ object Libs {
   val `akka-http-cors` = "ch.megard"         %% "akka-http-cors" % "1.1.2"
   val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.10")
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.10.0"
-  val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "1.2.0")
+  val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "2.1.0")
 
-  val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "8dc3e04")
+  val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "eae7acb")
 
   private val rsocketVersion    = "1.1.1"
   val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % rsocketVersion

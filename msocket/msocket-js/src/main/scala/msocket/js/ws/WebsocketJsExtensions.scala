@@ -5,7 +5,7 @@ import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType.{Cbor, Json}
 import msocket.api.{ContentType, ErrorProtocol}
 import msocket.js.CborArrayBuffer
-import org.scalajs.dom.raw.{MessageEvent, WebSocket}
+import org.scalajs.dom.{MessageEvent, WebSocket}
 
 import scala.scalajs.js.typedarray._
 

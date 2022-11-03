@@ -3,7 +3,7 @@ package akka.stream.scaladsl
 import akka.NotUsed
 import msocket.portable.Observer
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.global
 import scala.concurrent.Future
 
 trait Source[+Out, +Mat] {

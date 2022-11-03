@@ -1,9 +1,6 @@
 package example.service.test
 
-import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
 import akka.stream.scaladsl.{Keep, Sink, Source}
-import akka.stream.testkit.TestSubscriber.Probe
 import akka.stream.testkit.scaladsl.TestSink
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.ExampleCodecs
@@ -30,7 +27,7 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
 
   val wiring = new ServerWiring()
 
-  import wiring._
+  import wiring.*
 
   private val httpPort    = 5002
   private val rSocketPort = 7002
@@ -47,8 +44,6 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
   }
 
   override implicit def patienceConfig: PatienceConfig = PatienceConfig(timeout = 30.seconds)
-
-  def makeProbe[T](implicit system: ActorSystem[_]): Sink[T, Probe[T]] = TestSink.probe[T](system.toClassic)
 
   val PostEndpoint          = s"http://localhost:$httpPort/post-endpoint"
   val PostEndpoint2         = s"http://localhost:$httpPort/post-endpoint2"
@@ -109,7 +104,7 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
               val client = new ExampleClient(null, transport)
               client
                 .getNumbers(12)
-                .runWith(makeProbe)
+                .runWith(TestSink())
                 .request(2)
                 .expectNextN(Seq(12, 24))
             }
@@ -118,7 +113,7 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
               val client = new ExampleClient(null, transport)
               client
                 .helloStream("John")
-                .runWith(makeProbe)
+                .runWith(TestSink())
                 .request(2)
                 .expectNext("hello \n John again 0")
                 .expectNoMessage(100.millis)
@@ -129,7 +124,7 @@ class JvmTest extends AnyFreeSpec with Matchers with BeforeAndAfterAll with Exam
               val client = new ExampleClient(null, transport)
               client
                 .getNumbers(-1)
-                .runWith(makeProbe)
+                .runWith(TestSink())
                 .request(1)
                 .expectError(GetNumbersError(17))
             }

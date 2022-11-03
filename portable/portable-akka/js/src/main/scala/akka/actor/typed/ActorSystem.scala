@@ -1,7 +1,9 @@
 package akka.actor.typed
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
+import org.scalajs.macrotaskexecutor.MacrotaskExecutor
+
+import scala.concurrent.ExecutionContext
 
 class ActorSystem[-T] {
-  implicit def executionContext: ExecutionContextExecutor = ExecutionContext.global
+  implicit def executionContext: ExecutionContext = MacrotaskExecutor.Implicits.global
 }

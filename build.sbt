@@ -5,7 +5,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
   Seq(
-    scalaVersion      := "2.13.8",
+    scalaVersion      := "2.13.10",
     // jitpack provides the env variable VERSION=<version being built> # A tag or commit
     // we make use of it so that the version in class metadata (this.getClass.getPackage.getSpecificationVersion)
     // and the maven repo match
@@ -60,6 +60,9 @@ lazy val `portable-akka` = crossProject(JSPlatform, JVMPlatform)
       `akka-stream`,
       `akka-actor-typed`
     )
+  )
+  .jsSettings(
+    libraryDependencies += `scala-js-macrotask-executor`.value
   )
 
 //************* msocket *****************************************************

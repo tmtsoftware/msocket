@@ -14,7 +14,7 @@ trait AuthCodecs {
   implicit lazy val audienceEnc: Encoder[Audience] = implicitly[Encoder[Element]].contramap[Audience] { audience =>
     audience.value match {
       case head :: Nil => StringElem(head)
-      case xs          => ArrayElem.Unsized(xs.map(StringElem): _*)
+      case xs          => ArrayElem.Unsized(xs.map(StringElem.apply): _*)
     }
 
   }

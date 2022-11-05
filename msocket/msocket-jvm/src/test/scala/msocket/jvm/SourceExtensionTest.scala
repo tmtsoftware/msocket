@@ -5,7 +5,7 @@ import akka.actor.typed.scaladsl.Behaviors
 import akka.stream.scaladsl.{Sink, Source}
 import msocket.jvm.SourceExtension.RichSource
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.Await

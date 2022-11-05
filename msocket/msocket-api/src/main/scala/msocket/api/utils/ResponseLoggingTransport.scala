@@ -13,7 +13,7 @@ import scala.util.Try
 class ResponseLoggingTransport[Req: Encoder](transport: Transport[Req], action: String => Unit = println)(implicit
     ec: ExecutionContext,
     ep: ErrorProtocol[Req]
-) extends Transport {
+) extends Transport[Req] {
 
   private val loggingEncoder = new LoggingResponseEncoder[Req](action)
 

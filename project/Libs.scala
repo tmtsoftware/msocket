@@ -3,9 +3,11 @@ import sbt.Def.{setting => dep}
 import sbt._
 
 object Libs {
-  val `scala-async` = dep("org.scala-lang.modules" %%% "scala-async" % "1.0.1")
+//  val `scala-async` = dep("org.scala-lang.modules" %%% "scala-async" % "1.0.1")
 
-  val `scala-js-macrotask-executor` = dep("org.scala-js" %%% "scala-js-macrotask-executor" % "1.1.0")
+  val `scala-js-macrotask-executor`      = dep("org.scala-js" %%% "scala-js-macrotask-executor" % "1.1.0")
+  val `dotty-cps-async`                  = dep("com.github.rssh" %%% "dotty-cps-async" % "0.9.11")
+  val `shim-scala-async-dotty-cps-async` = "com.github.rssh" %% "shim-scala-async-dotty-cps-async" % "0.9.11"
 
   private val akkaVersion = "2.7.0"
 
@@ -16,10 +18,10 @@ object Libs {
 
   private val akkaHttpVersion = "10.4.0"
 
-  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % akkaHttpVersion
-  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion
+  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % akkaHttpVersion cross CrossVersion.for3Use2_13
+  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion cross CrossVersion.for3Use2_13
 
-  private val borerVersion = "1.8.0"
+  private val borerVersion = "1.10.1"
   val `borer-core`         = dep("io.bullet" %%% "borer-core" % borerVersion)
   val `borer-derivation`   = dep("io.bullet" %%% "borer-derivation" % borerVersion)
   val `borer-compat-akka`  = "io.bullet" %% "borer-compat-akka" % borerVersion
@@ -29,7 +31,7 @@ object Libs {
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.10.0"
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "2.3.0")
 
-  val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "eae7acb")
+  val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "2548bb6")
 
   private val rsocketVersion    = "1.1.3"
   val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % rsocketVersion

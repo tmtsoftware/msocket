@@ -59,6 +59,7 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
 
     fetchEventSource(uri, fetchEventSourceInit)
 
-    () => controller.abort(); observer.onCompleted()
+    () =>
+      controller.abort(); observer.onCompleted()
   }
 }

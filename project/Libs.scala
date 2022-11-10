@@ -16,17 +16,19 @@ object Libs {
   val `akka-actor-testkit-typed` = "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion
   val `akka-stream-testkit`      = "com.typesafe.akka" %% "akka-stream-testkit"      % akkaVersion
 
-  private val akkaHttpVersion = "10.4.0"
+  private val akkaHttpVersion = "10.4.0+67-7fa27c0b-SNAPSHOT"
 
-  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % akkaHttpVersion cross CrossVersion.for3Use2_13
-  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion cross CrossVersion.for3Use2_13
+  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % akkaHttpVersion
+  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion
 
   private val borerVersion = "1.10.1"
   val `borer-core`         = dep("io.bullet" %%% "borer-core" % borerVersion)
   val `borer-derivation`   = dep("io.bullet" %%% "borer-derivation" % borerVersion)
-  val `borer-compat-akka`  = "io.bullet" %% "borer-compat-akka" % borerVersion
+  val `borer-compat-akka`  = ("io.bullet" %% "borer-compat-akka" % borerVersion)
 
-  val `akka-http-cors` = "ch.megard"         %% "akka-http-cors" % "1.1.3"
+  val `akka-http-cors` = ("ch.megard" %% "akka-http-cors" % "1.1.3")
+    .exclude("com.typesafe.akka", "akka-http_2.13")
+
   val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.14")
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.10.0"
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "2.3.0")

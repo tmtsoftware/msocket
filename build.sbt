@@ -5,15 +5,16 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
   Seq(
-    scalaVersion      := "3.2.0",
+    scalaVersion                                    := "3.2.0",
     // jitpack provides the env variable VERSION=<version being built> # A tag or commit
     // we make use of it so that the version in class metadata (this.getClass.getPackage.getSpecificationVersion)
     // and the maven repo match
-    version           := sys.env.getOrElse("JITPACK_VERSION", "0.1.0-SNAPSHOT"),
-    organization      := "com.github.tmtsoftware.msocket",
-    organizationName  := "ThoughtWorks",
-    scalafmtOnCompile := true,
+    version                                         := sys.env.getOrElse("JITPACK_VERSION", "0.1.0-SNAPSHOT"),
+    organization                                    := "com.github.tmtsoftware.msocket",
+    organizationName                                := "ThoughtWorks",
+    scalafmtOnCompile                               := true,
     resolvers += "jitpack" at "https://jitpack.io",
+    resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
     scalacOptions ++= Seq(
       "-encoding",
       "UTF-8",

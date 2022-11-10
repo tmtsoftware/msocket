@@ -10,7 +10,7 @@ class ErrorEncoderTest extends AnyFreeSpec with Matchers {
   import ExampleCodecs.{exampleRequestResponseErrorProtocol => ep}
   import ExampleError._
 
-  List(HelloError(55), GetNumbersError(99), ErrorWithEmptyConstructor()).foreach {
+  List(HelloError(55), GetNumbersError(99) /*, ErrorWithEmptyConstructor()*/ ).foreach {
     case ex: ep.E =>
       ex.getClass.getSimpleName - {
         List(Json, Cbor).foreach { target =>

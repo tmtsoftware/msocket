@@ -16,7 +16,7 @@ object Libs {
   val `akka-actor-testkit-typed` = "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion
   val `akka-stream-testkit`      = "com.typesafe.akka" %% "akka-stream-testkit"      % akkaVersion
 
-  private val akkaHttpVersion = "10.4.0+67-7fa27c0b-SNAPSHOT"
+  private val akkaHttpVersion = "10.5.0-M1"
 
   val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % akkaHttpVersion
   val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion

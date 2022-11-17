@@ -14,7 +14,6 @@ inThisBuild(
     organizationName  := "ThoughtWorks",
     scalafmtOnCompile := true,
     resolvers += "jitpack" at "https://jitpack.io",
-    resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
     scalacOptions ++= Seq(
       "-encoding",
       "UTF-8",

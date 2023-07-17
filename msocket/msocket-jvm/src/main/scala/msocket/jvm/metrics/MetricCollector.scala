@@ -1,7 +1,7 @@
 package msocket.jvm.metrics
 
-import akka.NotUsed
-import akka.stream.scaladsl.Source
+import org.apache.pekko.NotUsed
+import org.apache.pekko.stream.scaladsl.Source
 import io.prometheus.client.{Counter, Gauge}
 
 import scala.concurrent.ExecutionContext

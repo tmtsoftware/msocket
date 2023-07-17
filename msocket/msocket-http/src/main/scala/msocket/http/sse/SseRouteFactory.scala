@@ -1,8 +1,8 @@
 package msocket.http.sse
 
-import akka.http.scaladsl.marshalling.sse.EventStreamMarshalling.toEventStream
-import akka.http.scaladsl.server.Directives.{complete, _}
-import akka.http.scaladsl.server.{Directive0, Route}
+import org.apache.pekko.http.scaladsl.marshalling.sse.EventStreamMarshalling.toEventStream
+import org.apache.pekko.http.scaladsl.server.Directives.{complete, _}
+import org.apache.pekko.http.scaladsl.server.{Directive0, Route}
 import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.ErrorProtocol

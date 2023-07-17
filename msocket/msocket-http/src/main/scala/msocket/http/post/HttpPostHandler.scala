@@ -1,6 +1,6 @@
 package msocket.http.post
 
-import akka.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.server.Route
 import msocket.api.ErrorProtocol
 
 /**

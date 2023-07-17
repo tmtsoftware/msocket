@@ -1,6 +1,6 @@
 package msocket.http.ws
 
-import akka.http.scaladsl.model.ws.Message
+import org.apache.pekko.http.scaladsl.model.ws.Message
 import io.bullet.borer.Encoder
 import msocket.api.models.ResponseHeaders
 import msocket.api.{ContentType, ErrorProtocol}

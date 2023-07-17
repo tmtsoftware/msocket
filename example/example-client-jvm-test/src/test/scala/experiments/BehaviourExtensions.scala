@@ -1,7 +1,7 @@
 package experiments
 
-import akka.actor.typed.*
-import akka.actor.typed.scaladsl.Behaviors
+import org.apache.pekko.actor.typed.*
+import org.apache.pekko.actor.typed.scaladsl.Behaviors
 
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag

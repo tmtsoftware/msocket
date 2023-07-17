@@ -1,7 +1,7 @@
 package msocket.http.post
 
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.{Directive0, Route}
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.{Directive0, Route}
 import io.bullet.borer.Decoder
 import msocket.api.ErrorProtocol
 import msocket.http.RouteFactory

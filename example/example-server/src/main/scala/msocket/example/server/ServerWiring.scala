@@ -1,8 +1,8 @@
 package msocket.example.server
 
-import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.Behaviors
-import akka.http.scaladsl.server.Route
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.actor.typed.scaladsl.Behaviors
+import org.apache.pekko.http.scaladsl.server.Route
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRequest}

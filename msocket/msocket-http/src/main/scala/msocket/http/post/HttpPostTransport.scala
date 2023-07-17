@@ -1,9 +1,9 @@
 package msocket.http.post
 
-import akka.NotUsed
-import akka.actor.typed.ActorSystem
-import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.scaladsl.Source
+import org.apache.pekko.NotUsed
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
+import org.apache.pekko.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.models.ErrorType

@@ -24,7 +24,7 @@ MSocket modules
 
 1. msocket-api: platform agnostic APIs that must be implemented 
 by each services and their clients
-2. msocket-impl: Akka-Http based implementation of helpers utilities 
+2. msocket-impl: Pekko-Http based implementation of helpers utilities 
 for service writers, and transport implementations for Http and Websocket
 3. msocket-impl-rsocket: RSocket-Java based implementation of helpers utilities 
 for service writers, and transport implementation for RSocket

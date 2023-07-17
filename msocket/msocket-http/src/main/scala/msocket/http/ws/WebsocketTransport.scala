@@ -1,11 +1,11 @@
 package msocket.http.ws
 
-import akka.actor.typed.ActorSystem
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.Uri
-import akka.http.scaladsl.model.headers.Authorization
-import akka.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
-import akka.stream.scaladsl.Source
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.model.Uri
+import org.apache.pekko.http.scaladsl.model.headers.Authorization
+import org.apache.pekko.http.scaladsl.model.ws.{BinaryMessage, TextMessage, WebSocketRequest}
+import org.apache.pekko.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentType, ErrorProtocol, Subscription}

@@ -1,10 +1,10 @@
 package example.service.test
 
-import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
-import akka.stream.scaladsl.{Keep, Sink, Source}
-import akka.stream.testkit.TestSubscriber.Probe
-import akka.stream.testkit.scaladsl.TestSink
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.actor.typed.scaladsl.adapter.TypedActorSystemOps
+import org.apache.pekko.stream.scaladsl.{Keep, Sink, Source}
+import org.apache.pekko.stream.testkit.TestSubscriber.Probe
+import org.apache.pekko.stream.testkit.scaladsl.TestSink
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}

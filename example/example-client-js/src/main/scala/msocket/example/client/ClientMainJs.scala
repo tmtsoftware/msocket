@@ -1,6 +1,6 @@
 package msocket.example.client
 
-import akka.actor.typed.ActorSystem
+import org.apache.pekko.actor.typed.ActorSystem
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, ExampleStreamRequest}

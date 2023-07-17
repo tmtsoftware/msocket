@@ -1,10 +1,10 @@
 package msocket.http.ws
 
-import akka.NotUsed
-import akka.actor.typed.ActorSystem
-import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
-import akka.stream.KillSwitches
-import akka.stream.scaladsl.{Flow, Source}
+import org.apache.pekko.NotUsed
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
+import org.apache.pekko.stream.KillSwitches
+import org.apache.pekko.stream.scaladsl.{Flow, Source}
 import io.bullet.borer.Decoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentEncoding, ErrorProtocol}

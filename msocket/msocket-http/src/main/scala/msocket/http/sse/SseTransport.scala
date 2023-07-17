@@ -1,13 +1,13 @@
 package msocket.http.sse
 
-import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
-import akka.http.scaladsl.model.sse.ServerSentEvent
-import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
-import akka.stream.Materializer
-import akka.stream.scaladsl.Source
-import akka.{NotUsed, actor}
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.actor.typed.scaladsl.adapter.TypedActorSystemOps
+import org.apache.pekko.http.scaladsl.model.sse.ServerSentEvent
+import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshal
+import org.apache.pekko.http.scaladsl.unmarshalling.sse.EventStreamUnmarshalling._
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.{NotUsed, actor}
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.{ContentType, ErrorProtocol, Subscription}

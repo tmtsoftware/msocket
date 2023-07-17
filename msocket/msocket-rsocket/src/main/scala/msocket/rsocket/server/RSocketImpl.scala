@@ -1,7 +1,7 @@
 package msocket.rsocket.server
 
-import akka.actor.typed.ActorSystem
-import akka.stream.scaladsl.{Sink, Source}
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.stream.scaladsl.{Sink, Source}
 import io.bullet.borer.Decoder
 import io.prometheus.client.Counter
 import io.rsocket.{Payload, RSocket}

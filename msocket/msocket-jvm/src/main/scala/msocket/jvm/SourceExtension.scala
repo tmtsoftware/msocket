@@ -1,7 +1,7 @@
 package msocket.jvm
 
-import akka.stream.KillSwitches
-import akka.stream.scaladsl.{Keep, Source}
+import org.apache.pekko.stream.KillSwitches
+import org.apache.pekko.stream.scaladsl.{Keep, Source}
 import msocket.api.Subscription
 
 object SourceExtension {

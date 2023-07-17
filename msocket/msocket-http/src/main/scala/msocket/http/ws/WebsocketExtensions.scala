@@ -1,6 +1,6 @@
 package msocket.http.ws
 
-import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
+import org.apache.pekko.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
 import io.bullet.borer.Encoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType

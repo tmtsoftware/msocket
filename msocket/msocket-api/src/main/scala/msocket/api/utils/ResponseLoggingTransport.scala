@@ -1,10 +1,10 @@
 package msocket.api.utils
 
-import akka.stream.scaladsl.Source
+import org.apache.pekko.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.{ErrorProtocol, Subscription, Transport}
 import msocket.portable.Observer
-import msocket.portable.PortableAkka.SourceOps
+import msocket.portable.PortablePekko.SourceOps
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}

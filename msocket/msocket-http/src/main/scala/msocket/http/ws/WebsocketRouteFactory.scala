@@ -1,9 +1,9 @@
 package msocket.http.ws
 
-import akka.actor.typed.ActorSystem
-import akka.http.scaladsl.model.headers.Authorization
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.http.scaladsl.model.headers.Authorization
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Route
 import io.bullet.borer.Decoder
 import msocket.api.ErrorProtocol
 import msocket.http.RouteFactory

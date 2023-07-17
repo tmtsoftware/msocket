@@ -2,7 +2,7 @@ package msocket.rsocket.client
 
 import java.net.URI
 
-import akka.actor.typed.ActorSystem
+import org.apache.pekko.actor.typed.ActorSystem
 import io.bullet.borer.Encoder
 import io.rsocket.transport.netty.client.WebsocketClientTransport
 import msocket.api.{ContentType, ErrorProtocol, Subscription}

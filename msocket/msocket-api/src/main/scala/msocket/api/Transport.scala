@@ -1,6 +1,6 @@
 package msocket.api
 
-import akka.stream.scaladsl.Source
+import org.apache.pekko.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.utils.{ContraMappedTransport, ResponseLoggingTransport}

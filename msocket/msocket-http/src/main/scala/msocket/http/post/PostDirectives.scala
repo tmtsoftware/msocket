@@ -1,9 +1,9 @@
 package msocket.http.post
 
-import akka.http.scaladsl.model.headers.Accept
-import akka.http.scaladsl.model.{HttpRequest, MediaRanges}
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.{Directive0, ExceptionHandler}
+import org.apache.pekko.http.scaladsl.model.headers.Accept
+import org.apache.pekko.http.scaladsl.model.{HttpRequest, MediaRanges}
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.{Directive0, ExceptionHandler}
 import msocket.api.ErrorProtocol
 import msocket.security.AccessControllerFactory
 

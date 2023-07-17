@@ -4,25 +4,26 @@ import sbt._
 
 object Libs {
   val `scala-async` = dep("org.scala-lang.modules" %%% "scala-async" % "1.0.1")
+  val `scala-java8-compat` = "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" // BSD 3-clause "New" or "Revised" License
 
-  private val akkaVersion = "2.6.18"
+  private val pekkoVersion = "1.0.0"
 
-  val `akka-stream`              = "com.typesafe.akka" %% "akka-stream"              % akkaVersion
-  val `akka-actor-typed`         = "com.typesafe.akka" %% "akka-actor-typed"         % akkaVersion
-  val `akka-actor-testkit-typed` = "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion
-  val `akka-stream-testkit`      = "com.typesafe.akka" %% "akka-stream-testkit"      % akkaVersion
+  val `pekko-stream`              = "org.apache.pekko" %% "pekko-stream"              % pekkoVersion
+  val `pekko-actor-typed`         = "org.apache.pekko" %% "pekko-actor-typed"         % pekkoVersion
+  val `pekko-actor-testkit-typed` = "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion
+  val `pekko-stream-testkit`      = "org.apache.pekko" %% "pekko-stream-testkit"      % pekkoVersion
 
-  private val akkaHttpVersion = "10.2.7"
+  private val pekkoHttpVersion = "0.0.0+4470-61034832-SNAPSHOT"
 
-  val `akka-http`         = "com.typesafe.akka" %% "akka-http"         % akkaHttpVersion
-  val `akka-http-testkit` = "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion
+  val `pekko-http`            = "org.apache.pekko" %% "pekko-http"            % pekkoHttpVersion
+  val `pekko-http-testkit` = "org.apache.pekko" %% "pekko-http-testkit" % pekkoHttpVersion
 
-  private val borerVersion = "1.7.2"
+  private val borerVersion = "1.7.2-pekko"
   val `borer-core`         = dep("io.bullet" %%% "borer-core" % borerVersion)
   val `borer-derivation`   = dep("io.bullet" %%% "borer-derivation" % borerVersion)
-  val `borer-compat-akka`  = "io.bullet" %% "borer-compat-akka" % borerVersion
+  val `borer-compat-pekko`  = "io.bullet" %% "borer-compat-pekko" % borerVersion
 
-  val `akka-http-cors` = "ch.megard"         %% "akka-http-cors" % "1.1.2"
+//  val `pekko-http-cors` = "ch.megard"         %% "pekko-http-cors" % "1.1.2"
   val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.10")
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.10.0"
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "2.1.0")

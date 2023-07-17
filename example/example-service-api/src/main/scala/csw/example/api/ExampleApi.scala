@@ -1,6 +1,6 @@
 package csw.example.api
 
-import akka.stream.scaladsl.Source
+import org.apache.pekko.stream.scaladsl.Source
 import csw.example.api.models.Bag
 import msocket.api.Subscription
 

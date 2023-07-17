@@ -1,7 +1,7 @@
 package msocket.http.post.streaming
 
-import akka.NotUsed
-import akka.stream.scaladsl.Source
+import org.apache.pekko.NotUsed
+import org.apache.pekko.stream.scaladsl.Source
 import io.bullet.borer.Encoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.ErrorProtocol

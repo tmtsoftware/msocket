@@ -3,10 +3,10 @@ package msocket.http
 import java.io.{StringWriter, Writer}
 import java.util
 
-import akka.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Route
 import io.prometheus.client.Collector.MetricFamilySamples
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat

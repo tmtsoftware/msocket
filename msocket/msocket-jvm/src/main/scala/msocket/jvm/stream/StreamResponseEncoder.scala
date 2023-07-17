@@ -1,7 +1,7 @@
 package msocket.jvm.stream
 
-import akka.NotUsed
-import akka.stream.scaladsl.Source
+import org.apache.pekko.NotUsed
+import org.apache.pekko.stream.scaladsl.Source
 import msocket.api.ErrorProtocol
 import msocket.api.models.ResponseHeaders
 import msocket.jvm.ResponseEncoder

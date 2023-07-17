@@ -1,7 +1,7 @@
 package msocket.example.server.handlers
 
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server.Route
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleCodecs._
 import csw.example.api.protocol.ExampleProtocol.{ExampleRequest, Hello, RandomBag}

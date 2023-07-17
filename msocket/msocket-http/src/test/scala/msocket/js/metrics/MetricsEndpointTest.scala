@@ -2,8 +2,8 @@ package msocket.js.metrics
 
 import java.io.StringWriter
 
-import akka.http.scaladsl.model.HttpCharsets
-import akka.http.scaladsl.testkit.ScalatestRouteTest
+import org.apache.pekko.http.scaladsl.model.HttpCharsets
+import org.apache.pekko.http.scaladsl.testkit.ScalatestRouteTest
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.{CollectorRegistry, Histogram}
 import msocket.http.MetricsEndpoint

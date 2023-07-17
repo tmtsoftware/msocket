@@ -1,6 +1,6 @@
 package msocket.rsocket.server
 
-import akka.actor.typed.ActorSystem
+import org.apache.pekko.actor.typed.ActorSystem
 import io.rsocket.RSocket
 import io.rsocket.core
 import io.rsocket.transport.netty.server.{CloseableChannel, WebsocketServerTransport}

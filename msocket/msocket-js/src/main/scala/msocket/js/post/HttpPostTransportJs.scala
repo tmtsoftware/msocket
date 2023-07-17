@@ -1,6 +1,6 @@
 package msocket.js.post
 
-import akka.Done
+import org.apache.pekko.Done
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.ContentType.Json

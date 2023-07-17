@@ -1,10 +1,10 @@
 package msocket.example.client
 
-import akka.actor.typed.ActorSystem
-import akka.stream.scaladsl.Source
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.stream.scaladsl.Source
 import csw.example.api.client.ExampleClient
 import msocket.api.Subscription
-import msocket.portable.PortableAkka
+import msocket.portable.PortablePekko
 
 import scala.concurrent.duration.DurationLong
 
@@ -34,7 +34,7 @@ class ClientAppJs(client: ExampleClient)(implicit actorSystem: ActorSystem[_]) {
 //    client.square(3).onComplete(x => println(s"==============================> $x"))
 //    client.square(4).onComplete(x => println(s"==============================> $x"))
 
-    PortableAkka.setTimeout(5.seconds) {
+    PortablePekko.setTimeout(5.seconds) {
       subscription.cancel()
     }
   }

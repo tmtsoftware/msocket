@@ -1,11 +1,11 @@
 package msocket.jvm
 
-import akka.actor.typed.ActorSystem
-import akka.stream.scaladsl.Sink
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.stream.scaladsl.Sink
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.{ErrorProtocol, Subscription, Transport}
 import msocket.portable.Observer
-import msocket.portable.PortableAkka.SourceOps
+import msocket.portable.PortablePekko.SourceOps
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration

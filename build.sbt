@@ -43,22 +43,22 @@ lazy val `msocket-root` = project
 lazy val portable = project.aggregate(
   `portable-observer`.jvm,
   `portable-observer`.js,
-  `portable-akka`.jvm,
-  `portable-akka`.js
+  `portable-pekko`.jvm,
+  `portable-pekko`.js
 )
 
 lazy val `portable-observer` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("portable/portable-observer"))
 
-lazy val `portable-akka` = crossProject(JSPlatform, JVMPlatform)
+lazy val `portable-pekko` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Dummy)
-  .in(file("portable/portable-akka"))
+  .in(file("portable/portable-pekko"))
   .dependsOn(`portable-observer`)
   .jvmSettings(
     libraryDependencies ++= Seq(
-      `akka-stream`,
-      `akka-actor-typed`
+      `pekko-stream`,
+      `pekko-actor-typed`
     )
   )
 
@@ -86,7 +86,7 @@ lazy val `msocket-security` = project
 lazy val `msocket-api` = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("msocket/msocket-api"))
-  .dependsOn(`portable-akka`)
+  .dependsOn(`portable-pekko`)
   .settings(
     libraryDependencies ++= Seq(
       `borer-core`.value,
@@ -110,11 +110,11 @@ lazy val `msocket-http` = project
   .dependsOn(`msocket-jvm`)
   .settings(
     libraryDependencies ++= Seq(
-      `akka-http`,
-      `borer-compat-akka`,
+      `pekko-http`,
+      `borer-compat-pekko`,
       scalatest.value            % Test,
-      `akka-actor-testkit-typed` % Test,
-      `akka-http-testkit`        % Test
+      `pekko-actor-testkit-typed` % Test,
+      `pekko-http-testkit`        % Test
     )
   )
 
@@ -124,7 +124,8 @@ lazy val `msocket-rsocket` = project
   .settings(
     libraryDependencies ++= Seq(
       `rsocket-transport-netty`,
-      `rsocket-core`
+      `rsocket-core`,
+      Libs.`scala-java8-compat`
     )
   )
 
@@ -165,10 +166,10 @@ lazy val `example-server` = project
   .dependsOn(`example-service`, `msocket-http`, `msocket-rsocket`)
   .settings(
     libraryDependencies ++= Seq(
-      `akka-http-cors`,
+//      `pekko-http-cors`,
       scalatest.value       % Test,
-      `akka-http-testkit`   % Test,
-      `akka-stream-testkit` % Test
+      `pekko-http-testkit`   % Test,
+      `pekko-stream-testkit` % Test
     )
   )
 
@@ -181,7 +182,7 @@ lazy val `example-client-jvm-test` = project
   .dependsOn(`example-server`, `example-client-jvm`)
   .settings(
     libraryDependencies ++= Seq(
-      `akka-stream-testkit` % Test,
+      `pekko-stream-testkit` % Test,
       scalatest.value       % Test
     )
   )

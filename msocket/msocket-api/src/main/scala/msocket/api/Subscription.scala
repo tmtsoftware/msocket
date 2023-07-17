@@ -1,6 +1,6 @@
 package msocket.api
 
-import akka.Done
+import org.apache.pekko.Done
 
 import scala.concurrent.{Future, Promise}
 

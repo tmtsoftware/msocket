@@ -1,6 +1,6 @@
 package msocket.http.post
 
-import akka.http.scaladsl.marshalling.ToEntityMarshaller
+import org.apache.pekko.http.scaladsl.marshalling.ToEntityMarshaller
 import io.bullet.borer.Encoder
 import msocket.api.ContentType
 

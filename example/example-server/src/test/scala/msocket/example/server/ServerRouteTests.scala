@@ -1,12 +1,12 @@
 package msocket.example.server
 
-import akka.NotUsed
-import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.adapter._
-import akka.http.scaladsl.model.ws.TextMessage
-import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest, WSProbe}
-import akka.stream.scaladsl.Source
-import akka.testkit.TestDuration
+import org.apache.pekko.NotUsed
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.actor.typed.scaladsl.adapter._
+import org.apache.pekko.http.scaladsl.model.ws.TextMessage
+import org.apache.pekko.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest, WSProbe}
+import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko.testkit.TestDuration
 import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleProtocol._
 import msocket.api.ContentType

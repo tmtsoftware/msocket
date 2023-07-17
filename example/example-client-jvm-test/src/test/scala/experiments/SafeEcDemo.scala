@@ -1,6 +1,6 @@
 package experiments
 
-import akka.actor.typed.*
+import org.apache.pekko.actor.typed.*
 import experiments.BehaviourExtensions.withSafeEc
 
 import scala.concurrent.ExecutionContext.Implicits.global

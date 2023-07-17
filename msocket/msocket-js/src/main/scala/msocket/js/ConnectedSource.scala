@@ -1,6 +1,6 @@
 package msocket.js
 
-import akka.stream.scaladsl.Source
+import org.apache.pekko.stream.scaladsl.Source
 import io.bullet.borer.{Decoder, Encoder}
 import msocket.api.{Subscription, Transport}
 import msocket.portable.Observer

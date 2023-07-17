@@ -1,6 +1,6 @@
 package csw.example.api.client
 
-import akka.stream.scaladsl.Source
+import org.apache.pekko.stream.scaladsl.Source
 import csw.example.api._
 import csw.example.api.protocol.ExampleProtocol._
 import csw.example.api.models.Bag

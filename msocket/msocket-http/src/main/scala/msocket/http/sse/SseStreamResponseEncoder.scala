@@ -1,8 +1,8 @@
 package msocket.http.sse
 
-import akka.NotUsed
-import akka.http.scaladsl.model.sse.ServerSentEvent
-import akka.stream.scaladsl.Source
+import org.apache.pekko.NotUsed
+import org.apache.pekko.http.scaladsl.model.sse.ServerSentEvent
+import org.apache.pekko.stream.scaladsl.Source
 import io.bullet.borer.Encoder
 import msocket.api.ContentEncoding.JsonText
 import msocket.api.models.ResponseHeaders

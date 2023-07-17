@@ -2,8 +2,8 @@ package msocket.api.codecs
 
 import java.util.concurrent.TimeUnit
 
-import akka.Done
-import akka.util.Timeout
+import org.apache.pekko.Done
+import org.apache.pekko.util.Timeout
 import io.bullet.borer.derivation.CompactMapBasedCodecs
 import io.bullet.borer.{Codec, Decoder, Encoder}
 import msocket.api.models.Result

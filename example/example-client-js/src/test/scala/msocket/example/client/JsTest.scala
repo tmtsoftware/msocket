@@ -1,8 +1,8 @@
 package msocket.example.client
 
-import akka.Done
-import akka.actor.typed.ActorSystem
-import akka.stream.scaladsl.Source
+import org.apache.pekko.Done
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.stream.scaladsl.Source
 import csw.example.api.client.ExampleClient
 import csw.example.api.protocol.ExampleCodecs
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}

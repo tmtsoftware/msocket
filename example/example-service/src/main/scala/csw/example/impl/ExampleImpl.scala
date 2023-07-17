@@ -1,9 +1,9 @@
 package csw.example.impl
 
-import akka.NotUsed
-import akka.actor.typed.ActorSystem
-import akka.actor.typed.scaladsl.adapter.TypedActorSystemOps
-import akka.stream.scaladsl.Source
+import org.apache.pekko.NotUsed
+import org.apache.pekko.actor.typed.ActorSystem
+import org.apache.pekko.actor.typed.scaladsl.adapter.TypedActorSystemOps
+import org.apache.pekko.stream.scaladsl.Source
 import csw.example.api.ExampleApi
 import csw.example.api.protocol.ExampleError.{GetNumbersError, HelloError}
 import csw.example.api.models.Bag
@@ -30,7 +30,7 @@ class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
 
   override def square(number: Int): Future[Int] = {
     // this is to simulate a call which takes much longer (say 3 min) than the implicit timeout of the transport (say 2 min)
-    akka.pattern.after(3.minutes, actorSystem.toClassic.scheduler) {
+    org.apache.pekko.pattern.after(3.minutes, actorSystem.toClassic.scheduler) {
       Future.successful(number * number)
     }
   }

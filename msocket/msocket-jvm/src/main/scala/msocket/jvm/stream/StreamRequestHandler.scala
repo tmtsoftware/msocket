@@ -1,6 +1,6 @@
 package msocket.jvm.stream
 
-import akka.stream.scaladsl.Source
+import org.apache.pekko.stream.scaladsl.Source
 import io.bullet.borer.Encoder
 import msocket.security.api.AuthorizationPolicy
 import msocket.security.models.AccessToken

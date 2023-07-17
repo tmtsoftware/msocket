@@ -1,7 +1,7 @@
 package experiments
 
-import akka.actor.typed.Behavior
-import akka.actor.typed.scaladsl.Behaviors
+import org.apache.pekko.actor.typed.Behavior
+import org.apache.pekko.actor.typed.scaladsl.Behaviors
 
 import scala.concurrent.{ExecutionContext, Future}
 

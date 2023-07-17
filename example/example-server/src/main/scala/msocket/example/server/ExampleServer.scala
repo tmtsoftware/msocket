@@ -3,7 +3,7 @@ package msocket.example.server
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.http.scaladsl.Http
 import org.apache.pekko.http.scaladsl.server.Route
-import ch.megard.pekko.http.cors.scaladsl.CorsDirectives.cors
+import org.apache.pekko.http.cors.scaladsl.CorsDirectives.cors
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 

@@ -166,7 +166,8 @@ lazy val `example-server` = project
   .dependsOn(`example-service`, `msocket-http`, `msocket-rsocket`)
   .settings(
     libraryDependencies ++= Seq(
-//      `pekko-http-cors`,
+      `pekko-http`,
+      `pekko-http-cors`,
       scalatest.value       % Test,
       `pekko-http-testkit`   % Test,
       `pekko-stream-testkit` % Test

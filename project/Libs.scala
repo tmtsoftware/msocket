@@ -16,6 +16,7 @@ object Libs {
   private val pekkoHttpVersion = "0.0.0+4470-61034832-SNAPSHOT"
 
   val `pekko-http`            = "org.apache.pekko" %% "pekko-http"            % pekkoHttpVersion
+  val `pekko-http-cors`       = "org.apache.pekko" %% "pekko-http-cors"            % pekkoHttpVersion
   val `pekko-http-testkit` = "org.apache.pekko" %% "pekko-http-testkit" % pekkoHttpVersion
 
   private val borerVersion = "1.7.2-pekko"

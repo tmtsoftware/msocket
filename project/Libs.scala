@@ -13,7 +13,7 @@ object Libs {
   val `pekko-actor-testkit-typed` = "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion
   val `pekko-stream-testkit`      = "org.apache.pekko" %% "pekko-stream-testkit"      % pekkoVersion
 
-  private val pekkoHttpVersion = "0.0.0+4470-61034832-SNAPSHOT"
+  private val pekkoHttpVersion = "1.0.0RC1"
 
   val `pekko-http`            = "org.apache.pekko" %% "pekko-http"            % pekkoHttpVersion
   val `pekko-http-cors`       = "org.apache.pekko" %% "pekko-http-cors"            % pekkoHttpVersion

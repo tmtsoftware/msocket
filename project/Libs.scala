@@ -7,24 +7,28 @@ object Libs {
   val `scala-java8-compat` = "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" // BSD 3-clause "New" or "Revised" License
 
   private val pekkoVersion = "1.0.0"
-
   val `pekko-stream`              = "org.apache.pekko" %% "pekko-stream"              % pekkoVersion
   val `pekko-actor-typed`         = "org.apache.pekko" %% "pekko-actor-typed"         % pekkoVersion
   val `pekko-actor-testkit-typed` = "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion
   val `pekko-stream-testkit`      = "org.apache.pekko" %% "pekko-stream-testkit"      % pekkoVersion
 
-  private val pekkoHttpVersion = "1.0.0RC1"
+  private val pekkoHttpVersion = "1.0.0-RC1"
+//  val pekkoHttpOrg = "org.apache.pekko"
+  val pekkoHttpOrg = "com.github.apache.incubator-pekko-http"
+//  val `pekko-http` = pekkoHttpOrg %% "pekko-http" % pekkoHttpVersion
+//  val `pekko-http-cors` = pekkoHttpOrg %% "pekko-http-cors" % pekkoHttpVersion
+//  val `pekko-http-testkit` = pekkoHttpOrg %% "pekko-http-testkit" % pekkoHttpVersion
+  val `pekko-http` = pekkoHttpOrg %% "pekko-http" % pekkoHttpVersion
+  val `pekko-http-cors` = pekkoHttpOrg %% "pekko-http-cors" % pekkoHttpVersion
+  val `pekko-http-testkit` = pekkoHttpOrg %% "pekko-http-testkit" % pekkoHttpVersion
 
-  val `pekko-http`            = "org.apache.pekko" %% "pekko-http"            % pekkoHttpVersion
-  val `pekko-http-cors`       = "org.apache.pekko" %% "pekko-http-cors"            % pekkoHttpVersion
-  val `pekko-http-testkit` = "org.apache.pekko" %% "pekko-http-testkit" % pekkoHttpVersion
+  private val borerVersion = "5875c8a597a82fabf740975a4f4c7d70c1eb5114"
+  //  val borerOrg     = "io.bullet"
+  val borerOrg = "com.github.tmtsoftware.borer"
+  val `borer-core` = dep(borerOrg %%% "borer-core" % borerVersion)
+  val `borer-derivation` = dep(borerOrg %%% "borer-derivation" % borerVersion)
+  val `borer-compat-pekko` = borerOrg %% "borer-compat-pekko" % borerVersion
 
-  private val borerVersion = "1.7.2-pekko"
-  val `borer-core`         = dep("io.bullet" %%% "borer-core" % borerVersion)
-  val `borer-derivation`   = dep("io.bullet" %%% "borer-derivation" % borerVersion)
-  val `borer-compat-pekko`  = "io.bullet" %% "borer-compat-pekko" % borerVersion
-
-//  val `pekko-http-cors` = "ch.megard"         %% "pekko-http-cors" % "1.1.2"
   val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.10")
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.10.0"
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "2.1.0")

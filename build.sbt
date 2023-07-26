@@ -14,6 +14,7 @@ inThisBuild(
     organizationName  := "ThoughtWorks",
     scalafmtOnCompile := true,
     resolvers += "jitpack" at "https://jitpack.io",
+    resolvers += "Apache Pekko Staging".at("https://repository.apache.org/content/groups/staging"),
     scalacOptions ++= Seq(
       "-encoding",
       "UTF-8",

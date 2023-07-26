@@ -15,8 +15,8 @@ object Libs {
   val `pekko-stream-testkit`      = pekkoOrg %% "pekko-stream-testkit"      % pekkoVersion
 
   private val pekkoHttpVersion = "1.0.0-RC2"
-//  val pekkoHttpOrg = "org.apache.pekko"
-  val pekkoHttpOrg = "com.github.apache.incubator-pekko-http"
+  val pekkoHttpOrg = "org.apache.pekko"
+//  val pekkoHttpOrg = "com.github.apache.incubator-pekko-http"
   val `pekko-http` = pekkoHttpOrg %% "pekko-http" % pekkoHttpVersion
   val `pekko-http-cors` = pekkoHttpOrg %% "pekko-http-cors" % pekkoHttpVersion
   val `pekko-http-testkit` = pekkoHttpOrg %% "pekko-http-testkit" % pekkoHttpVersion

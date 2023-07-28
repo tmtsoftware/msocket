@@ -3,7 +3,10 @@ import sbt.Def.{setting => dep}
 import sbt._
 
 object Libs {
-  val `scala-async` = dep("org.scala-lang.modules" %%% "scala-async" % "1.0.1")
+  val `scala-js-macrotask-executor` = dep("org.scala-js" %%% "scala-js-macrotask-executor" % "1.1.1")
+  val `dotty-cps-async` = dep("com.github.rssh" %%% "dotty-cps-async" % "0.9.17")
+  val `shim-scala-async-dotty-cps-async` = "com.github.rssh" %% "shim-scala-async-dotty-cps-async" % "0.9.17"
+
   val `scala-java8-compat` = "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" // BSD 3-clause "New" or "Revised" License
 
   private val pekkoVersion = "1.0.1"
@@ -21,26 +24,26 @@ object Libs {
   val `pekko-http-cors` = pekkoHttpOrg %% "pekko-http-cors" % pekkoHttpVersion
   val `pekko-http-testkit` = pekkoHttpOrg %% "pekko-http-testkit" % pekkoHttpVersion
 
-  private val borerVersion = "d59e5fd"
+  private val borerVersion = "377a777"
   //  val borerOrg     = "io.bullet"
   val borerOrg = "com.github.tmtsoftware.borer"
   val `borer-core` = dep(borerOrg %%% "borer-core" % borerVersion)
   val `borer-derivation` = dep(borerOrg %%% "borer-derivation" % borerVersion)
   val `borer-compat-pekko` = borerOrg %% "borer-compat-pekko" % borerVersion
 
-  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.10")
+  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.16")
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.10.0"
-  val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "2.1.0")
+  val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "2.6.0")
 
-  val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "eae7acb")
+  val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "2548bb6")
 
-  private val rsocketVersion    = "1.1.1"
+  private val rsocketVersion    = "1.1.4"
   val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % rsocketVersion
   val `rsocket-transport-netty` = "io.rsocket" % "rsocket-transport-netty" % rsocketVersion
 }
 
 object Prometheus {
-  val Version             = "0.14.1"
+  val Version             = "0.16.0"
   val simpleclient        = "io.prometheus" % "simpleclient"        % Version
   val simpleclient_common = "io.prometheus" % "simpleclient_common" % Version
 }

@@ -7,7 +7,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object SampleActor {
 
-  trait Msg
+  sealed trait Msg
   case object Increment            extends Msg
   case object IncrementViaCallback extends Msg
   case object GetTotal             extends Msg

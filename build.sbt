@@ -5,7 +5,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
   Seq(
-    scalaVersion      := "2.13.8",
+    scalaVersion      := "3.3.0",
     // jitpack provides the env variable VERSION=<version being built> # A tag or commit
     // we make use of it so that the version in class metadata (this.getClass.getPackage.getSpecificationVersion)
     // and the maven repo match
@@ -20,13 +20,7 @@ inThisBuild(
       "UTF-8",
       "-feature",
       "-unchecked",
-      "-deprecation",
-      "-Xasync",
-      "-Wconf:any:warning-verbose",
-      "-Wdead-code",
-      "-Xlint:_,-missing-interpolator",
-      "-Xsource:3",
-      "-Xcheckinit"
+      "-deprecation"
     )
   )
 )
@@ -61,6 +55,9 @@ lazy val `portable-pekko` = crossProject(JSPlatform, JVMPlatform)
       `pekko-stream`,
       `pekko-actor-typed`
     )
+  )
+  .jsSettings(
+    libraryDependencies += `scala-js-macrotask-executor`.value
   )
 
 //************* msocket *****************************************************
@@ -204,7 +201,9 @@ lazy val `example-client-js` = project
     },
     libraryDependencies ++= Seq(
       scalatest.value % Test,
-      `scala-async`.value
+      `dotty-cps-async`.value,
+      `shim-scala-async-dotty-cps-async`
+//      `scala-async`.value
     )
   )
 

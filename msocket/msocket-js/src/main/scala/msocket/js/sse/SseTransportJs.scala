@@ -31,7 +31,7 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
 
       body = JsonText.encode(request)
 
-      headers = js.Array(js.Array("Content-Type", ContentType.Json.mimeType))
+      headers = js.Array("Content-Type" -> ContentType.Json.mimeType)
 
       onopen = js.defined { res =>
         Future {
@@ -59,6 +59,7 @@ class SseTransportJs[Req: Encoder: ErrorProtocol](uri: String)(implicit ec: Exec
 
     fetchEventSource(uri, fetchEventSourceInit)
 
-    () => controller.abort(); observer.onCompleted()
+    () =>
+      controller.abort(); observer.onCompleted()
   }
 }

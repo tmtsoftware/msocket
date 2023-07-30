@@ -5,7 +5,7 @@ import io.rsocket.core.RSocketConnector
 import io.rsocket.transport.ClientTransport
 import msocket.api.ContentType
 
-import scala.compat.java8.FutureConverters.CompletionStageOps
+import scala.jdk.FutureConverters.*
 import scala.concurrent.Future
 
 object RSocketFactoryS {
@@ -15,6 +15,6 @@ object RSocketFactoryS {
       .dataMimeType(contentType.mimeType)
       .connect(clientTransport)
       .toFuture
-      .toScala
+      .asScala
   }
 }

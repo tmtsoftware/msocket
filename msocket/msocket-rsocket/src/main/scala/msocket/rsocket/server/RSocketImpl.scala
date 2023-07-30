@@ -13,7 +13,7 @@ import msocket.rsocket.RSocketExtensions._
 import msocket.security.AccessControllerFactory
 import reactor.core.publisher.{Flux, Mono}
 
-import scala.compat.java8.FutureConverters.FutureOps
+import scala.jdk.FutureConverters.*
 import scala.concurrent.Future
 
 class RSocketImpl[Req: Decoder: ErrorProtocol: LabelExtractor, StreamReq: Decoder: ErrorProtocol: LabelExtractor](
@@ -42,7 +42,7 @@ class RSocketImpl[Req: Decoder: ErrorProtocol: LabelExtractor, StreamReq: Decode
         monoResponseEncoder.encodeMono(monoRequestHandler.handle(req), collector)
       }
       .recover(monoResponseEncoder.errorEncoder)
-    Mono.fromCompletionStage(payloadF.toJava)
+    Mono.fromCompletionStage(payloadF.asJava)
   }
 
   override def requestStream(payload: Payload): Flux[Payload] = {

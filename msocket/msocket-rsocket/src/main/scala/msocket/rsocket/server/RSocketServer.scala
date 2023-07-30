@@ -7,7 +7,7 @@ import io.rsocket.transport.netty.server.{CloseableChannel, WebsocketServerTrans
 import msocket.api.ContentType
 import reactor.core.publisher.Mono
 
-import scala.compat.java8.FutureConverters.CompletionStageOps
+import scala.jdk.FutureConverters.*
 import scala.concurrent.{ExecutionContext, Future}
 
 class RSocketServer(rSocketF: ContentType => RSocket)(implicit actorSystem: ActorSystem[_]) {
@@ -27,7 +27,7 @@ class RSocketServer(rSocketF: ContentType => RSocket)(implicit actorSystem: Acto
       }
       .bind(transport)
       .toFuture
-      .toScala
+      .asScala
 
     channelF = eventualChannel
 

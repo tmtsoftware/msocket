@@ -7,11 +7,8 @@ object Libs {
   val `dotty-cps-async` = dep("com.github.rssh" %%% "dotty-cps-async" % "0.9.17")
   val `shim-scala-async-dotty-cps-async` = "com.github.rssh" %% "shim-scala-async-dotty-cps-async" % "0.9.17"
 
-  val `scala-java8-compat` = "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" // BSD 3-clause "New" or "Revised" License
-
   private val pekkoVersion = "1.0.1"
     val pekkoOrg = "org.apache.pekko"
-//  val pekkoOrg = "com.github.apache.incubator-pekko"
   val `pekko-stream`              = pekkoOrg %% "pekko-stream"              % pekkoVersion
   val `pekko-actor-typed`         = pekkoOrg %% "pekko-actor-typed"         % pekkoVersion
   val `pekko-actor-testkit-typed` = pekkoOrg %% "pekko-actor-testkit-typed" % pekkoVersion
@@ -19,7 +16,6 @@ object Libs {
 
   private val pekkoHttpVersion = "1.0.0-RC2"
   val pekkoHttpOrg = "org.apache.pekko"
-//  val pekkoHttpOrg = "com.github.apache.incubator-pekko-http"
   val `pekko-http` = pekkoHttpOrg %% "pekko-http" % pekkoHttpVersion
   val `pekko-http-cors` = pekkoHttpOrg %% "pekko-http-cors" % pekkoHttpVersion
   val `pekko-http-testkit` = pekkoHttpOrg %% "pekko-http-testkit" % pekkoHttpVersion

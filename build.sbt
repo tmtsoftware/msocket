@@ -20,7 +20,11 @@ inThisBuild(
       "UTF-8",
       "-feature",
       "-unchecked",
-      "-deprecation"
+      "-deprecation",
+      "-source:3.0-migration",
+      "-rewrite",
+      "-explain",
+      "-explain-types"
     )
   )
 )
@@ -122,8 +126,7 @@ lazy val `msocket-rsocket` = project
   .settings(
     libraryDependencies ++= Seq(
       `rsocket-transport-netty`,
-      `rsocket-core`,
-      Libs.`scala-java8-compat`
+      `rsocket-core`
     )
   )
 
@@ -201,9 +204,10 @@ lazy val `example-client-js` = project
     },
     libraryDependencies ++= Seq(
       scalatest.value % Test,
-      `dotty-cps-async`.value,
-      `shim-scala-async-dotty-cps-async`
-//      `scala-async`.value
+      `dotty-cps-async`.value
+
+      // Not available for scalajs
+//      `shim-scala-async-dotty-cps-async`
     )
   )
 

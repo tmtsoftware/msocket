@@ -21,10 +21,6 @@ inThisBuild(
       "-feature",
       "-unchecked",
       "-deprecation",
-      "-source:3.0-migration",
-      "-rewrite",
-      "-explain",
-      "-explain-types"
     )
   )
 )

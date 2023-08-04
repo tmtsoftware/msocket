@@ -14,13 +14,13 @@ object Libs {
   val `pekko-actor-testkit-typed` = pekkoOrg %% "pekko-actor-testkit-typed" % pekkoVersion
   val `pekko-stream-testkit`      = pekkoOrg %% "pekko-stream-testkit"      % pekkoVersion
 
-  private val pekkoHttpVersion = "1.0.0-RC2"
+  private val pekkoHttpVersion = "1.0.0"
   val pekkoHttpOrg = "org.apache.pekko"
   val `pekko-http` = pekkoHttpOrg %% "pekko-http" % pekkoHttpVersion
   val `pekko-http-cors` = pekkoHttpOrg %% "pekko-http-cors" % pekkoHttpVersion
   val `pekko-http-testkit` = pekkoHttpOrg %% "pekko-http-testkit" % pekkoHttpVersion
 
-  private val borerVersion = "377a777"
+  private val borerVersion = "687c9de"
   //  val borerOrg     = "io.bullet"
   val borerOrg = "com.github.tmtsoftware.borer"
   val `borer-core` = dep(borerOrg %%% "borer-core" % borerVersion)

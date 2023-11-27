@@ -4,7 +4,7 @@ import sbt._
 
 object Libs {
   val `scala-js-macrotask-executor` = dep("org.scala-js" %%% "scala-js-macrotask-executor" % "1.1.1")
-  val `dotty-cps-async` = dep("com.github.rssh" %%% "dotty-cps-async" % "0.9.17")
+  val `dotty-cps-async` = dep("com.github.rssh" %%% "dotty-cps-async" % "0.9.19")
   val `shim-scala-async-dotty-cps-async` = "com.github.rssh" %% "shim-scala-async-dotty-cps-async" % "0.9.17"
 
   private val pekkoVersion = "1.0.1"
@@ -20,16 +20,16 @@ object Libs {
   val `pekko-http-cors` = pekkoHttpOrg %% "pekko-http-cors" % pekkoHttpVersion
   val `pekko-http-testkit` = pekkoHttpOrg %% "pekko-http-testkit" % pekkoHttpVersion
 
-  private val borerVersion = "687c9de"
-  //  val borerOrg     = "io.bullet"
-  val borerOrg = "com.github.tmtsoftware.borer"
+  private val borerVersion = "1.12.0"
+    val borerOrg     = "io.bullet"
+//  val borerOrg = "com.github.tmtsoftware.borer"
   val `borer-core` = dep(borerOrg %%% "borer-core" % borerVersion)
   val `borer-derivation` = dep(borerOrg %%% "borer-derivation" % borerVersion)
   val `borer-compat-pekko` = borerOrg %% "borer-compat-pekko" % borerVersion
 
-  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.16")
+  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.17")
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.10.0"
-  val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "2.6.0")
+  val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "2.8.0")
 
   val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "2548bb6")
 

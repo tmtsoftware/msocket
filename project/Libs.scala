@@ -7,7 +7,7 @@ object Libs {
   val `dotty-cps-async` = dep("com.github.rssh" %%% "dotty-cps-async" % "0.9.19")
   val `shim-scala-async-dotty-cps-async` = "com.github.rssh" %% "shim-scala-async-dotty-cps-async" % "0.9.17"
 
-  private val pekkoVersion = "1.0.1"
+  private val pekkoVersion = "1.0.2"
     val pekkoOrg = "org.apache.pekko"
   val `pekko-stream`              = pekkoOrg %% "pekko-stream"              % pekkoVersion
   val `pekko-actor-typed`         = pekkoOrg %% "pekko-actor-typed"         % pekkoVersion

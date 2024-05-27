@@ -14,7 +14,7 @@ object Libs {
   val `pekko-actor-testkit-typed` = pekkoOrg %% "pekko-actor-testkit-typed" % pekkoVersion
   val `pekko-stream-testkit`      = pekkoOrg %% "pekko-stream-testkit"      % pekkoVersion
 
-  private val pekkoHttpVersion = "1.0.0"
+  private val pekkoHttpVersion = "1.0.1"
   val pekkoHttpOrg = "org.apache.pekko"
   val `pekko-http` = pekkoHttpOrg %% "pekko-http" % pekkoHttpVersion
   val `pekko-http-cors` = pekkoHttpOrg %% "pekko-http-cors" % pekkoHttpVersion
@@ -27,7 +27,7 @@ object Libs {
   val `borer-derivation` = dep(borerOrg %%% "borer-derivation" % borerVersion)
   val `borer-compat-pekko` = borerOrg %% "borer-compat-pekko" % borerVersion
 
-  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.17")
+  val scalatest        = dep("org.scalatest" %%% "scalatest" % "3.2.18")
   val `selenium-3-141` = "org.scalatestplus" %% "selenium-3-141" % "3.2.10.0"
   val `scalajs-dom`    = dep("org.scala-js" %%% "scalajs-dom" % "2.8.0")
 

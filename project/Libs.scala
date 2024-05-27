@@ -4,7 +4,7 @@ import sbt._
 
 object Libs {
   val `scala-js-macrotask-executor` = dep("org.scala-js" %%% "scala-js-macrotask-executor" % "1.1.1")
-  val `dotty-cps-async` = dep("com.github.rssh" %%% "dotty-cps-async" % "0.9.20")
+  val `dotty-cps-async` = dep("com.github.rssh" %%% "dotty-cps-async" % "0.9.21")
   val `shim-scala-async-dotty-cps-async` = "com.github.rssh" %% "shim-scala-async-dotty-cps-async" % "0.9.17"
 
   private val pekkoVersion = "1.0.2"

@@ -20,7 +20,7 @@ class WebsocketServerFlow[Req: Decoder: ErrorProtocol: LabelExtractor](
     streamRequestHandler: StreamRequestHandler[Req],
     collectorFactory: Req => MetricCollector[Req],
     accessController: AccessController
-)(implicit actorSystem: ActorSystem[_]) {
+)(implicit actorSystem: ActorSystem[?]) {
 
   val flow: Flow[Message, Message, NotUsed] = {
     Flow[Message]

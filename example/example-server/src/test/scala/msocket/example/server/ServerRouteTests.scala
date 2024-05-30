@@ -32,7 +32,7 @@ class ServerRouteTests
   override def clientContentType: ContentType = Json
 
   private val wiring = new ServerWiring {
-    override implicit lazy val actorSystem: ActorSystem[_] = system.toTyped
+    override implicit lazy val actorSystem: ActorSystem[?] = system.toTyped
   }
 
   protected override def afterAll(): Unit = {

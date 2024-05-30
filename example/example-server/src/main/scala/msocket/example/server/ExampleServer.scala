@@ -7,7 +7,7 @@ import org.apache.pekko.http.cors.scaladsl.CorsDirectives.cors
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
-class ExampleServer(routes: Route)(implicit system: ActorSystem[_]) {
+class ExampleServer(routes: Route)(implicit system: ActorSystem[?]) {
   implicit val executionContext: ExecutionContextExecutor = system.executionContext
 
   def start(host: String, port: Int): Future[Http.ServerBinding] = {

@@ -15,7 +15,7 @@ import msocket.security.AccessControllerFactory
 class WebsocketRouteFactory[Req: Decoder: ErrorProtocol: LabelExtractor](
     endpoint: String,
     streamRequestHandler: StreamRequestHandler[Req]
-)(implicit actorSystem: ActorSystem[_])
+)(implicit actorSystem: ActorSystem[?])
     extends RouteFactory[Req]
     with ServerHttpCodecs {
 

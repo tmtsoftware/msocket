@@ -24,7 +24,7 @@ class WebsocketTransport[Req: Encoder: ErrorProtocol](
     tokenFactory: () => Option[String] = () => None,
     appName: Option[String] = None,
     username: Option[String] = None
-)(implicit actorSystem: ActorSystem[_])
+)(implicit actorSystem: ActorSystem[?])
     extends JvmTransport[Req] {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext

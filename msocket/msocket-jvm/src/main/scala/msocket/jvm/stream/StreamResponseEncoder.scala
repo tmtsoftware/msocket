@@ -25,7 +25,7 @@ abstract class StreamResponseEncoder[Req: ErrorProtocol, M] extends ResponseEnco
             case Authorized(accessToken)      => streamResponse.responseFactory(accessToken)
             case authStatus: RuntimeException => Source.failed(authStatus)
           }
-          .map(res => encode(res, ResponseHeaders())(streamResponse.encoder))
+          .map(res => encode(res, ResponseHeaders())(using streamResponse.encoder))
           .recover(errorEncoder)
           .mapMaterializedValue(_ => NotUsed)
       }

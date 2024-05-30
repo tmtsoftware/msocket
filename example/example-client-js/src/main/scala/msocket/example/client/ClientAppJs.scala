@@ -9,7 +9,7 @@ import msocket.portable.PortablePekko
 import scala.concurrent.duration.DurationLong
 
 /** ScalaJS based client application that will send requests to the server */
-class ClientAppJs(client: ExampleClient)(implicit actorSystem: ActorSystem[_]) {
+class ClientAppJs(client: ExampleClient)(implicit actorSystem: ActorSystem[?]) {
 //  import actorSystem.executionContext
 
   def testRun(): Unit = {

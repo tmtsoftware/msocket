@@ -10,7 +10,7 @@ import scala.scalajs.js.timers
 
 object PortablePekko {
 
-  def setTimeout(duration: FiniteDuration)(body: => Unit)(implicit @nowarn actorSystem: ActorSystem[_]): Unit = {
+  def setTimeout(duration: FiniteDuration)(body: => Unit)(implicit @nowarn actorSystem: ActorSystem[?]): Unit = {
     timers.setTimeout(duration)(body)
   }
 

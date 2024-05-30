@@ -10,12 +10,12 @@ import reactor.core.publisher.Mono
 import scala.jdk.FutureConverters.*
 import scala.concurrent.{ExecutionContext, Future}
 
-class RSocketServer(rSocketF: ContentType => RSocket)(implicit actorSystem: ActorSystem[_]) {
+class RSocketServer(rSocketF: ContentType => RSocket)(implicit actorSystem: ActorSystem[?]) {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext
 
   @volatile
-  private var channelF: Future[CloseableChannel] = _
+  private var channelF: Future[CloseableChannel] = scala.compiletime.uninitialized
 
   def start(interface: String, port: Int): Future[CloseableChannel] = {
     val transport = WebsocketServerTransport.create(interface, port)

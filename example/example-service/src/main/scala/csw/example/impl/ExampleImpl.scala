@@ -17,7 +17,7 @@ import scala.util.Random
 /**
  * Implementation for the APIs defined in [[ExampleApi]]
  */
-class ExampleImpl(implicit actorSystem: ActorSystem[_]) extends ExampleApi {
+class ExampleImpl(implicit actorSystem: ActorSystem[?]) extends ExampleApi {
   import actorSystem.executionContext
 
   override def hello(name: String): Future[String] = {

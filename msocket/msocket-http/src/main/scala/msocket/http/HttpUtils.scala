@@ -22,7 +22,7 @@ class HttpUtils[Req: Encoder](
     appName: Option[String] = None,
     username: Option[String] = None
 )(implicit
-    actorSystem: ActorSystem[_],
+    actorSystem: ActorSystem[?],
     ep: ErrorProtocol[Req]
 ) extends ClientHttpCodecs {
 

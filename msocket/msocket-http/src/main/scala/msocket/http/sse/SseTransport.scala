@@ -23,7 +23,7 @@ class SseTransport[Req: Encoder: ErrorProtocol](
     tokenFactory: () => Option[String],
     appName: Option[String] = None,
     username: Option[String] = None
-)(implicit actorSystem: ActorSystem[_])
+)(implicit actorSystem: ActorSystem[?])
     extends JvmTransport[Req] {
 
   implicit val ec: ExecutionContext               = actorSystem.executionContext

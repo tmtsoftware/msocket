@@ -20,7 +20,7 @@ abstract class MonoResponseEncoder[Req: ErrorProtocol, M](implicit ec: Execution
           case Authorized(accessToken) => monoResponse.responseFactory(accessToken)
           case x: RuntimeException     => Future.failed(x)
         }
-        .map(res => encode(res, ResponseHeaders())(monoResponse.encoder))
+        .map(res => encode(res, ResponseHeaders())(using monoResponse.encoder))
         .recover(errorEncoder)
     }
 

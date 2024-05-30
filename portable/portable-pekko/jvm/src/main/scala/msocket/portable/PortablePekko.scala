@@ -10,7 +10,7 @@ import scala.util.{Failure, Success}
 
 object PortablePekko {
 
-  def setTimeout(duration: FiniteDuration)(body: => Unit)(implicit actorSystem: ActorSystem[_]): Unit = {
+  def setTimeout(duration: FiniteDuration)(body: => Unit)(implicit actorSystem: ActorSystem[?]): Unit = {
     import actorSystem.executionContext
     org.apache.pekko.pattern.after(duration, actorSystem.scheduler.toClassic) {
       Future.successful(body)

@@ -22,7 +22,7 @@ class HttpPostTransport[Req: Encoder](
     appName: Option[String] = None,
     username: Option[String] = None
 )(implicit
-    actorSystem: ActorSystem[_],
+    actorSystem: ActorSystem[?],
     ep: ErrorProtocol[Req]
 ) extends JvmTransport[Req]
     with ClientHttpCodecs {

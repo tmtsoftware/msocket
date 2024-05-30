@@ -12,7 +12,7 @@ import scala.concurrent.duration.DurationLong
 
 class RSocketTransportFactory {
   def connect[Req: Encoder: ErrorProtocol](uri: String, contentType: ContentType)(implicit
-      actorSystem: ActorSystem[_]
+      actorSystem: ActorSystem[?]
   ): (RSocketTransport[Req], Subscription) = {
     val underlyingTransport = WebsocketClientTransport.create(URI.create(uri))
     val rSocket             = Await.result(RSocketFactoryS.client(underlyingTransport, contentType), 5.seconds)

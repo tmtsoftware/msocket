@@ -22,7 +22,7 @@ class RSocketImpl[Req: Decoder: ErrorProtocol: LabelExtractor, StreamReq: Decode
     contentType: ContentType,
     accessControllerFactory: AccessControllerFactory,
     metricsEnabled: Boolean = false
-)(implicit actorSystem: ActorSystem[_])
+)(implicit actorSystem: ActorSystem[?])
     extends RSocket {
 
   import actorSystem.executionContext

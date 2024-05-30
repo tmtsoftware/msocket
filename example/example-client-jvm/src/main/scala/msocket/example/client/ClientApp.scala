@@ -6,7 +6,7 @@ import csw.example.api.client.ExampleClient
 import scala.concurrent.ExecutionContext
 
 /** Client application that will send requests to the server */
-class ClientApp(client: ExampleClient)(implicit ec: ExecutionContext, actorSystem: ActorSystem[_]) {
+class ClientApp(client: ExampleClient)(implicit ec: ExecutionContext, actorSystem: ActorSystem[?]) {
 
   def testRun(): Unit = {
 //    client.getNumbers(3).take(5).runForeach(println)

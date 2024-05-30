@@ -10,7 +10,7 @@ import msocket.portable.PortablePekko.SourceOps
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
-abstract class JvmTransport[Req: Encoder: ErrorProtocol](implicit actorSystem: ActorSystem[_]) extends Transport[Req] {
+abstract class JvmTransport[Req: Encoder: ErrorProtocol](implicit actorSystem: ActorSystem[?]) extends Transport[Req] {
   import actorSystem.executionContext
 
   override def requestStream[Res: Decoder: Encoder](request: Req, observer: Observer[Res]): Subscription = {

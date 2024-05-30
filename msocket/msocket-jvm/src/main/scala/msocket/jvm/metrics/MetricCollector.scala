@@ -26,8 +26,8 @@ class MetricCollector[Req: LabelExtractor](
     LabelExtractor[Req].allLabelNames.map(name => labelMap.getOrElse(name, ""))
   }
 
-  private lazy val counter: Option[Counter.Child] = _counter.map(_.labels(labels: _*))
-  private lazy val gauge: Option[Gauge.Child]     = _gauge.map(_.labels(labels: _*))
+  private lazy val counter: Option[Counter.Child] = _counter.map(_.labels(labels*))
+  private lazy val gauge: Option[Gauge.Child]     = _gauge.map(_.labels(labels*))
 
   def incGauge(): Unit   = gauge.foreach(_.inc())
   def decGauge(): Unit   = gauge.foreach(_.dec())

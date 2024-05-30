@@ -14,7 +14,7 @@ import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.FutureConverters.CompletionStageOps
 
-class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket, contentType: ContentType)(implicit actorSystem: ActorSystem[_])
+class RSocketTransport[Req: Encoder: ErrorProtocol](rSocket: RSocket, contentType: ContentType)(implicit actorSystem: ActorSystem[?])
     extends JvmTransport[Req] {
 
   implicit val ec: ExecutionContext = actorSystem.executionContext

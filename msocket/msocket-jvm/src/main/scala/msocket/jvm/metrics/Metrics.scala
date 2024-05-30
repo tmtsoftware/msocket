@@ -10,7 +10,7 @@ object Metrics {
       .build()
       .name(metricName)
       .help(help)
-      .labelNames(LabelExtractor[Req].allLabelNames: _*)
+      .labelNames(LabelExtractor[Req].allLabelNames*)
       .register(prometheusRegistry)
 
   def gauge[Req: LabelExtractor](metricName: String, help: String): Gauge =
@@ -18,6 +18,6 @@ object Metrics {
       .build()
       .name(metricName)
       .help(help)
-      .labelNames(LabelExtractor[Req].allLabelNames: _*)
+      .labelNames(LabelExtractor[Req].allLabelNames*)
       .register(prometheusRegistry)
 }

@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: coursier/setup-action@v1.2.0-M2
         with:
-          jvm: temurin:1.17
+          jvm: temurin:1.21
           apps: sbt sbtn
       - uses: coursier/cache-action@v6
       - name: Compile

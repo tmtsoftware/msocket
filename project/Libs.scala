@@ -7,7 +7,7 @@ object Libs {
   val `dotty-cps-async` = dep("com.github.rssh" %%% "dotty-cps-async" % "0.9.23")
   val `shim-scala-async-dotty-cps-async` = "com.github.rssh" %% "shim-scala-async-dotty-cps-async" % "0.9.17"
 
-  private val pekkoVersion = "1.1.2"
+  private val pekkoVersion = "1.1.3"
     val pekkoOrg = "org.apache.pekko"
   val `pekko-stream`              = pekkoOrg %% "pekko-stream"              % pekkoVersion
   val `pekko-actor-typed`         = pekkoOrg %% "pekko-actor-typed"         % pekkoVersion
@@ -33,7 +33,7 @@ object Libs {
 
   val `tmt-typed` = dep("com.github.mushtaq.tmt-typed" %%% "tmt-typed" % "2548bb6")
 
-  private val rsocketVersion    = "1.1.4"
+  private val rsocketVersion    = "1.1.5"
   val `rsocket-core`            = "io.rsocket" % "rsocket-core"            % rsocketVersion
   val `rsocket-transport-netty` = "io.rsocket" % "rsocket-transport-netty" % rsocketVersion
 }

@@ -5,7 +5,6 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 inThisBuild(
   Seq(
-//    scalaVersion      := "3.4.2",
     scalaVersion      := "3.6.2",
     // jitpack provides the env variable VERSION=<version being built> # A tag or commit
     // we make use of it so that the version in class metadata (this.getClass.getPackage.getSpecificationVersion)

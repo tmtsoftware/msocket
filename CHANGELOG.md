@@ -1,5 +1,8 @@
 # Change Log
 
+## [msocket v0.7.1] - 2025-04-10
+- Updated scala version
+- 
 ## [msocket v0.7.0] - 2025-03-13
 - Updated to Scala3/java-21
 - Replaces akka with pekko

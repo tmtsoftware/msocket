@@ -1,7 +1,8 @@
+jdk:
+  - openjdk21
 before_install:
-  - curl -fLo coursier https://github.com/coursier/launchers/raw/master/coursier
-  - chmod +x coursier
-  - ./coursier java --jvm temurin:1.21
+  - sdk install java 21.0.6-tem
+  - sdk use java 21.0.6-tem
   - export JITPACK_VERSION=$VERSION
   - wget https://repo1.maven.org/maven2/org/scala-sbt/sbt-launch/1.10.6/sbt-launch-1.10.6.jar
 install:

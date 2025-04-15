@@ -1,5 +1,8 @@
 # Change Log
 
+## [msocket v0.7.1] - 2025-04-14
+- Updated jitpack config
+- 
 ## [msocket v0.7.1] - 2025-04-10
 - Updated scala version
 - 
